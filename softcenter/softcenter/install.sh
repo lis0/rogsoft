@@ -55,16 +55,7 @@ softcenter_install() {
 		fi
 
 		# now try to reboot httpdb if httpdb not started
-		if [ -z "`pidof httpdb`"] || [ -z "`pidof perpboot`" ];then
-			sh /koolshare/perp/perp.sh
-		fi
-		#PERP_PROCESS=`pidof perpboot`
-		#if [ -z "$PERP_PROCESS" ];then
-		#	sh /koolshare/bin/kscore.sh
-		#else
-		#	PERP=`perpls | grep -E "httpdb|\+\+" | wc -l`
-		#	[ "$PERP" -ne "1" ] && sh /koolshare/bin/kscore.sh || echo software center runing normally!
-		#fi
+		/koolshare/bin/start-stop-daemon -S -q -x sh /koolshare/perp/perp.sh
 	fi
 }
 
