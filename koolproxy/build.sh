@@ -1,7 +1,7 @@
 #!/bin/sh
 
 MODULE=koolproxy
-VERSION=1.3
+VERSION=1.4
 TITLE=koolproxy
 DESCRIPTION=去广告，没烦恼
 HOME_URL=Module_koolproxy.asp

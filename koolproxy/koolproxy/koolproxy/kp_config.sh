@@ -1,9 +1,9 @@
 #! /bin/sh
 alias echo_date='echo $(date +%Y年%m月%d日\ %X):'
-export KSROOT=/jffs/koolshare
+export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy_`
-SOFT_DIR=/jffs/koolshare
+SOFT_DIR=/koolshare
 KP_DIR=$SOFT_DIR/koolproxy
 
 write_user_txt(){
@@ -52,7 +52,7 @@ add_ipset_conf(){
 	if [ "$koolproxy_mode" == "2" ];then
 		echo_date 添加黑名单软连接...
 		rm -rf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
-		ln -sf /jffs/koolshare/koolproxy/data/koolproxy_ipset.conf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
+		ln -sf /koolshare/koolproxy/data/koolproxy_ipset.conf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
 		dnsmasq_restart=1
 	fi
 }
