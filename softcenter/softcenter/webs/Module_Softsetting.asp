@@ -12,37 +12,18 @@
 <link rel="stylesheet" type="text/css" href="form_style.css"/>
 <link rel="stylesheet" type="text/css" href="/res/softcenter.css">
 <script type="text/javascript" src="/js/jquery.js"></script>
-<script>
-    var db_softcenter_ = [];
-    $.getJSON("/_api/softcenter_", function(resp) {
-        db_softcenter_=resp.result[0];
-        if(!db_softcenter_["softcenter_version"]) {
-            db_softcenter_["softcenter_version"] = "0.0";
-        }
-    });
-</script>
 <script type="text/javascript" src="/state.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
 <script type="text/javascript" src="/help.js"></script>
 <script type="text/javascript" src="/validator.js"></script>
 <script type="text/javascript" src="/general.js"></script>
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
-<!--<script type="text/javascript" src="/res/softcenter.js"></script>-->
+<script type="text/javascript" src="/res/softcenter.js"></script>
 <script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
 <script>
 function init(menu_hook) {
 	show_menu();
 	get_log();
-}
-
-function E(e) {
-	return (typeof(e) == 'string') ? document.getElementById(e) : e;
-}
-
-function onSubmitCtrl(o, s) {
-	document.form.action_mode.value = s;
-	showLoading(7);
-	document.form.submit();
 }
 
 function reload_Soft_Center() {
@@ -148,26 +129,11 @@ function get_log(s) {
 		}
 	});
 }
-
 </script>
 </head>
 <body onload="init();">
 	<div id="TopBanner"></div>
 	<div id="Loading" class="popup_bg"></div>
-	<iframe name="hidden_frame" id="hidden_frame" src="" width="0" height="0" frameborder="0"></iframe>
-	<form method="POST" name="form" action="" target="hidden_frame">
-	<input type="hidden" name="current_page" value="Main_Soft_setting.asp"/>
-	<input type="hidden" name="next_page" value="Main_Soft_setting.asp"/>
-	<input type="hidden" name="group_id" value=""/>
-	<input type="hidden" name="modified" value="0"/>
-	<input type="hidden" name="action_mode" value=""/>
-	<input type="hidden" name="action_script" value=""/>
-	<input type="hidden" name="action_wait" value=""/>
-	<input type="hidden" name="first_time" value=""/>
-	<input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>"/>
-	<input type="hidden" name="SystemCmd" onkeydown="onSubmitCtrl(this, ' Refresh ')" value="adm_config.sh"/>
-	<input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>"/>
-	<input type="hidden" id="soft_name" name="soft_name" value=""/>
 	<table class="content" align="center" cellpadding="0" cellspacing="0">
 		<tr>
 			<td width="17">&nbsp;</td>
@@ -184,7 +150,7 @@ function get_log(s) {
 								<tr>
 									<td bgcolor="#4D595D" colspan="3" valign="top">
 										<div>&nbsp;</div>
-										<div style="float:left;" class="formfonttitle">软件中心，离线安装页面</div>
+										<div style="float:left;" class="formfonttitle">软件中心 - 插件离线安装</div>
 										<div style="float:right; width:15px; height:25px;margin-top:10px"><img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img></div>
 										<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
 										<div class="formfontdesc" style="padding-top:5px;margin-top:0px;float: left;" id="cmdDesc"></div>
@@ -228,7 +194,6 @@ function get_log(s) {
 			</td>
 		</tr>
 	</table>
-	</form>
 	</td>
 	<div id="footer"></div>
 </body>

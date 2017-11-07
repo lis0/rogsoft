@@ -208,9 +208,7 @@
     .cloud_main_radius h5 { color:#FFF;font-weight:normal;font-style: normal;}
 </style>
 <script>
-
-var db_softcenter_ = [];
-
+var db_softcenter_ = {};
 String.prototype.format = String.prototype.f = function() {
 	var s = this,
 		i = arguments.length;
@@ -493,8 +491,7 @@ function init(cb) {
 					}
 				});
 			}
-			//把本地数据平面化转换成以app为对象
-
+		//把本地数据平面化转换成以app为对象
 		function _formatLocalData(localData) {
 				var result = {};
 				$.map(db_softcenter_, function(item, key) {
@@ -514,8 +511,7 @@ function init(cb) {
 
 				return result;
 			}
-			//将本地和远程进行一次对比合并
-
+		//将本地和远程进行一次对比合并
 		function _mergeData(remoteData) {
 			var result = {};
 			var localData = _formatLocalData(db_softcenter_);
@@ -653,145 +649,114 @@ function notice_show() {
 		}
 	});
 }
-
-//function test() {
-//	var id = parseInt(Math.random() * 100000000);
-//	var postData = {"id": id, "method": "dummy_script.sh", "params":[], "fields": ""};
-//	$.ajax({
-//		type: "POST",
-//		url: "/_api/",
-//		async: true,
-//		cache:false,
-//		data: JSON.stringify(postData),
-//		dataType: "json",
-//		success: function(response){
-//			if(response){
-//				console.log(response)
-//			}
-//		}
-//	});
-//}
-    
 </script>
 </head>
 <body>
     <div id="TopBanner"></div>
     <div id="Loading" class="popup_bg"></div>
-    <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>"/>
-    <input type="hidden" name="current_page" value="Main_Soft_center.asp">
-    <input type="hidden" name="next_page" value="Main_Soft_center.asp">
-    <input type="hidden" name="group_id" value="">
-    <input type="hidden" name="modified" value="0">
-    <input type="hidden" name="action_mode" value="">
-    <input type="hidden" name="action_script" value="">
-    <input type="hidden" name="action_wait" value="8">
-    <input type="hidden" name="first_time" value="">
-    <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
-    <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
-<table class="content" align="center" cellpadding="0" cellspacing="0">
-    <tr>
-        <td width="17">&nbsp;</td>
-        <td valign="top" width="202">
-            <div id="mainMenu"></div>
-            <div id="subMenu"></div>
-        </td>
-        <td valign="top">
-            <div id="tabMenu" class="submenuBlock"></div>
-                <table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td align="left" valign="top">
-                            <div>
-                                <table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle">
-                                    <tr>
-                                        <td bgcolor="#4D595D" colspan="3" valign="top">
-                                            <div>&nbsp;</div>
-                                            <div class="formfonttitle">Software Center</div>
-                                            <div style="margin-left:5px;margin-top:5px;margin-bottom:5px"><img src="/images/New_ui/export/line_export.png"></div>
-                                                <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" >
-                                                </table>
-                                                <table width="100%" height="150px" style="border-collapse:collapse;">
-                                                    <tr bgcolor="#444f53">
-                                                        <td colspan="5" bgcolor="#444f53" class="cloud_main_radius">
-                                                            <div style="padding:10px;width:95%;font-style:italic;font-size:14px;">
-                                                                <br/><br/>
-                                                                <table width="100%" >
-                                                                    <tr>
-                                                                        <td>
-                                                                            <ul style="margin-top:-50px;padding-left:15px;" >
-                                                                                <li style="margin-top:-5px;">
-                                                                                    <h2 id="push_titile"><em>欢迎</em></h2>
-                                                                                </li>
-                                                                                <li style="margin-top:-5px;">
-                                                                                    <h4 id="push_content1" >欢迎来到插件中心，目前正在紧张开发中，各种插件酝酿中！</h4>
-                                                                                </li>
-                                                                                <li  style="margin-top:-5px;">
-                                                                                    <h4 id="push_content2">如果你想加入我们的工作，在 <a href="http://www.koolshare.cn" target="_blank"> <i><u>www.koolshare.cn</u></i> </a>联系我们！</h4>
-                                                                                </li>
-                                                                                <li id="push_content3_li" style="margin-top:-5px;display: none;">
-                                                                                    <h4 id="push_content3"></h4>
-                                                                                </li>
-                                                                                <li id="push_content4_li" style="margin-top:-5px;display: none;">
-                                                                                    <h4 id="push_content4"></h4>
-                                                                                </li>
-                                                                                <li style="margin-top:-5px;">
-                                                                                    <h5>当前版本：<span id="spnCurrVersion"></span> 在线版本：<span id="spnOnlineVersion"></span>
-                                                                                    <input type="button" id="updateBtn" value="更新" style="display:none" /></h5>
-                                                                                </li>
-                                                                                    <!--<input type="button" id="updateBtn" class="button_gen" onclick="test();" value="测试"/></h5>-->
-                                                                            </ul>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr height="10px">
-                                                        <td colspan="3"></td>
-                                                    </tr>
-
-                                                    <tr bgcolor="#444f53" id="install_status" style="display: none;" width="235px">
-                                                        <td>
-                                                            <div style="padding:10px;width:95%;font-size:14px;" id="appInstallInfo">
-                                                            </div>
-                                                        </td>
-                                                        <td class="cloud_main_radius_right">
-                                                        </td>
-                                                     </tr>
-                                                    <tr height="10px">
-                                                        <td colspan="3"></td>
-                                                    </tr>
-                                                    <tr width="235px">
-                                                        <td colspan="4" cellpadding="0" cellspacing="0" style="padding:0">
-                                                            <input class="show-install-btn" type="button" value="已安装"/>
-                                                            <input class="show-uninstall-btn" type="button" value="未安装"/>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr bgcolor="#444f53" width="235px">
-                                                        <td colspan="4" id="IconContainer">
-                                                            <div style="text-align:center; line-height: 4em;">更新中...</div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr height="10px">
-                                                        <td colspan="3"></td>
-                                                    </tr>
-
-                                                </table>
-                                            <div class="KoolshareBottom">论坛技术支持： <a href="http://www.koolshare.cn" target="_blank"> <i><u>koolshare.cn</u></i> </a>
-                                                <br/>Github项目： <a href="https://github.com/koolshare/rogsoft" target="_blank"> <i><u>github.com/koolshare</u></i> </a>
-                                                <br/>Shell & Web by： <a href="mailto:sadoneli@gmail.com"> <i>sadoneli</i> </a>, <i>Xiaobao</i>
-                                            </div>
-                                        </td>
-                                    </tr>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </td>
-        <td width="10" align="center" valign="top"></td>
-    </tr>
-</table>
+	<table class="content" align="center" cellpadding="0" cellspacing="0">
+	    <tr>
+	        <td width="17">&nbsp;</td>
+	        <td valign="top" width="202">
+	            <div id="mainMenu"></div>
+	            <div id="subMenu"></div>
+	        </td>
+	        <td valign="top">
+	            <div id="tabMenu" class="submenuBlock"></div>
+	                <table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
+	                    <tr>
+	                        <td align="left" valign="top">
+	                            <div>
+	                                <table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle">
+	                                    <tr>
+	                                        <td bgcolor="#4D595D" colspan="3" valign="top">
+	                                            <div>&nbsp;</div>
+	                                            <div class="formfonttitle">Software Center</div>
+	                                            <div style="margin-left:5px;margin-top:5px;margin-bottom:5px"><img src="/images/New_ui/export/line_export.png"></div>
+	                                                <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" >
+	                                                </table>
+	                                                <table width="100%" height="150px" style="border-collapse:collapse;">
+	                                                    <tr bgcolor="#444f53">
+	                                                        <td colspan="5" bgcolor="#444f53" class="cloud_main_radius">
+	                                                            <div style="padding:10px;width:95%;font-style:italic;font-size:14px;">
+	                                                                <br/><br/>
+	                                                                <table width="100%" >
+	                                                                    <tr>
+	                                                                        <td>
+	                                                                            <ul style="margin-top:-50px;padding-left:15px;" >
+	                                                                                <li style="margin-top:-5px;">
+	                                                                                    <h2 id="push_titile"><em>欢迎</em></h2>
+	                                                                                </li>
+	                                                                                <li style="margin-top:-5px;">
+	                                                                                    <h4 id="push_content1" >欢迎来到插件中心，目前正在紧张开发中，各种插件酝酿中！</h4>
+	                                                                                </li>
+	                                                                                <li  style="margin-top:-5px;">
+	                                                                                    <h4 id="push_content2">如果你想加入我们的工作，在 <a href="http://www.koolshare.cn" target="_blank"> <i><u>www.koolshare.cn</u></i> </a>联系我们！</h4>
+	                                                                                </li>
+	                                                                                <li id="push_content3_li" style="margin-top:-5px;display: none;">
+	                                                                                    <h4 id="push_content3"></h4>
+	                                                                                </li>
+	                                                                                <li id="push_content4_li" style="margin-top:-5px;display: none;">
+	                                                                                    <h4 id="push_content4"></h4>
+	                                                                                </li>
+	                                                                                <li style="margin-top:-5px;">
+	                                                                                    <h5>当前版本：<span id="spnCurrVersion"></span> 在线版本：<span id="spnOnlineVersion"></span>
+	                                                                                    <input type="button" id="updateBtn" value="更新" style="display:none" /></h5>
+	                                                                                </li>
+	                                                                            </ul>
+	                                                                        </td>
+	                                                                    </tr>
+	                                                                </table>
+	                                                            </div>
+	                                                        </td>
+	                                                    </tr>
+	                                                    <tr height="10px">
+	                                                        <td colspan="3"></td>
+	                                                    </tr>
+	
+	                                                    <tr bgcolor="#444f53" id="install_status" style="display: none;" width="235px">
+	                                                        <td>
+	                                                            <div style="padding:10px;width:95%;font-size:14px;" id="appInstallInfo">
+	                                                            </div>
+	                                                        </td>
+	                                                        <td class="cloud_main_radius_right">
+	                                                        </td>
+	                                                     </tr>
+	                                                    <tr height="10px">
+	                                                        <td colspan="3"></td>
+	                                                    </tr>
+	                                                    <tr width="235px">
+	                                                        <td colspan="4" cellpadding="0" cellspacing="0" style="padding:0">
+	                                                            <input class="show-install-btn" type="button" value="已安装"/>
+	                                                            <input class="show-uninstall-btn" type="button" value="未安装"/>
+	                                                        </td>
+	                                                    </tr>
+	
+	                                                    <tr bgcolor="#444f53" width="235px">
+	                                                        <td colspan="4" id="IconContainer">
+	                                                            <div style="text-align:center; line-height: 4em;">更新中...</div>
+	                                                        </td>
+	                                                    </tr>
+	                                                    <tr height="10px">
+	                                                        <td colspan="3"></td>
+	                                                    </tr>
+	
+	                                                </table>
+	                                            <div class="KoolshareBottom">论坛技术支持： <a href="http://www.koolshare.cn" target="_blank"> <i><u>koolshare.cn</u></i> </a>
+	                                                <br/>Github项目： <a href="https://github.com/koolshare/rogsoft" target="_blank"> <i><u>github.com/koolshare</u></i> </a>
+	                                                <br/>Shell & Web by： <a href="mailto:sadoneli@gmail.com"> <i>sadoneli</i> </a>, <i>Xiaobao</i>
+	                                            </div>
+	                                        </td>
+	                                    </tr>
+	                            </table>
+	                        </div>
+	                    </td>
+	                </tr>
+	            </table>
+	        </td>
+	        <td width="10" align="center" valign="top"></td>
+	    </tr>
+	</table>
 <div id="footer"></div>
 </body>
 </html>
