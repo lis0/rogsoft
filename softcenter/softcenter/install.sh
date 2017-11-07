@@ -55,7 +55,7 @@ softcenter_install() {
 		fi
 
 		# now try to reboot httpdb if httpdb not started
-		/koolshare/bin/start-stop-daemon -S -q -x sh /koolshare/perp/perp.sh
+		/koolshare/bin/start-stop-daemon -S -q -x /koolshare/perp/perp.sh
 	fi
 }
 
