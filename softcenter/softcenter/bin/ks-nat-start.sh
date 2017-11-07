@@ -1,14 +1,14 @@
 #!/bin/sh
 
-#ACTION=$1
-ACTION="start_nat"
+ACTION=$1
+#ACTION="start_nat"
 
 echo start `date` > /tmp/ks_nat_log.txt
 
 ks_nat=`nvram get ks_nat`
 [ "$ks_nat" == "1" ] && echo exit `date` >> /tmp/ks_nat_log.txt && exit
 
-for i in $(find /jffs/koolshare/init.d/ -name 'N*' | sort) ;
+for i in $(find /koolshare/init.d/ -name 'N*' | sort) ;
 do
     case "$i" in
         *.sh )

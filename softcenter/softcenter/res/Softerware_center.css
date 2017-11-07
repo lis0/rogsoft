@@ -19,7 +19,7 @@
 	font-family: Lucida Console;
 	background-image:none;
 	background-color: #3e030d;
-	border:1px solid #91071f;
+	/*border:1px solid #91071f;*/
 	color:#FFFFFF;
 	color:#FFFFFF;
 }
@@ -60,7 +60,7 @@
 	display: none \9;
 }
 
-.input_option{
+/*.input_option{
 	height:25px;
 	background-color: rgb(62,3,13);
 	border-top-width:1px; 
@@ -72,3 +72,4 @@
 	background-color: #3e030d;
 	border:1px solid #91071f;
 }
+*/

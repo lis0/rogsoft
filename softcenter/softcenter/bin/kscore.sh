@@ -1,14 +1,7 @@
 #!/bin/sh
-#set -x
 
-export KSROOT=/jffs/koolshare
-source $KSROOT/scripts/base.sh
-export PERP_BASE=$KSROOT/perp
+#this scripts used for .asusrouer to start httpdb
+source /koolshare/scripts/base.sh
 mkdir -p /tmp/upload
-
-# ===============================
-# start perp
-echo start perp skipd and httpdb
-sh $KSROOT/perp/perp.sh
-
-
+sh /koolshare/perp/perp.sh
+#httpdb >/dev/null 2>&1 &
