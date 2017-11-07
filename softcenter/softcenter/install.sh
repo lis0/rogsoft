@@ -4,7 +4,6 @@ softcenter_install() {
 	if [ -d "/tmp/softcenter" ]; then
 		# make some folders
 		mkdir -p /jffs/configs/dnsmasq.d
-		mkdir -p /jffs/etc
 		mkdir -p /jffs/scripts
 		mkdir -p /koolshare/bin/
 		mkdir -p /koolshare/init.d/
@@ -36,7 +35,7 @@ softcenter_install() {
 		[ ! -L "/koolshare/bin/base64" ] && ln -sf /bin/busybox /koolshare/bin/base64
 		[ ! -L "/koolshare/scripts/ks_app_remove.sh" ] && ln -sf /koolshare/scripts/ks_app_install.sh /koolshare/scripts/ks_app_remove.sh
 		[ ! -L "/jffs/.asusrouter" ] && ln -sf /koolshare/bin/kscore.sh /jffs/.asusrouter
-		[ ! -L "/jffs/etc/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/etc/profile
+		[ ! -L "/jffs/configs/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/configs/profile
 
 		# creat wan-start and nat-start when not exist
 		if [ ! -f "/jffs/scripts/wan-start" ];then
