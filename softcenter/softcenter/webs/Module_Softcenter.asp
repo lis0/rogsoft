@@ -10,17 +10,8 @@
 <title>Merlin software center</title>
 <link rel="stylesheet" type="text/css" href="index_style.css">
 <link rel="stylesheet" type="text/css" href="form_style.css">
-<link rel="stylesheet" type="text/css" href="/res/Softerware_center.css">
+<link rel="stylesheet" type="text/css" href="/res/softcenter.css">
 <script type="text/javascript" src="/js/jquery.js"></script>
-<script>
-    var db_softcenter_ = [];
-    $.getJSON("/_api/softcenter_", function(resp) {
-        db_softcenter_=resp.result[0];
-        if(!db_softcenter_["softcenter_version"]) {
-            db_softcenter_["softcenter_version"] = "0.0";
-        }
-    });
-</script>
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
 <script language="JavaScript" type="text/javascript" src="/help.js"></script>
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
@@ -217,7 +208,9 @@
     .cloud_main_radius h5 { color:#FFF;font-weight:normal;font-style: normal;}
 </style>
 <script>
-//set tabstop=4 set shiftwidth=4 set expandtab
+
+var db_softcenter_ = [];
+
 String.prototype.format = String.prototype.f = function() {
 	var s = this,
 		i = arguments.length;
@@ -226,23 +219,6 @@ String.prototype.format = String.prototype.f = function() {
 	}
 	return s;
 };
-
-function formatString(s, args) {
-	i = args.length;
-	while (i--) {
-		s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), args[i]);
-	}
-	return s;
-}
-
-String.prototype.endsWith = function(suffix) {
-	return (this.substr(this.length - suffix.length) === suffix);
-}
-
-String.prototype.startsWith = function(prefix) {
-	return (this.substr(0, prefix.length) === prefix);
-}
-
 String.prototype.capitalizeFirstLetter = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 }
@@ -603,46 +579,53 @@ function init(cb) {
 $(function() {
 	//梅林要求用这个函数来显示左测菜单
 	show_menu(menu_hook);
+	$.ajax({
+	  	type: "GET",
+	 	url: "/_api/soft",
+	  	dataType: "json",
+	  	async:false,
+	 	success: function(data){
+	 	 	db_softcenter_ = data.result[0];
+			if (!db_softcenter_["softcenter_version"]) {
+				db_softcenter_["softcenter_version"] = "0.0";
+			}
+			$("#spnCurrVersion").html(db_softcenter_["softcenter_version"]);
 
-	if (!db_softcenter_["softcenter_version"]) {
-		db_softcenter_["softcenter_version"] = "0.0";
-	}
-	$("#spnCurrVersion").html(db_softcenter_["softcenter_version"]);
+			init(function() {
+				toggleAppPanel(1);
+				//一刷新界面是否就正在插件在安装.
+				initInstallStatus();
+			});
+			//挂接tab切换安装状态事件
+			$('.show-install-btn').click(function() {
+				init(function() {
+					toggleAppPanel(1);
+				});
+			});
+			$('.show-uninstall-btn').click(function() {
+				init(function() {
+					toggleAppPanel(0);
+				});
+			});
+			//挂接安装或者卸载事件
+			$('#IconContainer').on('click', '.install-btn', function() {
+				var name = $(this).data('name');
+				console.log('install', name);
+				appInstallModule(softInfo[name]);
+			});
+			$('#IconContainer').on('click', '.uninstall-btn', function() {
+				var name = $(this).data('name');
+				console.log('uninstall', name);
+				appUninstallModule(softInfo[name]);
+			});
+			$('#IconContainer').on('click', '.update-btn', function() {
+				var name = $(this).data('name');
+				console.log('update', name);
+				appInstallModule(softInfo[name]);
 
-	init(function() {
-		toggleAppPanel(1);
-		//一刷新界面是否就正在插件在安装.
-		initInstallStatus();
+			});
+	  	}
 	});
-	//挂接tab切换安装状态事件
-	$('.show-install-btn').click(function() {
-		init(function() {
-			toggleAppPanel(1);
-		});
-	});
-	$('.show-uninstall-btn').click(function() {
-		init(function() {
-			toggleAppPanel(0);
-		});
-	});
-	//挂接安装或者卸载事件
-	$('#IconContainer').on('click', '.install-btn', function() {
-		var name = $(this).data('name');
-		console.log('install', name);
-		appInstallModule(softInfo[name]);
-	});
-	$('#IconContainer').on('click', '.uninstall-btn', function() {
-		var name = $(this).data('name');
-		console.log('uninstall', name);
-		appUninstallModule(softInfo[name]);
-	});
-	$('#IconContainer').on('click', '.update-btn', function() {
-		var name = $(this).data('name');
-		console.log('update', name);
-		appInstallModule(softInfo[name]);
-
-	});
-
 });
 
 function menu_hook() {

@@ -55,7 +55,7 @@ softcenter_install() {
 		fi
 
 		# now try to reboot httpdb if httpdb not started
-		if [ -z "`pidof httpdb`"];then
+		if [ -z "`pidof httpdb`"] || [ -z "`pidof perpboot`" ];then
 			sh /koolshare/perp/perp.sh
 		fi
 		#PERP_PROCESS=`pidof perpboot`

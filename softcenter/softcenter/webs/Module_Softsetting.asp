@@ -10,7 +10,7 @@
 <title>软件中心 - 离线安装</title>
 <link rel="stylesheet" type="text/css" href="index_style.css"/>
 <link rel="stylesheet" type="text/css" href="form_style.css"/>
-<link rel="stylesheet" type="text/css" href="/res/Softerware_center.css">
+<link rel="stylesheet" type="text/css" href="/res/softcenter.css">
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script>
     var db_softcenter_ = [];
