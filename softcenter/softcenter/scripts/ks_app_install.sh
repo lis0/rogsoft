@@ -1,13 +1,13 @@
 #!/bin/sh
 
-export KSROOT=/jffs/koolshare
+export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 
 
 #From dbus to local variable
 eval `dbus export softcenter_installing_`
-source /jffs/koolshare/scripts/base.sh
-export PERP_BASE=/jffs/koolshare/perp
+source /koolshare/scripts/base.sh
+export PERP_BASE=/koolshare/perp
 
 #softcenter_installing_module 	#正在安装的模块
 #softcenter_installing_todo 	#希望安装的模块
@@ -91,7 +91,7 @@ install_module() {
 	fi
 
 	CMP=`versioncmp $softcenter_installing_version $OLD_VERSION`
-	if [ -f /jffs/koolshare/webs/Module_$softcenter_installing_module.sh -o "$softcenter_installing_todo" = "softcenter" ]; then
+	if [ -f /koolshare/webs/Module_$softcenter_installing_module.sh -o "$softcenter_installing_todo" = "softcenter" ]; then
 		CMP="-1"
 	fi
 	if [ "$CMP" = "-1" ]; then
@@ -145,7 +145,7 @@ install_module() {
 
 		if [ -f /tmp/$softcenter_installing_module/uninstall.sh ]; then
 			chmod 755 /tmp/$softcenter_installing_module/uninstall.sh
-			mv /tmp/$softcenter_installing_module/uninstall.sh /jffs/koolshare/scripts/uninstall_$softcenter_installing_todo.sh
+			mv /tmp/$softcenter_installing_module/uninstall.sh /koolshare/scripts/uninstall_$softcenter_installing_todo.sh
 		fi
 
 		chmod a+x /tmp/$softcenter_installing_module/install.sh
@@ -227,13 +227,13 @@ uninstall_module() {
 	dbus set softcenter_installing_todo=""
 
 	#try to call uninstall script
-	if [ -f "/jffs/koolshare/scripts/$softcenter_installing_todo$UNINSTALL_SUFFIX.sh"]; then
- 		sh /jffs/koolshare/scripts/$softcenter_installing_todo$UNINSTALL_SUFFIX.sh
-	elif [ -f "/jffs/koolshare/scripts/uninstall_$softcenter_installing_todo.sh" ]; then
-		sh /jffs/koolshare/scripts/uninstall_$softcenter_installing_todo.sh
+	if [ -f "/koolshare/scripts/$softcenter_installing_todo$UNINSTALL_SUFFIX.sh"]; then
+ 		sh /koolshare/scripts/$softcenter_installing_todo$UNINSTALL_SUFFIX.sh
+	elif [ -f "/koolshare/scripts/uninstall_$softcenter_installing_todo.sh" ]; then
+		sh /koolshare/scripts/uninstall_$softcenter_installing_todo.sh
 	else
-		rm -f /jffs/koolshare/webs/Module_$softcenter_installing_todo.asp
-        rm -f /jffs/koolshare/init.d/S*$softcenter_installing_todo.sh
+		rm -f /koolshare/webs/Module_$softcenter_installing_todo.asp
+        rm -f /koolshare/init.d/S*$softcenter_installing_todo.sh
 	fi
 	curl -s https://koolshare.ngrok.wang/"$softcenter_installing_module"/"$softcenter_installing_module"/install.sh >/dev/null 2>&1
 }
