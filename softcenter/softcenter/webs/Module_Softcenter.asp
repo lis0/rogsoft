@@ -11,13 +11,14 @@
 <link rel="stylesheet" type="text/css" href="index_style.css">
 <link rel="stylesheet" type="text/css" href="form_style.css">
 <link rel="stylesheet" type="text/css" href="/res/softcenter.css">
-<script type="text/javascript" src="/js/jquery.js"></script>
+<link rel="stylesheet" type="text/css" href="/res/layer/theme/default/layer.css">
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
 <script language="JavaScript" type="text/javascript" src="/help.js"></script>
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
 <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
 <script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
 <script language="JavaScript" type="text/javascript" src="/validator.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/general.js"></script>
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
 <script type="text/javascript" src="/form.js"></script>
@@ -575,6 +576,7 @@ function init(cb) {
 $(function() {
 	//梅林要求用这个函数来显示左测菜单
 	show_menu(menu_hook);
+	//pop_111();
 	$.ajax({
 	  	type: "GET",
 	 	url: "/_api/soft",
@@ -629,6 +631,26 @@ function menu_hook() {
 	tablink[tablink.length - 1] = new Array("", "Module_Softcenter.asp", "Module_Softsetting.asp");
 }
 
+/*
+function pop_111() {
+	require(['/res/layer/layer.js'], function(layer) {
+		layer.open({
+			type: 2,
+			shade: .7,
+			scrollbar: 0,
+			title: '国内外分流信息:ip111.cn',
+			area: ['750px', '466px'],
+			//offset: ['355px', '368px'],
+			fixed: false, //不固定
+			maxmin: true,
+			shadeClose: 1,
+			id: 'LAY_layuipro',
+			btnAlign: 'c',
+			content: ['http://ip111.cn/' , 'no'],
+		});
+	});
+}
+*/
 function notice_show() {
 	$.ajax({
 		url: 'https://rogsoft.ngrok.wang/softcenter/push_message.json.js',
