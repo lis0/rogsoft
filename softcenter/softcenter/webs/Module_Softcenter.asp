@@ -578,12 +578,16 @@ $(function() {
 	show_menu(menu_hook);
 	//pop_111();
 	$.ajax({
-	  	type: "GET",
-	 	url: "/_api/soft",
-	  	dataType: "json",
-	  	async:false,
-	 	success: function(data){
-	 	 	db_softcenter_ = data.result[0];
+		type: "GET",
+		url: "/_api/soft",
+		dataType: "json",
+		async: false,
+		cache: false,
+		success: function(response) {
+			if (response.result[0]["softcenter_version"]) {
+				db_softcenter_ = response.result[0];
+			}
+
 			if (!db_softcenter_["softcenter_version"]) {
 				db_softcenter_["softcenter_version"] = "0.0";
 			}
@@ -622,7 +626,7 @@ $(function() {
 				appInstallModule(softInfo[name]);
 
 			});
-	  	}
+		}
 	});
 });
 
