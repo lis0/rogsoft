@@ -72,26 +72,14 @@ restart_dnsmasq(){
 	fi
 }
 
-add_ss_event(){
-	start=`dbus list __event__onssstart_|grep koolproxy`
-	if [ -z "$start" ];then
-	echo_date 添加ss事件触发：当ss启用或者重启，重新加载koolproxy的nat规则.
-	dbus event onssstart_koolproxy $KP_DIR/koolproxy.sh
-	fi
-}
-
-remove_ss_event(){
-	dbus remove __event__onssstart_koolproxy
-}
-
 write_reboot_job(){
 	# start setvice
 	if [ "1" == "$koolproxy_reboot" ]; then
 		echo_date 开启插件定时重启，每天"$koolproxy_reboot_hour"时，自动重启插件...
-		cru a koolproxy_reboot "* $koolproxy_reboot_hour * * * /bin/sh $KP_DIR/koolproxy.sh restart"
+		cru a koolproxy_reboot "* $koolproxy_reboot_hour * * * /bin/sh $KP_DIR/kp_config.sh restart"
 	elif [ "2" == "$koolproxy_reboot" ]; then
 		echo_date 开启插件间隔重启，每隔"$koolproxy_reboot_inter_hour"时，自动重启插件...
-		cru a koolproxy_reboot "* */$koolproxy_reboot_inter_hour * * * /bin/sh $KP_DIR/koolproxy.sh restart"
+		cru a koolproxy_reboot "* */$koolproxy_reboot_inter_hour * * * /bin/sh $KP_DIR/kp_config.sh restart"
 	fi
 }
 
@@ -105,12 +93,17 @@ remove_reboot_job(){
 }
 
 creat_ipset(){
+	xt=`lsmod | grep xt_set`
+	OS=$(uname -r)
+	if [ -f /lib/modules/${OS}/kernel/net/netfilter/xt_set.ko ] && [ -z "$xt" ];then
+		echo_date "加载xt_set.ko内核模块！"
+		insmod /lib/modules/${OS}/kernel/net/netfilter/xt_set.ko
+	fi
+
 	echo_date 创建ipset名单
 	ipset -! creat white_kp_list nethash
 	ipset -! creat black_koolproxy nethash
-}
-
-add_white_black_ip(){
+	
 	ip_lan="0.0.0.0/8 10.0.0.0/8 100.64.0.0/10 127.0.0.0/8 169.254.0.0/16 172.16.0.0/12 192.168.0.0/16 224.0.0.0/4 240.0.0.0/4"
 	for ip in $ip_lan
 	do
@@ -185,13 +178,10 @@ get_acl_para(){
 lan_acess_control(){
 	# lan access control
 	[ -z "$koolproxy_acl_default" ] && koolproxy_acl_default=1
-	acl_nu=`dbus list koolproxy_acl_mode|sort -n -t "=" -k 2|cut -d "=" -f 1 | cut -d "_" -f 4`
+	acl_nu=`dbus list koolproxy_acl_mode|sort -n -t "=" -k 2|cut -d "=" -f 1 | cut -d "_" -f 4 | sort -n`
 	if [ -n "$acl_nu" ]; then
-		min="1"
-		max="$acl_nu"
-		while [ $min -le $max ]
+		for min in $acl_nu
 		do
-			#echo_date $min $max
 			ipaddr=`dbus get koolproxy_acl_ip_$min`
 			mac=`dbus get koolproxy_acl_mac_$min`
 			proxy_name=`dbus get koolproxy_acl_name_$min`
@@ -202,13 +192,11 @@ lan_acess_control(){
 			[ "$koolproxy_acl_method" == "3" ] && ipaddr="" && echo_date 加载ACL规则：【$mac】模式为：$(get_mode_name $proxy_mode)
 			#echo iptables -t nat -A KOOLPROXY $(factor $ipaddr "-s") $(factor $mac "-m mac --mac-source") -p tcp $(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)
 			iptables -t nat -A KOOLPROXY $(factor $ipaddr "-s") $(factor $mac "-m mac --mac-source") -p tcp $(get_jump_mode $proxy_mode) $(get_action_chain $proxy_mode)
-		min=`expr $min + 1`
 		done
 		echo_date 加载ACL规则：其余主机模式为：$(get_mode_name $koolproxy_acl_default)
 	else
 		echo_date 加载ACL规则：所有模式为：$(get_mode_name $koolproxy_acl_default)
 	fi
-
 }
 
 load_nat(){
@@ -287,62 +275,62 @@ get_rule_para(){
 case $1 in
 start)
 	nvram set ks_nat="1"
-	echo_date ================== koolproxy启用 =================
+	echo_date ============================ koolproxy启用 ===========================
 	rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
 	detect_cert
 	start_koolproxy
 	add_ipset_conf && restart_dnsmasq
 	creat_ipset
-	add_white_black_ip
 	load_nat
 	dns_takeover
 	creat_start_up
 	write_nat_start
 	write_reboot_job
-	# add_ss_event
-	echo_date =================================================
+	echo_date =====================================================================
 	nvram set ks_nat="0"
 	;;
 restart)
 	# now stop
-	echo_date ================== 关闭 =================
-	#sleep 1
+	echo_date ================================ 关闭 ===============================
 	rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
-	remove_ss_event
 	remove_reboot_job
 	remove_nat_start
 	flush_nat
 	stop_koolproxy
 	# now start
-	echo_date ================== koolproxy启用 =================
+	echo_date ============================ koolproxy启用 ===========================
 	detect_cert
 	start_koolproxy
 	add_ipset_conf && restart_dnsmasq
 	creat_ipset
-	add_white_black_ip
 	load_nat
 	dns_takeover
 	creat_start_up
 	write_nat_start
 	write_reboot_job
-	add_ss_event
 	echo_date koolproxy启用成功，请等待日志窗口自动关闭，页面会自动刷新...
-	echo_date =================================================
+	[ ! -f "/tmp/koolprxoy.nat_lock" ] && touch /tmp/koolprxoy.nat_lock
+	echo_date =====================================================================
 	;;
 stop)
-	remove_ss_event
+	echo_date ================================ 关闭 ===============================
 	remove_reboot_job
 	add_ipset_conf && restart_dnsmasq
 	remove_nat_start
 	flush_nat
 	stop_koolproxy
-	#del_start_up
+	echo_date koolproxy插件已关闭
+	echo_date =====================================================================
 	;;
 start_nat)
-	flush_nat
-	creat_ipset
-	add_white_black_ip
-	load_nat
-	dns_takeover
+	WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
+	[ -n "$WAN_ACTION" ] && exit
+	[ ! -f "/tmp/koolprxoy.nat_lock" ] && exit 0
+	if [ "$koolproxy_enable" == "1" ] ;then
+		flush_nat
+		creat_ipset
+		load_nat
+		dns_takeover
+	fi
 	;;
 esac

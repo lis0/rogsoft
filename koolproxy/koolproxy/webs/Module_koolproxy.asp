@@ -13,15 +13,8 @@
 <link rel="stylesheet" type="text/css" href="usp_style.css"/>
 <link rel="stylesheet" type="text/css" href="css/element.css">
 <link rel="stylesheet" type="text/css" href="/device-map/device-map.css">
-<link rel="stylesheet" type="text/css" href="/res/Softerware_center.css">
+<link rel="stylesheet" type="text/css" href="/res/softcenter.css">
 <script type="text/javascript" src="/js/jquery.js"></script>
-<script>
-	var $j = jQuery.noConflict();
-	var db_koolproxy = [];
-	$j.getJSON("/_api/koolproxy_", function(resp) {
-		db_koolproxy=resp.result[0];
-	});
-</script>
 <script type="text/javascript" src="/state.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
 <script type="text/javascript" src="/validator.js"></script>
@@ -30,13 +23,13 @@
 <script type="text/javascript" src="/client_function.js"></script>
 <script type="text/javascript" src="/res/softcenter.js"></script>
 <style>
-    .cloud_main_radius h2 { border-bottom:1px #AAA dashed;}
-	.cloud_main_radius h3 { font-size:12px;color:#FFF;font-weight:normal;font-style: normal;}
-	.cloud_main_radius h4 { font-size:12px;color:#FC0;font-weight:normal;font-style: normal;}
-	.cloud_main_radius h5 { color:#FFF;font-weight:normal;font-style: normal;}
+.cloud_/koolshare_radius h2 { border-bottom:1px #AAA dashed;}
+.cloud_main_radius h3 { font-size:12px;color:#FFF;font-weight:normal;font-style: normal;}
+.cloud_main_radius h4 { font-size:12px;color:#FC0;font-weight:normal;font-style: normal;}
+.cloud_main_radius h5 { color:#FFF;font-weight:normal;font-style: normal;}
 .kp_btn {
 	border: 1px solid #222;
-	background: linear-gradient(to bottom, #91071f  0%, #700618 100%); /* W3C */
+	background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
 	font-size:10pt;
 	color: #fff;
 	padding: 5px 5px;
@@ -45,17 +38,15 @@
 }
 .kp_btn:hover {
 	border: 1px solid #222;
-	background: linear-gradient(to bottom, #cf0a2c  0%, #91071f 100%); /* W3C */
+	background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
 	font-size:10pt;
 	color: #fff;
 	padding: 5px 5px;
 	border-radius: 5px 5px 5px 5px;
 	width:14%;
 }
-
 #log_content3, #loading_block2, #log_content1 {line-height:1.5}
 #log_content3, #log_content1 { -ms-overflow-style: none; overflow: auto; } /* for IE hide scrollbar on ss node ta */
-
 #log_content3::-webkit-scrollbar, #log_content1::-webkit-scrollbar {
     width: 0px;  /* remove scrollbar space */
     background: transparent;  /* optional: just make scrollbar invisible */
@@ -63,7 +54,23 @@
 #log_content3:focus, #log_content1:focus {
 	outline: none;
 }
+
 #log_content3, #log_content1 {overflow: -moz-scrollbars-none;}
+.contentM_qis {
+	position: absolute;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius:10px;
+	z-index: 10;
+	background-color:#2B373B;
+	margin-left: -215px;
+	top: 240px;
+	width:980px;
+	return height:auto;
+	box-shadow: 3px 3px 10px #000;
+	background: rgba(0,0,0,0.85);
+	display:none;
+}
 .contentM_qis {
 	position: absolute;
 	-webkit-border-radius: 5px;
@@ -86,247 +93,211 @@
 	padding:10px;
 	font-weight:bold;
 }
-.FormTitle_chrome56 i {
-    color: #FC0;
-    font-style: normal;
-}
-.FormTitle_chrome56 em {
-    color: #00ffe4;
-    font-style: normal;
-}
-.FormTitle_chrome56 b {
-    color: #1cfe16;
-    font-style: normal;
-	font-weight:normal;
-}
-
-.FormTitle_firefox i {
-    color: #FC0;
-    font-style: normal;
-}
-.FormTitle_firefox em {
-    color: #00ffe4;
-    font-style: normal;
-}
-.FormTitle_firefox b {
-    color: #1cfe16;
-    font-style: normal;
-	font-weight:normal;
+.input_option_2{
+	height:25px;
+	background-color:#475a5f;
+	border: 0px solid #222;
+	color:#FFFFFF;
+	font-family:'Courier New', Courier, mono;
+	font-size:13px;
 }
 </style>
-
 <script>
-var $G = function(id){return document.getElementById(id);};
 var _responseLen;
 var noChange = 0;
 var reload = 0;
-var params = ["koolproxy_mode", "koolproxy_ext_ports", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method", "koolproxy_acl_default"];
+var dbus = {};
 
 function init() {
-	show_menu();
-	buildswitch();
+	show_menu(menu_hook);
+	get_dbus_data();
 	generate_options();
-	conf2obj();
 	refresh_acl_table();
 	update_visibility();
-	update_visibility1();
-	setTimeout("get_run_status();", 100);
 	get_user_rule();
-	$j("#log_content2").click(
-		function() {
-			x = -10;
+	hook_event();
+	setTimeout("get_run_status();", 100);
+    setTimeout("showDropdownClientList('setClientIP', 'ip', 'all', 'ClientList_Block', 'pull_arrow', 'online');", 1000);
+}
+
+function E(e) {
+	return (typeof(e) == 'string') ? document.getElementById(e) : e;
+}
+
+function done_validating() {
+	return true;
+}
+
+function get_dbus_data(){
+	$.ajax({
+	  	type: "GET",
+	 	url: "/_api/koolproxy_",
+	  	dataType: "json",
+	  	async:false,
+	 	success: function(data){
+	 	 	dbus = data.result[0];
+			conf2obj();
+	  	}
 	});
-	$j("#download_cert").click(
+}
+
+function hook_event(){
+	$("#log_content2").click(
+		function() {
+		x = -10;
+	});
+	$("#download_cert").click(
 	function() {
 		location.href = "http://110.110.110.110";
 	});
-	$j("#koolproxy_github").click(
+	$("#koolproxy_github").click(
 		function() {
 		window.open("https://github.com/koolproxy/koolproxy_rules");
 	});
-    setTimeout("showDropdownClientList('setClientIP', 'ip', 'all', 'ClientList_Block', 'pull_arrow', 'online');", 1000);
-	
+	$("#switch").click(
+		function(){
+		if(E('switch').checked){
+			dbus["koolproxy_enable"] = 1;
+			E("policy_tr").style.display = "";
+			E("kp_status").style.display = "";
+			E("auto_reboot_switch").style.display = "";
+			E("rule_update_switch").style.display = "";
+			E("cert_download_tr").style.display = "";
+			E("klloproxy_com").style.display = "";
+			E("acl_method_tr").style.display = "";
+			E("ACL_table").style.display = "";
+			E("ACL_note").style.display = "";
+		}else{
+			dbus["koolproxy_enable"] = 0;
+			E("policy_tr").style.display = "none";
+			E("kp_status").style.display = "none";
+			E("auto_reboot_switch").style.display = "none";
+			E("rule_update_switch").style.display = "none";
+			E("cert_download_tr").style.display = "none";
+			E("klloproxy_com").style.display = "none";
+			E("acl_method_tr").style.display = "none";
+			E("ACL_table").style.display = "none";
+			E("ACL_note").style.display = "none";
+		}
+	});
 }
 
 function generate_options(){
 	for(var i = 0; i < 24; i++) {
-		$j("#koolproxy_reboot_hour").append("<option value='"  + i + "'>" + i + "点</option>");
-		$j("#koolproxy_reboot_hour").val(3);
-	}
-	for(var i = 1; i < 73; i++) {
-		$j("#koolproxy_reboot_inter_hour").append("<option value='"  + i + "'>" + i + "时</option>");
-		$j("#koolproxy_reboot_inter_hour").val(72);
+		$("#koolproxy_reboot_hour").append("<option value='"  + i + "'>" + i + "点</option>");
+		$("#koolproxy_reboot_hour").val(3);
+		$("#koolproxy_reboot_inter_hour").append("<option value='"  + i + "'>" + i + "时</option>");
+		$("#koolproxy_reboot_inter_hour").val(12);
 	}
 	for(var i = 0; i < 60; i++) {
-		$j("#koolproxy_reboot_min").append("<option value='"  + i + "'>" + i + "分</option>");
-		$j("#koolproxy_reboot_inter_min").append("<option value='"  + i + "'>" + i + "分</option>");
-		$j("#koolproxy_reboot_min").val(30);
-		$j("#koolproxy_reboot_inter_min").val(0);
+		$("#koolproxy_reboot_min").append("<option value='"  + i + "'>" + i + "分</option>");
+		$("#koolproxy_reboot_inter_min").append("<option value='"  + i + "'>" + i + "分</option>");
+		$("#koolproxy_reboot_min").val(30);
+		$("#koolproxy_reboot_inter_min").val(0);
 	}
 }
 
 function get_run_status(){
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {"id": id, "method": "KoolProxy_status.sh", "params":[2], "fields": ""};
-	$j.ajax({
+	$.ajax({
 		type: "POST",
 		cache:false,
 		url: "/_api/",
 		data: JSON.stringify(postData),
 		dataType: "json",
 		success: function(response){
-			document.getElementById("koolproxy_status").innerHTML = response.result.split("@@")[0];
-			document.getElementById("koolproxy_rule_status").innerHTML = response.result.split("@@")[1];
+			E("koolproxy_status").innerHTML = response.result.split("@@")[0];
+			E("koolproxy_rule_status").innerHTML = response.result.split("@@")[1];
 			setTimeout("get_run_status();", 10000);
 		},
 		error: function(){
-			document.getElementById("koolproxy_status").innerHTML = "获取运行状态失败！";
-			document.getElementById("koolproxy_rule_status").innerHTML = "获取规则状态失败！";
+			E("koolproxy_status").innerHTML = "获取运行状态失败！";
+			E("koolproxy_rule_status").innerHTML = "获取规则状态失败！";
 			setTimeout("get_run_status();", 5000);
 		}
 	});
 }
 
 function get_user_rule() {
-	$j.ajax({
+	$.ajax({
 		url: '/_temp/user.txt',
 		type: 'GET',
 		cache:false,
 		dataType: 'text',
 		success: function(res) {
-			$j('#usertxt').val(res);
+			$('#usertxt').val(res);
 			//console.log("res", res);
 		}
 	});
 }
 
-function buildswitch(){
-	$j("#switch").click(
-	function(){
-		if(document.getElementById('switch').checked){
-			db_koolproxy["koolproxy_enable"] = 1;
-			document.getElementById("policy_tr").style.display = "";
-			document.getElementById("ports_tr").style.display = "";
-			document.getElementById("kp_status").style.display = "";
-			document.getElementById("auto_reboot_switch").style.display = "";
-			document.getElementById("rule_update_switch").style.display = "";
-			document.getElementById("cert_download_tr").style.display = "";
-			document.getElementById("klloproxy_com").style.display = "";
-			document.getElementById("acl_method_tr").style.display = "";
-			document.getElementById("ACL_table").style.display = "";
-			document.getElementById("ACL_note").style.display = "";
-		}else{
-			db_koolproxy["koolproxy_enable"] = 0;
-			document.getElementById("policy_tr").style.display = "none";
-			document.getElementById("ports_tr").style.display = "none";
-			document.getElementById("kp_status").style.display = "none";
-			document.getElementById("auto_reboot_switch").style.display = "none";
-			document.getElementById("rule_update_switch").style.display = "none";
-			document.getElementById("cert_download_tr").style.display = "none";
-			document.getElementById("klloproxy_com").style.display = "none";
-			document.getElementById("acl_method_tr").style.display = "none";
-			document.getElementById("ACL_table").style.display = "none";
-			document.getElementById("ACL_note").style.display = "none";
-		}
-	});
+function menu_hook() {
+	tabtitle[tabtitle.length -1] = new Array("", "koolproxy", "__INHERIT__");
+	tablink[tablink.length -1] = new Array("", "Module_koolproxy.asp", "NULL");
 }
 
 function conf2obj(){
-    var rrt = document.getElementById("switch");
-    if (db_koolproxy["koolproxy_enable"] != "1") {
+    var rrt = E("switch");
+    if (dbus["koolproxy_enable"] != "1") {
         rrt.checked = false;
     } else {
         rrt.checked = true;
     }
     
-    for (var field in db_koolproxy) {
-        $j('#'+field).val(db_koolproxy[field]);
+    for (var field in dbus) {
+        $('#'+field).val(dbus[field]);
     }
-
 }
 
 function reload_Soft_Center(){
-	location.href = "/Main_Soft_center.asp";
-}
-
-function update_visibility1(){
-	showhide("koolproxy_mode_read1", (document.form.koolproxy_mode.value == 1));
-	showhide("koolproxy_mode_read2", (document.form.koolproxy_mode.value == 2));
-	showhide("koolproxy_mode_read3", (document.form.koolproxy_mode.value == 3));
-	showhide("koolproxy_reboot_hour_span", (document.form.koolproxy_reboot.value == 1));
-	showhide("koolproxy_reboot_interval_span", (document.form.koolproxy_reboot.value == 2));
+	location.href = "/Module_Softcenter.asp";
 }
 
 function update_visibility(){
-	if(db_koolproxy["koolproxy_enable"] == "1"){
-		document.getElementById("policy_tr").style.display = "";
-		document.getElementById("ports_tr").style.display = "";
-		document.getElementById("kp_status").style.display = "";
-		document.getElementById("auto_reboot_switch").style.display = "";
-		document.getElementById("rule_update_switch").style.display = "";
-		document.getElementById("cert_download_tr").style.display = "";
-		document.getElementById("klloproxy_com").style.display = "";
-		document.getElementById("acl_method_tr").style.display = "";
-		document.getElementById("ACL_table").style.display = "";
-		document.getElementById("ACL_note").style.display = "";
+	if(dbus["koolproxy_enable"] == "1"){
+		E("policy_tr").style.display = "";
+		E("kp_status").style.display = "";
+		E("auto_reboot_switch").style.display = "";
+		E("rule_update_switch").style.display = "";
+		E("cert_download_tr").style.display = "";
+		E("klloproxy_com").style.display = "";
+		E("acl_method_tr").style.display = "";
+		E("ACL_table").style.display = "";
+		E("ACL_note").style.display = "";
 	}else{
-		document.getElementById("policy_tr").style.display = "none";
-		document.getElementById("ports_tr").style.display = "none";
-		document.getElementById("kp_status").style.display = "none";
-		document.getElementById("auto_reboot_switch").style.display = "none";
-		document.getElementById("rule_update_switch").style.display = "none";
-		document.getElementById("cert_download_tr").style.display = "none";
-		document.getElementById("klloproxy_com").style.display = "none";
-		document.getElementById("acl_method_tr").style.display = "none";
-		document.getElementById("ACL_table").style.display = "none";
-		document.getElementById("ACL_note").style.display = "none";
+		E("policy_tr").style.display = "none";
+		E("kp_status").style.display = "none";
+		E("auto_reboot_switch").style.display = "none";
+		E("rule_update_switch").style.display = "none";
+		E("cert_download_tr").style.display = "none";
+		E("klloproxy_com").style.display = "none";
+		E("acl_method_tr").style.display = "none";
+		E("ACL_table").style.display = "none";
+		E("ACL_note").style.display = "none";
 	}
-}
-
-function get_arp_list(){
-	var id = parseInt(Math.random() * 100000000);
-	var postData = {"id": id, "method": "KoolProxy_getarp.sh", "params":[], "fields": ""};
-	$j.ajax({
-		type: "POST",
-		url: "/_api/",
-		async:true,
-		cache:false,
-		data: JSON.stringify(postData),
-		dataType: "json",
-		success: function(response){
-			if (response.result != "-1"){
-				var s2 = response.result.split( '>' );
-				//console.log("s2", s2);
-				for ( var i = 0; i < s2.length; ++i ) {
-					option_arp_local[i] = [s2[ i ].split( '<' )[0], s2[ i ].split( '<' )[0],s2[ i ].split( '<' )[1],s2[ i ].split( '<' )[2]];
-				}
-			
-				option_arp_list = $.extend([],option_arp_local);
-				//console.log("option_arp_list", option_arp_list);
-			}
-		},
-		timeout:1000
-	});
+	showhide("koolproxy_reboot_hour_span", (E("koolproxy_reboot").value == 1));
+	showhide("koolproxy_reboot_interval_span", (E("koolproxy_reboot").value == 2));
 }
 
 function get_log(){
-	$j.ajax({
+	$.ajax({
 		url: '/_temp/kp_log.txt',
 		type: 'GET',
 		cache:false,
 		dataType: 'text',
 		success: function(response) {
-			var retArea = $G("log_content3");
+			var retArea = E("log_content3");
 			if (response.search("XU6J03M6") != -1) {
 				retArea.value = response.replace("XU6J03M6", " ");
-				$G("ok_button").style.display = "";
+				E("ok_button").style.display = "";
 				retArea.scrollTop = retArea.scrollHeight;
 				if (reload == 1){
 					x = 6;
 					count_down_close();
 					return true;
 				}else{
-					$G("ok_button").style.display = "none";
+					E("ok_button").style.display = "";
 					return true;
 				}
 			}
@@ -338,7 +309,7 @@ function get_log(){
 			if (noChange > 1000) {
 				return false;
 			} else {
-				setTimeout("get_log();", 300);
+				setTimeout("get_log();", 50);
 			}
 			retArea.value = response.replace("XU6J03M6", " ");
 			retArea.scrollTop = retArea.scrollHeight;
@@ -390,11 +361,11 @@ function showKPLoadingBar(seconds){
 		winHeight = 660;
 	
 	blockmarginTop= winHeight*0.3-140		
-	document.getElementById("loadingBarBlock").style.marginTop = blockmarginTop+"px";
-	document.getElementById("loadingBarBlock").style.marginLeft = blockmarginLeft+"px";
-	document.getElementById("loadingBarBlock").style.width = 770+"px";
-	document.getElementById("LoadingBar").style.width = winW+"px";
-	document.getElementById("LoadingBar").style.height = winH+"px";
+	E("loadingBarBlock").style.marginTop = blockmarginTop+"px";
+	E("loadingBarBlock").style.marginLeft = blockmarginLeft+"px";
+	E("loadingBarBlock").style.width = 770+"px";
+	E("LoadingBar").style.width = winW+"px";
+	E("LoadingBar").style.height = winH+"px";
 	loadingSeconds = seconds;
 	progress = 100/loadingSeconds;
 	y = 0;
@@ -402,27 +373,27 @@ function showKPLoadingBar(seconds){
 }
 
 function LoadingKPProgress(seconds){
-	document.getElementById("LoadingBar").style.visibility = "visible";
-	if (db_koolproxy["koolproxy_enable"] == 0){
-		document.getElementById("loading_block3").innerHTML = "koolproxy关闭中 ..."
-		$j("#loading_block2").html("<li><font color='#ffcc00'><a href='http://www.koolshare.cn' target='_blank'></font>koolproxy工作有问题？请来我们的<font color='#ffcc00'>论坛www.koolshare.cn</font>反应问题...</font></li>");
+	E("LoadingBar").style.visibility = "visible";
+	if (dbus["koolproxy_enable"] == 0){
+		E("loading_block3").innerHTML = "koolproxy关闭中 ..."
+		$("#loading_block2").html("<li><font color='#ffcc00'><a href='http://www.koolshare.cn' target='_blank'></font>koolproxy工作有问题？请来我们的<font color='#ffcc00'>论坛www.koolshare.cn</font>反应问题...</font></li>");
 	} else {
-			$j("#loading_block2").html("<font color='#ffcc00'>------------------------------------------------------------------------------------------------------------------------------------");
-		if (db_koolproxy["koolproxy_basic_action"] == 1){
-			document.getElementById("loading_block3").innerHTML = "开启koolproxy ..."
-		}else if (db_koolproxy["koolproxy_basic_action"] == 2){
-			document.getElementById("loading_block3").innerHTML = "更新koolproxy规则列表 ..."
-		}else if (db_koolproxy["koolproxy_basic_action"] == 3){
-			document.getElementById("loading_block3").innerHTML = "上传证书 ..."
-		}else if (db_koolproxy["koolproxy_basic_action"] == 4){
-			document.getElementById("loading_block3").innerHTML = "保存user.txt ..."
+			$("#loading_block2").html("<font color='#ffcc00'>----------------------------------------------------------------------------------------------------------------------------------");
+		if (dbus["koolproxy_basic_action"] == 1){
+			E("loading_block3").innerHTML = "开启koolproxy ..."
+		}else if (dbus["koolproxy_basic_action"] == 2){
+			E("loading_block3").innerHTML = "更新koolproxy规则列表 ..."
+		}else if (dbus["koolproxy_basic_action"] == 3){
+			E("loading_block3").innerHTML = "上传证书 ..."
+		}else if (dbus["koolproxy_basic_action"] == 4){
+			E("loading_block3").innerHTML = "保存user.txt ..."
 		}
 	}
 }
 
 function hideKPLoadingBar(){
 	x = -1;
-	document.getElementById("LoadingBar").style.visibility = "hidden";
+	E("LoadingBar").style.visibility = "hidden";
 	refreshpage();
 }
 
@@ -432,10 +403,10 @@ function count_down_close() {
 		hideKPLoadingBar();
 	}
 	if (x < 0) {
-		$G("ok_button1").value = "手动关闭"
+		E("ok_button1").value = "手动关闭"
 		return false;
 	}
-	$G("ok_button1").value = "自动关闭（" + x + "）"
+	E("ok_button1").value = "自动关闭（" + x + "）"
 		--x;
 	setTimeout("count_down_close();", 1000);
 }
@@ -443,7 +414,7 @@ function count_down_close() {
 
 function getACLConfigs() {
 	var dict = {};
-	for (var field in db_koolproxy) {
+	for (var field in dbus) {
 		names = field.split("_");
 		dict[names[names.length - 1]] = 'ok';
 	}
@@ -452,18 +423,18 @@ function getACLConfigs() {
 	var params = ["ip", "name", "mode"];
 	for (var field in dict) {
 		var obj = {};
-		if (typeof db_koolproxy[p + "_mac_" + field] == "undefined") {
+		if (typeof dbus[p + "_mac_" + field] == "undefined") {
 			obj["mac"] = '';
 		} else {
-			obj["mac"] = db_koolproxy[p + "_mac_" + field];
+			obj["mac"] = dbus[p + "_mac_" + field];
 		}
 		for (var i = 0; i < params.length; i++) {
 			var ofield = p + "_" + params[i] + "_" + field;
-			if (typeof db_koolproxy[ofield] == "undefined") {
+			if (typeof dbus[ofield] == "undefined") {
 				obj = null;
 				break;
 			}
-			obj[params[i]] = db_koolproxy[ofield];
+			obj[params[i]] = dbus[ofield];
 		}
 		if (obj != null) {
 			var node_a = parseInt(field);
@@ -483,27 +454,24 @@ function addTr() {
 	acl_node_max += 1;
 	var params = ["ip", "name", "mac", "mode"];
 	for (var i = 0; i < params.length; i++) {
-		acls[p + "_" + params[i] + "_" + acl_node_max] = $j('#' + p + "_" + params[i]).val();
+		acls[p + "_" + params[i] + "_" + acl_node_max] = $('#' + p + "_" + params[i]).val();
 	}
 
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {"id": id, "method": "dummy_script.sh", "params":[2], "fields": acls};
-	$j.ajax({
+	$.ajax({
 		type: "POST",
 		cache:false,
 		url: "/_api/",
 		data: JSON.stringify(postData),
 		dataType: "json",
-		error: function(xhr) {
-			console.log("error in posting config of table");
-		},
 		success: function(response) {
 			if (response.result == id){
-			refresh_acl_table();
-			document.form.koolproxy_acl_name.value = "";
-			document.form.koolproxy_acl_ip.value = "";
-			document.form.koolproxy_acl_mac.value = "";
-			document.form.koolproxy_acl_mode.value = "1";
+				refresh_acl_table();
+				E("koolproxy_acl_name").value = "";
+				E("koolproxy_acl_ip").value = "";
+				E("koolproxy_acl_mac").value = "";
+				E("koolproxy_acl_mode").value = "1";
 			}
 		}
 	});
@@ -511,7 +479,7 @@ function addTr() {
 }
 
 function delTr(o) {
-	var id = $j(o).attr("id");
+	var id = $(o).attr("id");
 	var ids = id.split("_");
 	var p = "koolproxy_acl";
 	id = ids[ids.length - 1];
@@ -522,15 +490,12 @@ function delTr(o) {
 	}
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {"id": id, "method": "dummy_script.sh", "params":[2], "fields": acls};
-	$j.ajax({
+	$.ajax({
 		type: "POST",
 		cache:false,
 		url: "/_api/",
 		data: JSON.stringify(postData),
 		dataType: "json",
-		error: function(xhr) {
-			console.log("error in posting config of table");
-		},
 		success: function(response) {
 			refresh_acl_table();
 		}
@@ -538,23 +503,23 @@ function delTr(o) {
 }
 
 function refresh_acl_table() {
-	$j.ajax({
+	$.ajax({
 	  	type: "GET",
 	 	url: "/_api/koolproxy_",
 	  	dataType: "json",
 	  	async:false,
 	 	success: function(response){
-			db_koolproxy=response.result[0];
-			$j("#ACL_table").find("tr:gt(2)").remove();
-			$j('#ACL_table tr:last').after(refresh_acl_html());
+			dbus=response.result[0];
+			$("#ACL_table").find("tr:gt(2)").remove();
+			$('#ACL_table tr:last').after(refresh_acl_html());
 			for (var i = 1; i < acl_node_max + 1; i++) {
-				$j('#koolproxy_acl_mode_' + i).val(db_koolproxy["koolproxy_acl_mode_" + i]);
-				$j('#koolproxy_acl_name_' + i).val(db_koolproxy["koolproxy_acl_name_" + i]);
+				$('#koolproxy_acl_mode_' + i).val(dbus["koolproxy_acl_mode_" + i]);
+				$('#koolproxy_acl_name_' + i).val(dbus["koolproxy_acl_name_" + i]);
 			}
-			if (typeof db_koolproxy["koolproxy_acl_default"] !== "undefined"){
-				$j('#koolproxy_acl_default').val(db_koolproxy["koolproxy_acl_default"]);
+			if (typeof dbus["koolproxy_acl_default"] !== "undefined"){
+				$('#koolproxy_acl_default').val(dbus["koolproxy_acl_default"]);
 			}else{
-				$j('#koolproxy_acl_default').val("1");
+				$('#koolproxy_acl_default').val("1");
 			}
 	  	}
 	});
@@ -571,16 +536,16 @@ function refresh_acl_html() {
 		var ac = acl_confs[field];
 		code = code + '<tr>';
 		code = code + '<td>';
-		code = code + '<input type="text" placeholder="" id="koolproxy_acl_ip_' + ac["acl_node"] + '" name="koolproxy_acl_ip_' + ac["acl_node"] + '" class="input_option" maxlength="50" style="width:140px;" value="' + ac["ip"] + '" />';
+		code = code + '<input type="text" placeholder="" id="koolproxy_acl_ip_' + ac["acl_node"] + '" name="koolproxy_acl_ip_' + ac["acl_node"] + '" class="input_option_2" maxlength="50" style="width:140px;" value="' + ac["ip"] + '" />';
 		code = code + '</td>';
 		code = code + '<td>';
-		code = code + '<input type="text" placeholder="" id="koolproxy_acl_mac_' + ac["acl_node"] + '" name="koolproxy_acl_mac_' + ac["acl_node"] + '" class="input_option" maxlength="50" style="width:140px;" value="' + ac["mac"] + '" />';
+		code = code + '<input type="text" placeholder="" id="koolproxy_acl_mac_' + ac["acl_node"] + '" name="koolproxy_acl_mac_' + ac["acl_node"] + '" class="input_option_2" maxlength="50" style="width:140px;" value="' + ac["mac"] + '" />';
 		code = code + '</td>';
 		code = code + '<td>';
-		code = code + '<input type="text" placeholder="" id="koolproxy_acl_name_' + ac["acl_node"] + '" name="koolproxy_acl_name_' + ac["acl_node"] + '" class="input_option" maxlength="50" style="width:140px;" placeholder="" />';
+		code = code + '<input type="text" placeholder="" id="koolproxy_acl_name_' + ac["acl_node"] + '" name="koolproxy_acl_name_' + ac["acl_node"] + '" class="input_option_2" maxlength="50" style="width:140px;" placeholder="" />';
 		code = code + '</td>';
 		code = code + '<td>';
-		code = code + '<select id="koolproxy_acl_mode_' + ac["acl_node"] + '" name="koolproxy_acl_mode_' + ac["acl_node"] + '" style="width:160px;margin:0px 0px 0px 2px;" class="input_option">';
+		code = code + '<select id="koolproxy_acl_mode_' + ac["acl_node"] + '" name="koolproxy_acl_mode_' + ac["acl_node"] + '" style="width:160px;margin:0px 0px 0px 2px;" class="input_option_2">';
 		code = code + '<option value="1">http only</option>';
 		code = code + '<option value="2">http + https</option>';
 		code = code + '<option value="0">不过滤</option>';
@@ -593,14 +558,14 @@ function refresh_acl_html() {
 	}
 	code = code + '<tr>';
 	if (n == 0) {
-		code = code + '<td><input type="text" class="input_option" maxlength="50" style="width:140px;" value="所有主机" disabled/></td>';
+		code = code + '<td>所有主机</td>';
 	} else {
-		code = code + '<td><input type="text" class="input_option" maxlength="50" style="width:140px;" value="其它主机" disabled/></td>';
+		code = code + '<td>其它主机</td>';
 	}
-	code = code + '<td><input type="text" class="input_option" maxlength="50" style="width:140px;" value="默认规则" disabled/></td>';
-	code = code + '<td><input type="text" class="input_option" maxlength="50" style="width:140px;" value="默认规则" disabled/></td>';
+	code = code + '<td>缺省规则</td>';
+	code = code + '<td>缺省规则</td>';
 	code = code + '<td>';
-	code = code + '<select id="koolproxy_acl_default" name="koolproxy_acl_default" style="width:160px;margin:0px 0px 0px 2px;" class="input_option";">';
+	code = code + '<select id="koolproxy_acl_default" name="koolproxy_acl_default" style="width:160px;margin:0px 0px 0px 2px;" class="input_option_2";">';
 	code = code + '<option value="1" selected>http only</option>';
 	code = code + '<option value="2">http + https</option>';
 	code = code + '<option value="0">不过滤</option>';
@@ -613,38 +578,46 @@ function refresh_acl_html() {
 }
 
 function setClientIP(ip , name, mac){
-	document.form.koolproxy_acl_ip.value = ip;
-	document.form.koolproxy_acl_name.value = name;
-	document.form.koolproxy_acl_mac.value = mac;
+	E("koolproxy_acl_ip").value = ip;
+	E("koolproxy_acl_name").value = name;
+	E("koolproxy_acl_mac").value = mac;
 	hideClients_Block();
 }
 
 function pullLANIPList(obj){
-	var element = document.getElementById('ClientList_Block');
+	var element = E('ClientList_Block');
 	var isMenuopen = element.offsetWidth > 0 || element.offsetHeight > 0;
 	if(isMenuopen == 0){
 		obj.src = "/images/arrow-top.gif"
 		element.style.display = 'block';
-		document.form.koolproxy_acl_ip.focus();
+		E("koolproxy_acl_ip").focus();
 	}
 	else
 		hideClients_Block();
 }
 
 function hideClients_Block(){
-	document.getElementById("pull_arrow").src = "/images/arrow-down.gif";
-	document.getElementById('ClientList_Block').style.display='none';
-	validator.validIPForm(document.form.koolproxy_acl_ip, 0);
+	E("pull_arrow").src = "/images/arrow-down.gif";
+	E('ClientList_Block').style.display='none';
+	validator.validIPForm(E("koolproxy_acl_ip"), 0);
 }
 
 
-
 function showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode, _containerID, _pullArrowID, _clientState) {
+	document.body.addEventListener("click", function(_evt) {control_dropdown_client_block(_containerID, _pullArrowID, _evt);})
+	if(clientList.length == 0){
+		setTimeout(function() {
+			genClientList();
+			showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode, _containerID, _pullArrowID);
+		}, 500);
+		return false;
+	}
+
 	var htmlCode = "";
-	htmlCode += "<div id='clientlist_online'></div>";
-	htmlCode += "<div id='clientlist_dropdown_expand' class='clientlist_dropdown_expand' onclick='expand_hide_Client(\"clientlist_dropdown_expand\", \"clientlist_offline\");' onmouseover='over_var=1;' onmouseout='over_var=0;'>Show Offline Client List</div>";
-	htmlCode += "<div id='clientlist_offline'></div>";
-	document.getElementById(_containerID).innerHTML = htmlCode;
+	htmlCode += "<div id='" + _containerID + "_clientlist_online'></div>";
+	htmlCode += "<div id='" + _containerID + "_clientlist_dropdown_expand' class='clientlist_dropdown_expand' onclick='expand_hide_Client(\"" + _containerID + "_clientlist_dropdown_expand\", \"" + _containerID + "_clientlist_offline\");' onmouseover='over_var=1;' onmouseout='over_var=0;'>Show Offline Client List</div>";
+	htmlCode += "<div id='" + _containerID + "_clientlist_offline'></div>";
+	E(_containerID).innerHTML = htmlCode;
 
 	var param = _callBackFunParam.split(">");
 	var clientMAC = "";
@@ -661,7 +634,10 @@ function showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode,
 				}
 				break;
 			case "name" :
-				attribute_value = (clientObj.nickName == "") ? clientObj.name : clientObj.nickName;
+				attribute_value = (clientObj.nickName == "") ? clientObj.name.replace(/'/g, "\\'") : clientObj.nickName.replace(/'/g, "\\'");
+				break;
+			default :
+				attribute_value = _attribute;
 				break;
 		}
 		return attribute_value;
@@ -694,6 +670,16 @@ function showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode,
 		code += '\''
 		code += clientList[i];
 		code += '\');">';
+		for(var j = 0; j < param.length; j += 1) {
+			if(j == 0) {
+				code += "【" + getClientValue(param[j], clientObj) + "】 ";
+			}
+			else {
+				code += '\', \'';
+				code += "【" + getClientValue(param[j], clientObj) + "】 ";
+			}
+		}
+		
 		if(clientName.length > 32) {
 			code += clientName.substring(0, 30) + "..";
 		}
@@ -701,7 +687,7 @@ function showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode,
 			code += clientName;
 		}
 		if(_state == "offline")
-			code += '<strong title="Remove this client" style="float:right;margin-right:5px;cursor:pointer;" onclick="removeClient(\'' + clientObj.mac + '\', \'clientlist_dropdown_expand\', \'clientlist_offline\')">×</strong>';
+			code += '<strong title="Remove this client" style="float:right;margin-right:5px;cursor:pointer;" onclick="removeClient(\'' + clientObj.mac + '\', \'' + _containerID  + '_clientlist_dropdown_expand\', \'' + _containerID  + '_clientlist_offline\')">×</strong>';
 		code += '</div><!--[if lte IE 6.5]><iframe class="hackiframe2"></iframe><![endif]--></a>';
 		return code;
 	};
@@ -717,10 +703,10 @@ function showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode,
 					continue;
 				}
 				if(clientObj.isOnline) {
-					document.getElementById("clientlist_online").innerHTML += genClientItem("online");
+					E("" + _containerID + "_clientlist_online").innerHTML += genClientItem("online");
 				}
 				else if(clientObj.from == "nmpClient") {
-					document.getElementById("clientlist_offline").innerHTML += genClientItem("offline");
+					E("" + _containerID + "_clientlist_offline").innerHTML += genClientItem("offline");
 				}
 				break;
 			case "online" :
@@ -731,7 +717,7 @@ function showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode,
 					continue;
 				}
 				if(clientObj.isOnline) {
-					document.getElementById("clientlist_online").innerHTML += genClientItem("online");
+					E("" + _containerID + "_clientlist_online").innerHTML += genClientItem("online");
 				}
 				break;
 			case "offline" :
@@ -742,85 +728,82 @@ function showDropdownClientList(_callBackFun, _callBackFunParam, _interfaceMode,
 					continue;
 				}
 				if(clientObj.from == "nmpClient") {
-					document.getElementById("clientlist_offline").innerHTML += genClientItem("offline");
+					E("" + _containerID + "_clientlist_offline").innerHTML += genClientItem("offline");
 				}
 				break;
 		}		
 	}
 	
-	if(document.getElementById("clientlist_offline").childNodes.length == "0") {
-		if(document.getElementById("clientlist_dropdown_expand") != null) {
-			removeElement(document.getElementById("clientlist_dropdown_expand"));
+	if(E("" + _containerID + "_clientlist_offline").childNodes.length == "0") {
+		if(E("" + _containerID + "_clientlist_dropdown_expand") != null) {
+			removeElement(E("" + _containerID + "_clientlist_dropdown_expand"));
 		}
-		if(document.getElementById("clientlist_offline") != null) {
-			removeElement(document.getElementById("clientlist_offline"));
+		if(E("" + _containerID + "_clientlist_offline") != null) {
+			removeElement(E("" + _containerID + "_clientlist_offline"));
 		}
 	}
 	else {
-		if(document.getElementById("clientlist_dropdown_expand").innerText == "Show Offline Client List") {
-			document.getElementById("clientlist_offline").style.display = "none";
+		if(E("" + _containerID + "_clientlist_dropdown_expand").innerText == "Show Offline Client List") {
+			E("" + _containerID + "_clientlist_offline").style.display = "none";
 		}
 		else {
-			document.getElementById("clientlist_offline").style.display = "";
+			E("" + _containerID + "_clientlist_offline").style.display = "";
 		}
 	}
-	if(document.getElementById("clientlist_online").childNodes.length == "0") {
-		if(document.getElementById("clientlist_online") != null) {
-			removeElement(document.getElementById("clientlist_online"));
+	if(E("" + _containerID + "_clientlist_online").childNodes.length == "0") {
+		if(E("" + _containerID + "_clientlist_online") != null) {
+			removeElement(E("" + _containerID + "_clientlist_online"));
 		}
 	}
 
-	if(document.getElementById(_containerID).childNodes.length == "0")
-		document.getElementById(_pullArrowID).style.display = "none";
+	if(E(_containerID).childNodes.length == "0")
+		E(_pullArrowID).style.display = "none";
 	else
-		document.getElementById(_pullArrowID).style.display = "";
+		E(_pullArrowID).style.display = "";
 }
 
 function open_user_rule(){
-	$j("#vpnc_settings").fadeIn(200);
+	$("#vpnc_settings").fadeIn(200);
 }
 function close_user_rule(){
-	$j("#vpnc_settings").fadeOut(200);
+	$("#vpnc_settings").fadeOut(200);
 }
 
 function save(){
-	// collect basic data
-	db_koolproxy["koolproxy_basic_action"] = "1";
 	showKPLoadingBar();
 	reload=1;
 	setTimeout("get_log();", 600);
+	// collect basic data
+	//var dbus = {}
+	dbus["koolproxy_basic_action"] = "1";
+	var params = ["koolproxy_mode", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method", "koolproxy_acl_default"];
 	for (var i = 0; i < params.length; i++) {
-    	db_koolproxy[params[i]] = $G(params[i]).value;
+    	dbus[params[i]] = E(params[i]).value;
 	}
 	// collect value in user rule textarea
-	db_koolproxy["koolproxy_custom_rule"] = Base64.encode(document.getElementById("usertxt").value);
+	dbus["koolproxy_custom_rule"] = Base64.encode(E("usertxt").value);
 	// collect data from acl pannel
-	//var data2 = kpacl.getAllData();
-	//var acllist = '';
-	//if(data2.length > 0){
-	//	for ( var i = 0; i < data2.length; ++i ) {
-	//		acllist += data2[ i ].join( '<' ) + '>';
-	//	}
-	//	db_koolproxy["koolproxy_acl_list"] = acllist;
-	//}else{
-	//	db_koolproxy["koolproxy_acl_list"] = " ";
-	//}
-	
+	maxid = parseInt($("#ACL_table > tbody > tr:eq(-2) > td:nth-child(1) > input").attr("id").split("_")[3]);
+	for ( var i = 1; i <= maxid; ++i ) {
+		if (E("koolproxy_acl_ip_" + i)){
+			dbus["koolproxy_acl_ip_" + i] = E("koolproxy_acl_ip_" + i).value;
+			dbus["koolproxy_acl_mac_" + i] = E("koolproxy_acl_mac_" + i).value;
+			dbus["koolproxy_acl_name_" + i] = E("koolproxy_acl_name_" + i).value;
+			dbus["koolproxy_acl_mode_" + i] = E("koolproxy_acl_mode_" + i).value;
+		}
+	}
+	//console.log(dbus)
 	// post data
 	var id3 = parseInt(Math.random() * 100000000);
-	var postData3 = {"id": id3, "method": "KoolProxy_config.sh", "params":[1], "fields": db_koolproxy};
+	var postData3 = {"id": id3, "method": "KoolProxy_config.sh", "params":[1], "fields": dbus};
 	//showMsg("msg_warring","正在提交数据！","<b>等待后台运行完毕，请不要刷新本页面！</b>");
-	$j.ajax({
+	$.ajax({
 		url: "/_api/",
 		cache:false,
 		type: "POST",
 		dataType: "json",
 		data: JSON.stringify(postData3)
-		//error: function(){
-		//	showMsg("msg_error","失败","<b>当前系统存在异常查看系统日志！</b>");
-		//}
 	});
-	//save_user_txt();
 }
 
 </script>
@@ -844,7 +827,6 @@ function save(){
 		</tr>
 	</table>
 	</div>
-	<form  name="form">
 	<table class="content" align="center" cellpadding="0" cellspacing="0">
 		<tr>
 			<td width="17">&nbsp;</td>
@@ -859,7 +841,7 @@ function save(){
 						<td align="left" valign="top">
 							<table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle">
 								<tr>
-									<td style="background:transparent" bgcolor="#4D595D" colspan="3" valign="top">
+									<td bgcolor="#4D595D" colspan="3" valign="top">
 										<div>&nbsp;</div>
 											<table width="100%" height="150px" style="border-collapse:collapse;">
                                             <tr>
@@ -945,28 +927,17 @@ function save(){
 											<tr id="policy_tr">
 												<th>选择过滤模式</th>
 												<td>
-													<select name="koolproxy_mode" id="koolproxy_mode" class="input_option" onchange="update_visibility1();" style="width:auto;margin:0px 0px 0px 2px;">
+													<select name="koolproxy_mode" id="koolproxy_mode" class="input_option" onchange="update_visibility();" style="width:auto;margin:0px 0px 0px 2px;">
 														<option value="1" selected>全局模式</option>
 														<option value="2">ipset模式</option>
 														<option value="3">视频模式</option>
 													</select>
-														<span id="koolproxy_mode_read1" style="display: none;">&nbsp;&nbsp;全局模式所有80/443端口的流量都会走koolproxy过，过滤效果最好。</span>
-														<span id="koolproxy_mode_read2" style="display: none;">&nbsp;&nbsp;只有黑名单内的域名走koolproxy(基于ipset)，效果不及全局模式。</span>
-														<span id="koolproxy_mode_read3" style="display: none;">&nbsp;&nbsp;视频模式下只加载视频规则，不加载静态规则。</span>
 												</td>
 											</tr>
-											<tr id="ports_tr">
-												<th>额外过滤端口</th>
-												<td>
-													<input type="text" class="input_ss_table" style="width:164px;" autocorrect="off" autocapitalize="off" id="koolproxy_ext_ports" name="koolproxy_ext_ports" value="82,8080" />
-													<span>&nbsp;&nbsp;除80/443外，额外需要过滤的端口。</span>
-												</td>
-											</tr>
-
 											<tr id="auto_reboot_switch">
 												<th>插件自动重启</th>
 												<td>
-													<select name="koolproxy_reboot" id="koolproxy_reboot" class="input_option" style="width:auto;margin:0px 0px 0px 2px;" onchange="update_visibility1();">
+													<select name="koolproxy_reboot" id="koolproxy_reboot" class="input_option" style="width:auto;margin:0px 0px 0px 2px;" onchange="update_visibility();">
 														<option value="1">定时</option>
 														<option value="2">间隔</option>
 														<option value="0" selected>关闭</option>
@@ -997,7 +968,7 @@ function save(){
 											<tr id="acl_method_tr">
 												<th>访问控制匹配方法</th>
 												<td>
-													<select name="koolproxy_acl_method" id="koolproxy_acl_method" class="input_option" style="width:127px;margin:0px 0px 0px 2px;" onchange="update_visibility1();">
+													<select name="koolproxy_acl_method" id="koolproxy_acl_method" class="input_option" style="width:127px;margin:0px 0px 0px 2px;" onchange="update_visibility();">
 														<option value="1" selected>IP + MAC匹配</option>
 														<option value="2">仅IP匹配</option>
 														<option value="3">仅MAC匹配</option>
@@ -1044,7 +1015,7 @@ function save(){
 												<td>
 													<input type="text" maxlength="15" class="input_ss_table" id="koolproxy_acl_ip" name="koolproxy_acl_ip" align="left" onkeypress="return validator.isIPAddr(this, event)" style="float:left;width:113px" autocomplete="off" onClick="hideClients_Block();" autocorrect="off" autocapitalize="off">
 													<img id="pull_arrow" height="14px;" src="images/arrow-down.gif" align="right" onclick="pullLANIPList(this);" title="<#select_IP#>">
-													<div id="ClientList_Block" class="clientlist_dropdown" style="margin-left:2px;margin-top:25px;"></div>
+													<div id="ClientList_Block" class="clientlist_dropdown" style="margin-left:2px;margin-top:25px;width:auto"></div>
 												</td>
 												<td>
 													<input type="text" id="koolproxy_acl_mac" name="koolproxy_acl_mac" class="input_ss_table" style="width:130px" maxlength="50" style="width:140px;" placeholder="" />
@@ -1082,7 +1053,6 @@ function save(){
 			</td>
 		</tr>
 	</table>
-	</form>
 	<div id="footer"></div>
 </body>
 </html>
