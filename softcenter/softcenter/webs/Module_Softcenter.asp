@@ -38,8 +38,7 @@
     -moz-border-radius: 10px;
     border-radius: 10px;
 }
-</style>
-<style>
+
     /* 软件中心icon新样式 by acelan */
     dl,dt,dd{
         padding:0;
@@ -210,6 +209,16 @@
 </style>
 <script>
 var db_softcenter_ = {};
+var TIMEOUT_SECONDS = 18;
+var softInfo = null;
+var syncRemoteSuccess = 0; //判断是否进入页面后已经成功进行远端同步
+var currState = {
+	"installing": false,
+	"lastChangeTick": 0,
+	"lastStatus": "-1",
+	"module": ""
+};
+
 String.prototype.format = String.prototype.f = function() {
 	var s = this,
 		i = arguments.length;
@@ -275,7 +284,6 @@ function appPostScript(moduleInfo, script) {
 			currState.installing = false;
 		}
 	});
-
 }
 
 function appInstallModule(moduleInfo) {
@@ -283,28 +291,11 @@ function appInstallModule(moduleInfo) {
 }
 
 function appUninstallModule(moduleInfo) {
-
-		if (!window.confirm('确定卸载吗')) {
-			return;
-		}
-		appPostScript(moduleInfo, "ks_app_remove.sh");
+	if (!window.confirm('确定卸载吗')) {
+		return;
 	}
-	//TODO auto detect home url
-db_softcenter_["softcenter_home_url"] = "https://rogsoft.ngrok.wang";
-
-// 安装信息更新策略:
-// 当软件安装的时候,安装进程内部会有超时时间. 超过超时时间 没安装成功,则认为失败.
-// 但是路由内部的绝对时间与浏览器上的时间可能不同步,所以无法使用路由器内的时间. 浏览器的策略是,
-// 安装的时候会有一个同样的计时,若这个超时时间内,安装状态有变化,则更新安装状态.从而可以实时更新安装进程.
-var currState = {
-	"installing": false,
-	"lastChangeTick": 0,
-	"lastStatus": "-1",
-	"module": ""
-};
-var TIMEOUT_SECONDS = 18;
-// TODO 如何避免实用全局变量?
-var softInfo = null;
+	appPostScript(moduleInfo, "ks_app_remove.sh");
+}
 
 function initInstallStatus() {
 	var o = db_softcenter_;
@@ -455,7 +446,7 @@ function renderView(apps) {
 	$('.show-install-btn').val('已安装(' + installCount + ')');
 	$('.show-uninstall-btn').val('未安装(' + uninstallCount + ')');
 }
-var syncRemoteSuccess = 0; //判断是否进入页面后已经成功进行远端同步
+
 function getRemoteData() {
 	var remoteURL = db_softcenter_["softcenter_home_url"] + '/softcenter/app.json.js';
 	return $.ajax({
@@ -584,9 +575,8 @@ $(function() {
 		async: false,
 		cache: false,
 		success: function(response) {
-			if (response.result[0]["softcenter_version"]) {
-				db_softcenter_ = response.result[0];
-			}
+			db_softcenter_ = response.result[0];
+			db_softcenter_["softcenter_home_url"] = "https://rogsoft.ngrok.wang";
 
 			if (!db_softcenter_["softcenter_version"]) {
 				db_softcenter_["softcenter_version"] = "0.0";
@@ -635,26 +625,6 @@ function menu_hook() {
 	tablink[tablink.length - 1] = new Array("", "Module_Softcenter.asp", "Module_Softsetting.asp");
 }
 
-/*
-function pop_111() {
-	require(['/res/layer/layer.js'], function(layer) {
-		layer.open({
-			type: 2,
-			shade: .7,
-			scrollbar: 0,
-			title: '国内外分流信息:ip111.cn',
-			area: ['750px', '466px'],
-			//offset: ['355px', '368px'],
-			fixed: false, //不固定
-			maxmin: true,
-			shadeClose: 1,
-			id: 'LAY_layuipro',
-			btnAlign: 'c',
-			content: ['http://ip111.cn/' , 'no'],
-		});
-	});
-}
-*/
 function notice_show() {
 	$.ajax({
 		url: 'https://rogsoft.ngrok.wang/softcenter/push_message.json.js',
