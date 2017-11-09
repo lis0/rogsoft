@@ -9,7 +9,7 @@ KP_DIR=$SOFT_DIR/koolproxy
 write_user_txt(){
 	if [ -n "$koolproxy_custom_rule" ];then
 		echo $koolproxy_custom_rule| base64_decode |sed 's/\\n/\n/g' > $KP_DIR/data/rules/user.txt
-		#dbus remove koolproxy_custom_rule
+		dbus remove koolproxy_custom_rule
 	fi
 }
 
@@ -297,7 +297,6 @@ restart)
 	remove_nat_start
 	flush_nat
 	stop_koolproxy
-	remove_ipset_conf && restart_dnsmasq
 	# now start
 	echo_date ============================ koolproxy启用 ===========================
 	detect_cert
@@ -320,7 +319,6 @@ stop)
 	remove_nat_start
 	flush_nat
 	stop_koolproxy
-	remove_ipset_conf && restart_dnsmasq
 	echo_date koolproxy插件已关闭
 	echo_date =====================================================================
 	;;

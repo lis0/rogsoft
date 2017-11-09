@@ -103,11 +103,10 @@
 }
 </style>
 <script>
+var dbus = {};
 var _responseLen;
 var noChange = 0;
 var reload = 0;
-var dbus = {};
-
 function init() {
 	show_menu(menu_hook);
 	get_dbus_data();
@@ -116,16 +115,8 @@ function init() {
 	update_visibility();
 	get_user_rule();
 	hook_event();
-	setTimeout("get_run_status();", 100);
-    setTimeout("showDropdownClientList('setClientIP', 'ip', 'all', 'ClientList_Block', 'pull_arrow', 'online');", 1000);
-}
-
-function E(e) {
-	return (typeof(e) == 'string') ? document.getElementById(e) : e;
-}
-
-function done_validating() {
-	return true;
+	get_run_status();
+    showDropdownClientList('setClientIP', 'ip', 'all', 'ClientList_Block', 'pull_arrow', 'online');
 }
 
 function get_dbus_data(){
@@ -156,8 +147,8 @@ function hook_event(){
 	});
 	$("#switch").click(
 		function(){
-		if(E('switch').checked){
-			dbus["koolproxy_enable"] = 1;
+		if(E('koolproxy_enable').checked){
+			dbus["koolproxy_enable"] = "1";
 			E("policy_tr").style.display = "";
 			E("kp_status").style.display = "";
 			E("auto_reboot_switch").style.display = "";
@@ -168,7 +159,7 @@ function hook_event(){
 			E("ACL_table").style.display = "";
 			E("ACL_note").style.display = "";
 		}else{
-			dbus["koolproxy_enable"] = 0;
+			dbus["koolproxy_enable"] = "0";
 			E("policy_tr").style.display = "none";
 			E("kp_status").style.display = "none";
 			E("auto_reboot_switch").style.display = "none";
@@ -227,7 +218,6 @@ function get_user_rule() {
 		dataType: 'text',
 		success: function(res) {
 			$('#usertxt').val(res);
-			//console.log("res", res);
 		}
 	});
 }
@@ -238,16 +228,11 @@ function menu_hook() {
 }
 
 function conf2obj(){
-    var rrt = E("switch");
-    if (dbus["koolproxy_enable"] != "1") {
-        rrt.checked = false;
-    } else {
-        rrt.checked = true;
-    }
-    
-    for (var field in dbus) {
-        $('#'+field).val(dbus[field]);
-    }
+	var params = ["koolproxy_mode", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method"];
+	E("koolproxy_enable").checked = dbus["koolproxy_enable"] == "1";
+	for (var i = 0; i < params.length; i++) {
+    	E(params[i]).value = dbus[params[i]]||"";
+	}
 }
 
 function reload_Soft_Center(){
@@ -374,11 +359,11 @@ function showKPLoadingBar(seconds){
 
 function LoadingKPProgress(seconds){
 	E("LoadingBar").style.visibility = "visible";
-	if (dbus["koolproxy_enable"] == 0){
+	if (E("koolproxy_enable").checked == false){
 		E("loading_block3").innerHTML = "koolproxy关闭中 ..."
 		$("#loading_block2").html("<li><font color='#ffcc00'><a href='http://www.koolshare.cn' target='_blank'></font>koolproxy工作有问题？请来我们的<font color='#ffcc00'>论坛www.koolshare.cn</font>反应问题...</font></li>");
 	} else {
-			$("#loading_block2").html("<font color='#ffcc00'>----------------------------------------------------------------------------------------------------------------------------------");
+		$("#loading_block2").html("<font color='#ffcc00'>----------------------------------------------------------------------------------------------------------------------------------");
 		if (dbus["koolproxy_basic_action"] == 1){
 			E("loading_block3").innerHTML = "开启koolproxy ..."
 		}else if (dbus["koolproxy_basic_action"] == 2){
@@ -504,11 +489,11 @@ function delTr(o) {
 
 function refresh_acl_table() {
 	$.ajax({
-	  	type: "GET",
-	 	url: "/_api/koolproxy_",
-	  	dataType: "json",
-	  	async:false,
-	 	success: function(response){
+		type: "GET",
+		url: "/_api/koolproxy_",
+		dataType: "json",
+		async:false,
+		success: function(response){
 			dbus=response.result[0];
 			$("#ACL_table").find("tr:gt(2)").remove();
 			$('#ACL_table tr:last').after(refresh_acl_html());
@@ -590,7 +575,6 @@ function pullLANIPList(obj){
 	if(isMenuopen == 0){
 		obj.src = "/images/arrow-top.gif"
 		element.style.display = 'block';
-		E("koolproxy_acl_ip").focus();
 	}
 	else
 		hideClients_Block();
@@ -774,9 +758,9 @@ function save(){
 	reload=1;
 	setTimeout("get_log();", 600);
 	// collect basic data
-	//var dbus = {}
-	dbus["koolproxy_basic_action"] = "1";
 	var params = ["koolproxy_mode", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method", "koolproxy_acl_default"];
+	dbus["koolproxy_enable"] = E("koolproxy_enable").checked ? "1" : "0";
+	dbus["koolproxy_basic_action"] = "1";
 	for (var i = 0; i < params.length; i++) {
     	dbus[params[i]] = E(params[i]).value;
 	}
@@ -843,40 +827,23 @@ function save(){
 								<tr>
 									<td bgcolor="#4D595D" colspan="3" valign="top">
 										<div>&nbsp;</div>
-											<table width="100%" height="150px" style="border-collapse:collapse;">
-                                            <tr>
-                                                <td colspan="5" class="cloud_main_radius">
-                                                    <div style="padding:10px;width:95%;font-style:italic;font-size:14px;">
-                                                        <br/><br/>
-                                                        <table width="100%" >
-                                                            <tr>
-                                                                <td>
-                                                                    <ul style="margin-top:-70px;padding-left:15px;" >
-                                                                        <li style="margin-top:-5px;">
-                                                                            <h2 id="push_titile"><em>koolproxy</em></h2>
-                                                                            <div style="float:auto; width:15px; height:25px;margin-top:-40px;margin-left:680px"><img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img></div>
-                                                                        </li>
-                                                                        <li style="margin-top:-5px;">
-                                                                            <h3 id="push_content1" >koolproxy是能识别adblock规则的代理软件，可以用于去除网页静广告和视频广告，并且支持https！
-                                                                            </h3>
-                                                                        </li>
-                                                                        <li  style="margin-top:-5px;">
-                                                                            <h3 id="koolproxy_rule_status">
-	                                                                            <i>koolproxy静态规则：</i>
-	                                                                            <span id="rule_date_web"></span>
-	                                                                            &nbsp;&nbsp;&nbsp;&nbsp;
-	                                                                            <i>koolproxy视频规则：</i>
-                                                                            	<span id="video_date_web"></span>
-                                                                            </h3>
-                                                                        </li>
-                                                                    </ul>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                       	<div class="formfonttitle"><em>软件中心 - koolproxy</em></div>
+                                       	<div style="float:right; width:15px; height:25px;margin-top:-20px">
+                                       	    <img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
+                                       	</div>
+                                       	<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
+                                       	<div class="SimpleNote">
+                                       	   <li id="push_content1" style="margin-top:-5px;">
+                                       	       koolproxy是能识别adblock规则的代理软件，可以用于去除网页静广告和视频广告，并且支持https！
+                                       	   </li>
+                                       	   <li id="koolproxy_rule_status">
+	                                   	       <i>koolproxy静态规则：</i>
+	                                   	       <span id="rule_date_web"></span>
+	                                   	       &nbsp;&nbsp;&nbsp;&nbsp;
+	                                   	       <i>koolproxy视频规则：</i>
+                                       	   	   <span id="video_date_web"></span>
+                                       	   </li>
+                                       	</div>
 										<!-- this is the popup area for user rules -->
 										<div id="vpnc_settings"  class="contentM_qis" style="box-shadow: 3px 3px 10px #000;margin-top: -65px;">
 											<div class="user_title">koolproxy自定义规则</div>
@@ -892,8 +859,7 @@ function save(){
 											</div>
 										</div>
 										<!-- end of the popouparea -->
-										
-										<table style="margin:-30px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" id="routing_table">
+										<table style="margin:0px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" id="routing_table">
 											<thead>
 											<tr>
 												<td colspan="2">基础设置</td>
@@ -905,8 +871,8 @@ function save(){
 												</th>
 												<td colspan="2">
 													<div class="switch_field" style="display:table-cell">
-														<label for="switch">
-															<input id="switch" class="switch" type="checkbox" style="display: none;">
+														<label for="koolproxy_enable">
+															<input id="koolproxy_enable" class="switch" type="checkbox" style="display: none;">
 															<div class="switch_container" >
 																<div class="switch_bar"></div>
 																<div class="switch_circle transition_style">
@@ -918,12 +884,10 @@ function save(){
 													<div id="koolproxy_install_show" style="padding-top:5px;margin-left:80px;margin-top:-30px;float: left;"></div>	
 												</td>
 											</tr>
-
 											<tr id="kp_status">
 												<th>koolproxy运行状态</th>
 												<td><span id="koolproxy_status"></span></td>
 											</tr>
-		
 											<tr id="policy_tr">
 												<th>选择过滤模式</th>
 												<td>
