@@ -1,4 +1,4 @@
-/*  For Shadowsocks  */
+/*  For software center  */
 .KoolshareBottom {
     width: 230px;
     height: 100px;
@@ -28,7 +28,7 @@
     font-style: normal;
 }
 .FormTitle em {
-    color: #FFFFFF;;
+    color: #00ffe4;
     font-style: normal;
 }
 .FormTitle b {
@@ -58,17 +58,3 @@
 .IE8HACK{
 	display: none \9;
 }
-
-/*.input_option{
-	height:25px;
-	background-color: rgb(62,3,13);
-	border-top-width:1px; 
-	border-bottom-width:1px; 
-	border-color:rgb(145,7,31);	
-	color:#FFFFFF;
-	font-family: Lucida Console;
-	font-size:13px;
-	background-color: #3e030d;
-	border:1px solid #91071f;
-}
-*/

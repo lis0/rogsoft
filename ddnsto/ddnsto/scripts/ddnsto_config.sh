@@ -1,6 +1,7 @@
 #!/bin/sh
+export KSROOT=/koolshare
+source $KSROOT/scripts/base.sh
 eval `dbus export ddnsto`
-source /koolshare/scripts/base.sh
 
 case $ACTION in
 start)
@@ -15,5 +16,6 @@ start)
     else
         killall ddnsto
     fi
+    http_response "$1"
     ;;
 esac

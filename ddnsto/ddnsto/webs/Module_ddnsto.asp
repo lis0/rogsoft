@@ -1,7 +1,6 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<!-- version: 1.8 -->
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta HTTP-EQUIV="Pragma" CONTENT="no-cache"/>
@@ -9,18 +8,20 @@
 <link rel="shortcut icon" href="images/favicon.png"/>
 <link rel="icon" href="images/favicon.png"/>
 <title>软件中心 - DDNSTO远程控制</title>
-<link rel="stylesheet" type="text/css" href="index_style.css"/> 
+<link rel="stylesheet" type="text/css" href="index_style.css"/>
 <link rel="stylesheet" type="text/css" href="form_style.css"/>
+<link rel="stylesheet" type="text/css" href="usp_style.css"/>
 <link rel="stylesheet" type="text/css" href="css/element.css">
-<script language="JavaScript" type="text/javascript" src="/state.js"></script>
-<script language="JavaScript" type="text/javascript" src="/help.js"></script>
-<script language="JavaScript" type="text/javascript" src="/general.js"></script>
-<script language="JavaScript" type="text/javascript" src="/popup.js"></script>
-<script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
-<script language="JavaScript" type="text/javascript" src="/validator.js"></script>
+<link rel="stylesheet" type="text/css" href="/device-map/device-map.css">
+<link rel="stylesheet" type="text/css" href="/res/softcenter.css">
 <script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/state.js"></script>
+<script type="text/javascript" src="/popup.js"></script>
+<script type="text/javascript" src="/validator.js"></script>
+<script type="text/javascript" src="/general.js"></script>
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
-<script type="text/javascript" src="/dbconf?p=ddnsto&v=<% uptime(); %>"></script>
+<script type="text/javascript" src="/client_function.js"></script>
+<script type="text/javascript" src="/res/softcenter.js"></script>
 <style> .Bar_container {
     width:85%;
     height:20px;
@@ -40,7 +41,7 @@
 }
 #proceeding_img {
     height:21px;
-    background:#C0D1D3 url(/images/ss_proceding.gif);
+    background:#C0D1D3 url(/res/proceding.gif);
 }
 #ClientList_Block_PC {
     border: 1px outset #999;
@@ -79,22 +80,22 @@
     cursor: default;
 }
 .ddnsto_btn {
-    border: 1px solid #222;
-    background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
-    font-size:10pt;
-    color: #fff;
-    padding: 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    width:16%;
+	border: 1px solid #222;
+	background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
+	font-size:10pt;
+	color: #fff;
+	padding: 5px 5px;
+	border-radius: 5px 5px 5px 5px;
+	width:14%;
 }
 .ddnsto_btn:hover {
-    border: 1px solid #222;
-    background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
-    font-size:10pt;
-    color: #fff;
-    padding: 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    width:16%;
+	border: 1px solid #222;
+	background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
+	font-size:10pt;
+	color: #fff;
+	padding: 5px 5px;
+	border-radius: 5px 5px 5px 5px;
+	width:14%;
 }
 
 input[type=button]:focus {
@@ -103,130 +104,84 @@ input[type=button]:focus {
 
 </style>
 <script>
-var $j = jQuery.noConflict();
-var $G = function (id) {
-return document.getElementById(id);
-};
-
-function init(){
-    show_menu(menu_hook);
-    get_status();
-    conf_to_obj();
-    buildswitch();
-    toggle_switch();
-    version_show();
-    $j("#ddnsto_website").click(
-        function() {
-        window.open("https://ddns.to");
-        });
-}
-
-function get_status() {
-    $j.ajax({
-        url: 'apply.cgi?current_page=Module_ddnsto.asp&next_page=Module_ddnsto.asp&group_id=&modified=0&action_mode=+Refresh+&action_script=&action_wait=&first_time=&preferred_lang=CN&SystemCmd=ddnsto_status.sh',
-        dataType: 'html',
-        error: function(xhr) {
-            alert("error");
-        },
-        success: function(response) {
-            //alert("success");
-            setTimeout("check_DDNSTO_status();", 1000);
-        }
-    });
-}
 var noChange_status=0;
 var _responseLen;
-function check_DDNSTO_status(){
-    $j.ajax({
-        url: '/res/ddnsto_check.html',
-        dataType: 'html',
-        
-        error: function(xhr){
-            setTimeout("check_DDNSTO_status();", 1000);
-        },
-        success: function(response){
-            var _cmdBtn = document.getElementById("cmdBtn");
-            if(response.search("XU6J03M6") != -1){
-                ddnsto_status = response.replace("XU6J03M6", " ");
-                //alert(ddnsto_status);
-                document.getElementById("status").innerHTML = ddnsto_status;
-                return true;
-            }
-
-            if(_responseLen == response.length){
-                noChange_status++;
-            }else{
-                noChange_status = 0;
-            }
-            if(noChange_status > 100){
-                noChange_status = 0;
-                //refreshpage();
-            }else{
-                setTimeout("check_DDNSTO_status();", 400);
-            }
-            _responseLen = response.length;
-        }
-    });
-}
-function toggle_switch(){
-    var rrt = document.getElementById("switch");
-    if (document.form.ddnsto_enable.value != "1") {
-        rrt.checked = false;
-    } else {
-        rrt.checked = true;
-    }
+function init(){
+    show_menu(menu_hook);
+    get_dbus_data();
+    get_run_status();
 }
 
-function buildswitch(){
-    $j("#switch").click(
-    function(){
-        if(document.getElementById('switch').checked){
-            document.form.ddnsto_enable.value = 1;
-        }else{
-            document.form.ddnsto_enable.value = 0;
-        }
-    });
+var db_ddnsto = {};
+function get_dbus_data() {
+	$.ajax({
+		type: "GET",
+		url: "/_api/ddnsto",
+		dataType: "json",
+		async: false,
+		success: function(data) {
+			db_ddnsto = data.result[0];
+			console.log(db_ddnsto)
+			conf_to_obj();
+   			version_show();
+		}
+	});
 }
 
-function conf_to_obj(){
-    if(typeof db_ddnsto != "undefined") {
-        for(var field in db_ddnsto) {
-            var el = document.getElementById(field);
-            if(el != null) {
-                el.value = db_ddnsto[field];
-            }
-        }
-    } 
+function get_run_status(){
+	var id = parseInt(Math.random() * 100000000);
+	var postData = {"id": id, "method": "ddnsto_status.sh", "params":[], "fields": ""};
+	$.ajax({
+		type: "POST",
+		cache:false,
+		url: "/_api/",
+		data: JSON.stringify(postData),
+		dataType: "json",
+		success: function(response){
+			console.log(response)
+            E("status").innerHTML = response.result;
+			setTimeout("get_run_status();", 10000);
+		},
+		error: function(){
+			setTimeout("get_run_status();", 5000);
+		}
+	});
 }
 
-function onSubmitCtrl(o, s) {
-    showSSLoadingBar(5);
-    document.form.action_mode.value = s;
-    updateOptions();
+function conf_to_obj() {
+	E("ddnsto_enable").checked = db_ddnsto["ddnsto_enable"] == "1";
+	E("ddnsto_token").value = db_ddnsto["ddnsto_token"]||"";
 }
 
-function done_validating(action){
-    return true;
+function onSubmitCtrl(){
+	showSSLoadingBar();
+	// collect basic data
+	db_ddnsto["ddnsto_token"] = E("ddnsto_token").value
+	db_ddnsto["ddnsto_enable"] = E("ddnsto_enable").checked ? "1" : "0";
+	var id = parseInt(Math.random() * 100000000);
+	var postData = {"id": id, "method": "ddnsto_config.sh", "params":[], "fields": db_ddnsto};
+    $("#loading_block3").html("<b>正在提交数据！</b>等待后台运行完毕，请不要刷新本页面！")
+	$.ajax({
+		url: "/_api/",
+		cache:false,
+		type: "POST",
+		dataType: "json",
+		data: JSON.stringify(postData),
+		success: function(response){
+			if (response.result == id){
+    			$("#loading_block3").html("<b>提交成功！</b>")
+				setTimeout("refreshpage();", 500);
+			}else{
+    			$("#loading_block3").html("<b>提交失败！</b>错误代码：" + response.result)
+				return false;
+			}
+		}
+	});
 }
 
-function updateOptions(){
-    document.form.enctype = "";
-    document.form.encoding = "";
-    document.form.action = "/applydb.cgi?p=ddnsto_";
-    document.form.SystemCmd.value = "ddnsto_config.sh";
-    document.form.submit();
-}
-
-function menu_hook(title, tab) {
-    var enable_ss = "<% nvram_get("enable_ss"); %>";
-    var enable_soft = "<% nvram_get("enable_soft"); %>";
-    if(enable_ss == "1" && enable_soft == "1"){
-        tabtitle[tabtitle.length -2] = new Array("", "ddnsto 远程控制");
-        tablink[tablink.length -2] = new Array("", "Module_ddnsto.asp");
-    }else{
-        tabtitle[tabtitle.length -1] = new Array("", "ddnsto 远程控制");
-        tablink[tablink.length -1] = new Array("", "Module_ddnsto.asp");
-    }
+function menu_hook() {
+	tabtitle[tabtitle.length -1] = new Array("", "ddnsto 远程控制", "__INHERIT__");
+	tablink[tablink.length -1] = new Array("", "Module_ddnsto.asp", "NULL");
 }
 
 function openShutManager(oSourceObj, oTargetObj, shutAble, oOpenTip, oShutTip) {
@@ -248,15 +203,9 @@ function openShutManager(oSourceObj, oTargetObj, shutAble, oOpenTip, oShutTip) {
     }
 }
 
-
 function showSSLoadingBar(seconds){
     if(window.scrollTo)
         window.scrollTo(0,0);
-
-    disableCheckChangedStatus();
-
-    htmlbodyforIE = document.getElementsByTagName("html");  //this both for IE&FF, use "html" but not "body" because <!DOCTYPE html PUBLIC.......>
-    htmlbodyforIE[0].style.overflow = "hidden";      //hidden the Y-scrollbar for preventing from user scroll it.
 
     winW_H();
 
@@ -289,69 +238,35 @@ function showSSLoadingBar(seconds){
     if(winHeight >660)
         winHeight = 660;
 
-    blockmarginTop= winHeight*0.3-140
+    blockmarginTop= winHeight*0.5
 
-    document.getElementById("loadingBarBlock").style.marginTop = blockmarginTop+"px";
-    document.getElementById("loadingBarBlock").style.marginLeft = blockmarginLeft+"px";
-    document.getElementById("loadingBarBlock").style.width = 770+"px";
-    document.getElementById("LoadingBar").style.width = winW+"px";
-    document.getElementById("LoadingBar").style.height = winH+"px";
-    
-    loadingSeconds = seconds;
-    progress = 100/loadingSeconds;
-    y = 0;
-    LoadingLocalProgress(seconds);
+    E("loadingBarBlock").style.marginTop = blockmarginTop+"px";
+    E("loadingBarBlock").style.marginLeft = blockmarginLeft+"px";
+    E("loadingBarBlock").style.width = 770+"px";
+    E("LoadingBar").style.width = winW+"px";
+    E("LoadingBar").style.height = winH+"px";
+    E("LoadingBar").style.visibility = "visible";
 }
 
-
-function LoadingLocalProgress(seconds){
-    document.getElementById("LoadingBar").style.visibility = "visible";
-    if (document.form.ddnsto_enable.value != "1"){
-        document.getElementById("loading_block3").innerHTML = "ddnsto关闭中 ..."
-    }else{
-        document.getElementById("loading_block3").innerHTML = "ddnsto启用中 ..."
-    }
-
-    y = y + progress;
-    if(typeof(seconds) == "number" && seconds >= 0){
-        if(seconds != 0){
-            document.getElementById("proceeding_img").style.width = Math.round(y) + "%";
-            document.getElementById("proceeding_img_text").innerHTML = Math.round(y) + "%";
-    
-            if(document.getElementById("loading_block1")){
-                document.getElementById("proceeding_img_text").style.width = document.getElementById("loading_block1").clientWidth;
-                document.getElementById("proceeding_img_text").style.marginLeft = "175px";
-            }
-            --seconds;
-            setTimeout("LoadingLocalProgress("+seconds+");", 1000);
-        }
-        else{
-            document.getElementById("proceeding_img_text").innerHTML = "完成";
-            y = 0;
-                setTimeout("hideSSLoadingBar();",1000);
-                refreshpage();
-        }
-    }
-}
-
-function reload_Soft_Center(){
-    location.href = "/Main_Soft_center.asp";
-}
 function version_show(){
-    $j.ajax({
-        url: 'https://koolshare.ngrok.wang/ddnsto/config.json.js',
+    $.ajax({
+        url: 'https://rogsoft.ngrok.wang/ddnsto/config.json.js',
         type: 'GET',
         dataType: 'jsonp',
         success: function(res) {
             if(typeof(res["version"]) != "undefined" && res["version"].length > 0) {
                 if(res["version"] == db_ddnsto["ddnsto_version"]){
-                    $j("#ddnsto_version_show").html("插件版本：" + res["version"]);
+                    $("#ddnsto_version_show").html("插件版本：" + res["version"]);
                    }else if(res["version"] > db_ddnsto["ddnsto_version"]) {
-                    $j("#ddnsto_version_show").html("<font color=\"#66FF66\">有新版本：" + res.version + "</font>");
+                    $("#ddnsto_version_show").html("<font color=\"#66FF66\">有新版本：" + res.version + "</font>");
                 }
             }
         }
     });
+}
+
+function reload_Soft_Center(){
+    location.href = "/Module_Softcenter.asp";
 }
 </script>
 </head>
@@ -362,30 +277,11 @@ function version_show(){
         <table cellpadding="5" cellspacing="0" id="loadingBarBlock" class="loadingBarBlock" align="center">
             <tr>
                 <td height="100">
-                    <div id="loading_block3" style="margin:10px auto;width:85%; font-size:12pt;"></div>
-                    <div id="loading_block1" class="Bar_container">
-                        <span id="proceeding_img_text"></span>
-                        <div id="proceeding_img"></div>
-                    </div>
-                    <div id="loading_block2" style="margin:10px auto; width:85%;">进度条走动过程中请勿刷新网页，请稍后...</div>
+                    <div id="loading_block3" style="margin:10px auto;width:85%; font-size:12pt;">数据提交中，请稍候...</div>
                 </td>
             </tr>
         </table>
     </div>
-<iframe name="hidden_frame" id="hidden_frame" src="" width="0" height="0" frameborder="0"></iframe>
-<form method="POST" name="form" action="/applydb.cgi?p=ddnsto_" target="hidden_frame">
-    <input type="hidden" name="current_page" value="Module_ddnsto.asp">
-    <input type="hidden" name="next_page" value="Module_ddnsto.asp">
-    <input type="hidden" name="group_id" value="">
-    <input type="hidden" name="modified" value="0">
-    <input type="hidden" name="action_mode" value="">
-    <input type="hidden" name="action_script" value="">
-    <input type="hidden" name="action_wait" value="8">
-    <input type="hidden" name="first_time" value="">
-    <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
-    <input type="hidden" name="SystemCmd" onkeydown="onSubmitCtrl(this, ' Refresh ')" value="">
-    <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
-    <input type="hidden" id="ddnsto_enable" name="ddnsto_enable" value='<% dbus_get_def("ddnsto_enable", "0"); %>'/>
     <table class="content" align="center" cellpadding="0" cellspacing="0">
         <tr>
             <td width="17">&nbsp;</td>
@@ -407,7 +303,6 @@ function version_show(){
                                         <div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
                                         <div class="SimpleNote">
                                             <li>ddnsto远程控制是koolshare小宝开发的，支持http2的远程控制。<em>仅支持远程管理路由器+nas+windows远程桌面！</em></li>
-                                            <li><i>很抱歉：为了提升安全性，从此版本开始更换为Token方式认证，原有用户名密码方式将禁用，请重新设置您的插件。</i></li></br>
                                         </div>
                                         <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
                                             <thead>
@@ -421,8 +316,8 @@ function version_show(){
                                                 </th>
                                                 <td colspan="2">
                                                     <div claddnsto="switch_field" style="display:table-cell;float: left;">
-                                                        <label for="switch">
-                                                            <input id="switch" class="switch" type="checkbox" style="display: none;">
+                                                        <label for="ddnsto_enable">
+                                                            <input id="ddnsto_enable" class="switch" type="checkbox" style="display: none;">
                                                             <div class="switch_container" >
                                                                 <div class="switch_bar"></div>
                                                                 <div class="switch_circle transition_style">
@@ -431,8 +326,7 @@ function version_show(){
                                                             </div>
                                                         </label>
                                                     </div>
-                                                    <div id="ddnsto_version_show" style="padding-top:5px;margin-left:30px;margin-top:0px;float: left;">插件版本：<% dbus_get_def("ddnsto_version", "未知"); %></div>
-                                                    <div id="ddnsto_changelog_show" style="padding-top:5px;margin-right:50px;margin-top:0px;float: right;"><a href="https://raw.githubusercontent.com/koolshare/merlin_ddnsto/master/Changelog.txt" target="_blank"><em><u>[ 更新日志 ]</u></em></a></div>
+                                                    <div id="ddnsto_version_show" style="padding-top:5px;margin-left:30px;margin-top:0px;float: left;"></div>
                                                 </td>
                                             </tr>
                                             <tr id="ddnsto_status">
@@ -448,8 +342,8 @@ function version_show(){
                                             <tr id="rule_update_switch">
                                                 <th>管理/帮助</th>
                                                 <td>
-                                                    <input class="ddnsto_btn" id="ddnsto_website" style="cursor:pointer;" type="submit" value="ddns.to" />
-                                                    <input class="ddnsto_btn" onclick="openShutManager(this,'NoteBox',false,'关闭使用说明','ddnsto使用说明') " style="cursor:pointer;" type="submit" value="帮助信息" />
+                                                    <a type="button" class="ddnsto_btn" style="cursor:pointer" href="https://ddns.to" target="_blank">https://www.ddns.to</a>
+                                                    <a type="button" class="ddnsto_btn" style="cursor:pointer" onclick="openShutManager(this,'NoteBox',false,'关闭使用说明','ddnsto使用说明') " href="javascript:void(0);">ddnsto使用说明</a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -473,16 +367,7 @@ function version_show(){
             <td width="10" align="center" valign="top"></td>
         </tr>
     </table>
-</form>
 <div id="footer"></div>
 </body>
-<script type="text/javascript">
-<!--[if !IE]>-->
-jQuery.noConflict();
-(function($){
-var i = 0;
-})(jQuery);
-<!--<![endif]-->
-</script>
 </html>
 

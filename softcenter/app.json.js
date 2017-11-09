@@ -12,15 +12,15 @@
             "version": "1.1"
         }, 
         {
-            "build_date": "2017-11-08_23:43:36", 
+            "build_date": "2017-11-09_10:11:46", 
             "changelog": "", 
             "description": "ddnsto内网穿透", 
             "home_url": "Module_ddnsto.asp", 
-            "md5": "6904fc9b1e0ec8dc752419b9871112fc", 
+            "md5": "b8af4fab8474cd1c5de14d59cf0f954b", 
             "name": "ddnsto", 
             "tar_url": "ddnsto/ddnsto.tar.gz", 
             "title": "ddnsto", 
-            "version": "1.0"
+            "version": "1.1"
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
