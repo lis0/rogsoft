@@ -5,7 +5,6 @@ export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy_`
 mkdir -p /tmp/upload
-touch /jffs/tesst.txt
 # this part for start up
 case $1 in
 start)

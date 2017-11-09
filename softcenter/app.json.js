@@ -1,15 +1,15 @@
 {
     "apps": [
         {
-            "build_date": "2017-11-09_13:15:08", 
+            "build_date": "2017-11-09_13:18:54", 
             "changelog": "", 
             "description": "去广告，没烦恼", 
             "home_url": "Module_koolproxy.asp", 
-            "md5": "0eb54dd12c5fcdf46d661ee1f91fb278", 
+            "md5": "c2149fa92a9cc2e14ae9ff0790b633ad", 
             "name": "koolproxy", 
             "tar_url": "koolproxy/koolproxy.tar.gz", 
             "title": "koolproxy", 
-            "version": "1.4"
+            "version": "1.5"
         }, 
         {
             "build_date": "2017-11-09_10:11:46", 
