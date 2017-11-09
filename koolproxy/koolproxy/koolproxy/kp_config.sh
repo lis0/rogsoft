@@ -21,7 +21,7 @@ start_koolproxy(){
 	[ -f "$KSROOT/bin/koolproxy" ] && rm -rf $KSROOT/bin/koolproxy
 	[ ! -L "$KSROOT/bin/koolproxy" ] && ln -sf $KSROOT/koolproxy/koolproxy $KSROOT/bin/koolproxy
 	[ "$koolproxy_mode" == "3" ] && EXT_ARG="-e" || EXT_ARG=""
-	cd $KP_DIR && koolproxy $EXT_ARG -d
+	cd $KP_DIR && koolproxy $EXT_ARG --mark -d
 }
 
 stop_koolproxy(){
