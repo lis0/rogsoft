@@ -145,10 +145,11 @@ function hook_event(){
 		function() {
 		window.open("https://github.com/koolproxy/koolproxy_rules");
 	});
-	$("#switch").click(
+	$("#koolproxy_enable").click(
 		function(){
 		if(E('koolproxy_enable').checked){
 			dbus["koolproxy_enable"] = "1";
+			dbus["koolproxy_basic_action"] = "1";
 			E("policy_tr").style.display = "";
 			E("kp_status").style.display = "";
 			E("auto_reboot_switch").style.display = "";
@@ -160,6 +161,7 @@ function hook_event(){
 			E("ACL_note").style.display = "";
 		}else{
 			dbus["koolproxy_enable"] = "0";
+			dbus["koolproxy_basic_action"] = "0";
 			E("policy_tr").style.display = "none";
 			E("kp_status").style.display = "none";
 			E("auto_reboot_switch").style.display = "none";
@@ -231,7 +233,9 @@ function conf2obj(){
 	var params = ["koolproxy_mode", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method"];
 	E("koolproxy_enable").checked = dbus["koolproxy_enable"] == "1";
 	for (var i = 0; i < params.length; i++) {
-    	E(params[i]).value = dbus[params[i]]||"";
+    	if(dbus[params[i]]){
+			E(params[i]).value = dbus[params[i]];
+	    }
 	}
 }
 
@@ -760,7 +764,6 @@ function save(){
 	// collect basic data
 	var params = ["koolproxy_mode", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method", "koolproxy_acl_default"];
 	dbus["koolproxy_enable"] = E("koolproxy_enable").checked ? "1" : "0";
-	dbus["koolproxy_basic_action"] = "1";
 	for (var i = 0; i < params.length; i++) {
     	dbus[params[i]] = E(params[i]).value;
 	}
