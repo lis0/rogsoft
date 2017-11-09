@@ -297,6 +297,7 @@ restart)
 	remove_nat_start
 	flush_nat
 	stop_koolproxy
+	remove_ipset_conf && restart_dnsmasq
 	# now start
 	echo_date ============================ koolproxy启用 ===========================
 	detect_cert
@@ -319,6 +320,7 @@ stop)
 	remove_nat_start
 	flush_nat
 	stop_koolproxy
+	remove_ipset_conf && restart_dnsmasq
 	echo_date koolproxy插件已关闭
 	echo_date =====================================================================
 	;;
