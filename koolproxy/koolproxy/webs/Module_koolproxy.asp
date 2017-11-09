@@ -826,9 +826,9 @@ function save(){
 				<table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
 					<tr>
 						<td align="left" valign="top">
-							<table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle">
+							<table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle" style="border: 0px solid transparent;">
 								<tr>
-									<td bgcolor="#4D595D" colspan="3" valign="top">
+									<td bgcolor="#4D595D" colspan="3" valign="top" style="border-radius: 8px">
 										<div>&nbsp;</div>
                                        	<div class="formfonttitle"><em>软件中心 - koolproxy</em></div>
                                        	<div style="float:right; width:15px; height:25px;margin-top:-20px">

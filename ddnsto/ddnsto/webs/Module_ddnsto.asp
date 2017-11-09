@@ -293,9 +293,9 @@ function reload_Soft_Center(){
                 <table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
                     <tr>
                         <td align="left" valign="top">
-                            <table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle">
+                            <table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle" style="border: 0px solid transparent;">
                                 <tr>
-                                    <td bgcolor="#4D595D" colspan="3" valign="top"><div>&nbsp;</div>
+                                    <td bgcolor="#4D595D" colspan="3" valign="top" style="border-radius: 8px"><div>&nbsp;</div>
                                         <div class="formfonttitle">软件中心 - ddnsto远程控制</div>
                                         <div style="float:right; width:15px; height:25px;margin-top:-20px">
                                             <img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>

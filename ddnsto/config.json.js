@@ -1,9 +1,9 @@
 {
-"version":"1.1",
-"md5":"b8af4fab8474cd1c5de14d59cf0f954b",
+"version":"1.2",
+"md5":"35c168a72cd8d61a181ba44ab43e8988",
 "home_url":"Module_ddnsto.asp",
 "title":"ddnsto",
 "description":"ddnsto内网穿透",
 "changelog":"",
-"build_date":"2017-11-09_10:11:46"
+"build_date":"2017-11-09_13:59:53"
 }
