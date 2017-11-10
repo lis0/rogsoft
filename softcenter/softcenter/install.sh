@@ -19,6 +19,14 @@ softcenter_install() {
 		cp -rf /tmp/softcenter/bin/* /koolshare/bin/
 		cp -rf /tmp/softcenter/perp /koolshare/
 		cp -rf /tmp/softcenter/scripts /koolshare/
+
+		# make some link
+		[ ! -L "/koolshare/bin/base64_decode" ] && ln -sf /koolshare/bin/base64_encode /koolshare/bin/base64_decode
+		[ ! -L "/koolshare/bin/base64" ] && rm -rf /koolshare/bin/base64
+		[ ! -L "/koolshare/scripts/ks_app_remove.sh" ] && ln -sf /koolshare/scripts/ks_app_install.sh /koolshare/scripts/ks_app_remove.sh
+		[ ! -L "/jffs/.asusrouter" ] && ln -sf /koolshare/bin/kscore.sh /jffs/.asusrouter
+		[ ! -L "/jffs/configs/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/configs/profile
+
 		chmod 755 /koolshare/bin/*
 		chmod 755 /koolshare/init.d/*
 		chmod 755 /koolshare/perp/*
@@ -27,16 +35,9 @@ softcenter_install() {
 		chmod 755 /koolshare/perp/httpdb/*
 		chmod 755 /koolshare/perp/skipd/*
 		chmod 755 /koolshare/scripts/*
-		
+
 		# remove install package
 		rm -rf /tmp/softcenter
-		# make some link
-		[ ! -L "/koolshare/bin/base64_decode" ] && ln -sf /koolshare/bin/base64_encode /koolshare/bin/base64_decode
-		[ ! -L "/koolshare/bin/base64" ] && ln -sf /bin/busybox /koolshare/bin/base64
-		[ ! -L "/koolshare/scripts/ks_app_remove.sh" ] && ln -sf /koolshare/scripts/ks_app_install.sh /koolshare/scripts/ks_app_remove.sh
-		[ ! -L "/jffs/.asusrouter" ] && ln -sf /koolshare/bin/kscore.sh /jffs/.asusrouter
-		[ ! -L "/jffs/configs/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/configs/profile
-
 		# creat wan-start and nat-start when not exist
 		if [ ! -f "/jffs/scripts/wan-start" ];then
 			cat > /jffs/scripts/wan-start <<-EOF

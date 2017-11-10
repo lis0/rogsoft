@@ -21,13 +21,11 @@
 <script type="text/javascript" src="/res/softcenter.js"></script>
 <script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
 <script>
+var _responseLen;
+var noChange = 0;
 function init(menu_hook) {
 	show_menu();
 	get_log();
-}
-
-function reload_Soft_Center() {
-	location.href = "/Main_Soft_center.asp";
 }
 
 function menu_hook() {
@@ -82,10 +80,9 @@ function install_now(moduleInfo) {
 		data: JSON.stringify(postData),
 		dataType: "json",
 		success: function(response) {
-			get_log(1);
-		},
-		error: function() {
-			currState.installing = false;
+			if(response.result == id){
+				get_log(1);
+			}
 		}
 	});
 }
@@ -95,8 +92,7 @@ function get_log(s) {
 	$.ajax({
 		url: '/_temp/soft_log.txt',
 		type: 'GET',
-		dataType: 'html',
-		async: true,
+		dataType: 'text',
 		cache: false,
 		success: function(response) {
 			if (response.search("XU6J03M6") != -1) {
@@ -112,11 +108,11 @@ function get_log(s) {
 			} else {
 				noChange = 0;
 			}
-			if (noChange > 8000) {
+			if (noChange > 4000) {
 				//tabSelect("app1");
 				return false;
 			} else {
-				setTimeout("get_log(1);", 400); //100 is radical but smooth!
+				setTimeout("get_log(1);", 100); //100 is radical but smooth!
 			}
 			retArea.value = response;
 			retArea.scrollTop = retArea.scrollHeight;

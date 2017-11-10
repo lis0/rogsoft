@@ -6,8 +6,25 @@ function done_validating() {
 	return true;
 }
 
+
+function reload_Soft_Center() {
+	location.href = "/Module_Softcenter.asp";
+}
+
 String.prototype.replaceAll = function(s1,s2){
 　　return this.replace(new RegExp(s1,"gm"),s2);
+}
+
+String.prototype.format = String.prototype.f = function() {
+	var s = this,
+		i = arguments.length;
+	while (i--) {
+		s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+	}
+	return s;
+};
+String.prototype.capitalizeFirstLetter = function() {
+	return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
 var Base64;

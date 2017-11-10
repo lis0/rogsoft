@@ -21,191 +21,197 @@
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/general.js"></script>
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
+<script type="text/javascript" src="/res/softcenter.js"></script>
 <script type="text/javascript" src="/form.js"></script>
 <style>
-.cloud_main_radius_left{
-    -webkit-border-radius: 10px 0 0 10px;
-    -moz-border-radius: 10px 0 0 10px;
-    border-radius: 10px 0 0 10px;
+.cloud_main_radius_left {
+	-webkit-border-radius: 10px 0 0 10px;
+	-moz-border-radius: 10px 0 0 10px;
+	border-radius: 10px 0 0 10px;
 }
-.cloud_main_radius_right{
-    -webkit-border-radius: 0 10px 10px 0;
-    -moz-border-radius: 0 10px 10px 0;
-    border-radius: 0 10px 10px 0;
+.cloud_main_radius_right {
+	-webkit-border-radius: 0 10px 10px 0;
+	-moz-border-radius: 0 10px 10px 0;
+	border-radius: 0 10px 10px 0;
 }
-.cloud_main_radius{
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
+.cloud_main_radius {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
 }
-
-    /* 软件中心icon新样式 by acelan */
-    dl,dt,dd{
-        padding:0;
-        margin:0;
-    }
-    input[type=button]:focus {
-        outline: none;
-    }
-   .icon{
-        float:left;
-        position:relative;
-        margin: 10px 0px 30px 0px;
-    }
-    .icon-title{
-        line-height: 3em;
-        text-align:center;
-    }
-    .icon-pic{
-        margin: 10px 30px 0px 30px;
-    }
-    .icon-pic img{
-        border:0;
-        width: 60px;
-        height: 60px;
-        margin:2px;
-    }
-    .icon-desc{
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 105%;
-        visibility: hidden;
-        font-size:0;
-        width: 119px;
-        border-radius: 8px;
-        font-size: 16px;
-        opacity: 0;
-        background-color:#000;
-        margin:5px;
-        text-overflow:ellipsis;
-        transition: opacity .5s ease-in;
-    }
-    .icon-desc .text{
-        font-size: 12px;
-        line-height: 1.4em;
-        display: block;
-        height: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-    .icon:hover .icon-desc{
-        opacity: .8;
-        visibility: visible;
-    }
-    .icon-desc .opt{
-        position: absolute;
-        bottom: 0;
-        height: 18px;
-        width: 100%;
-    }
-    .install-status-0 .icon-desc .opt{
-        height: 100%;
-    }
-    .icon-desc .install-btn,
-    .icon-desc .uninstall-btn,
-    .icon-desc .update-btn{
-        background: #fff;
-        color:#333;
-        cursor:pointer;
-        text-align: center;
-        font-size: 13px;
-        padding-bottom: 5px;
-        margin-left: 10px;
-        margin-right: 10px;
-        display: block;
-        width: 100%;
-        height: 18px;
-        border-radius: 0px 0px 5px 5px;
-        border: 0px;
-        position: absolute;
-        bottom: 0;
-        left: -10px;
-    }
-
-    .icon-desc .uninstall-btn{
-        display: none;
-    }
-    .icon-desc .update-btn{
-        display: none;
-        border-radius: 0px 0px 0px 5px;
-        width:60%;
-        border-right: 1px solid #000;
-    }
-    .show-install-btn,
-    .show-uninstall-btn{
-        border: none;
-        background: #444;
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px 5px 0px 0px;
-    }
-    .active{
-        background: #444f53;
-    }
-    .install-status-1 .uninstall-btn{
-        display: block;
-    }
-    .install-status-1 .install-btn{
-        display: none;
-    }
-    .update-btn{
-        display: none;
-    }
-    .install-status-1 .update-btn{
-        display: none;
-    }
-    .install-status-4 .uninstall-btn{
-        display: block;
-    }
-    .install-status-4 .install-btn{
-        display: none;
-    }
-    .install-status-4 .update-btn{
-        display: none;
-    }
-    .install-status-2 .uninstall-btn{
-        display: block;
-        width: 40%;
-        border-radius: 0px 0px 5px 0px;
-        right: -10px;
-        left: auto;
-        border-left: 1px solid #000;
-    }
-    .install-status-2 .install-btn{
-        display: none;
-    }
-    .install-status-2 .update-btn{
-        display: block;
-    }
-    .install-status-1{
-        display: none;
-    }
-    .install-status-2{
-        display: none;
-    }
-    .install-status-0{
-        display: block;
-    }
-    .install-status-4{
-        display: none;
-    }
-    .install-view .install-status-1{
-        display: block;
-    }
-    .install-view .install-status-2{
-        display: block;
-    }
-    .install-view .install-status-0{
-        display: none;
-    }
-    .install-view .install-status-4{
-        display: block;
-    } 
-    .cloud_main_radius h2 { border-bottom:1px #AAA dashed;}
-    .cloud_main_radius h3,
-    .cloud_main_radius h4 { font-size:12px;color:#FC0;font-weight:normal;font-style: normal;}
-    .cloud_main_radius h5 { color:#FFF;font-weight:normal;font-style: normal;}
+/* 软件中心icon新样式 by acelan */
+ dl, dt, dd {
+	padding:0;
+	margin:0;
+}
+input[type=button]:focus {
+	outline: none;
+}
+.icon {
+	float:left;
+	position:relative;
+	margin: 10px 0px 30px 0px;
+}
+.icon-title {
+	line-height: 3em;
+	text-align:center;
+}
+.icon-pic {
+	margin: 10px 30px 0px 30px;
+}
+.icon-pic img {
+	border:0;
+	width: 60px;
+	height: 60px;
+	margin:2px;
+}
+.icon-desc {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 105%;
+	visibility: hidden;
+	font-size:0;
+	width: 119px;
+	border-radius: 8px;
+	font-size: 16px;
+	opacity: 0;
+	background-color:#000;
+	margin:5px;
+	text-overflow:ellipsis;
+	transition: opacity .5s ease-in;
+}
+.icon-desc .text {
+	font-size: 12px;
+	line-height: 1.4em;
+	display: block;
+	height: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+}
+.icon:hover .icon-desc {
+	opacity: .8;
+	visibility: visible;
+}
+.icon-desc .opt {
+	position: absolute;
+	bottom: 0;
+	height: 18px;
+	width: 100%;
+}
+.install-status-0 .icon-desc .opt {
+	height: 100%;
+}
+.icon-desc .install-btn, .icon-desc .uninstall-btn, .icon-desc .update-btn {
+	background: #fff;
+	color:#333;
+	cursor:pointer;
+	text-align: center;
+	font-size: 13px;
+	padding-bottom: 5px;
+	margin-left: 10px;
+	margin-right: 10px;
+	display: block;
+	width: 100%;
+	height: 18px;
+	border-radius: 0px 0px 5px 5px;
+	border: 0px;
+	position: absolute;
+	bottom: 0;
+	left: -10px;
+}
+.icon-desc .uninstall-btn {
+	display: none;
+}
+.icon-desc .update-btn {
+	display: none;
+	border-radius: 0px 0px 0px 5px;
+	width:60%;
+	border-right: 1px solid #000;
+}
+.show-install-btn, .show-uninstall-btn {
+	border: none;
+	background: #444;
+	color: #fff;
+	padding: 10px 20px;
+	border-radius: 5px 5px 0px 0px;
+}
+.active {
+	background: #444f53;
+}
+.install-status-1 .uninstall-btn {
+	display: block;
+}
+.install-status-1 .install-btn {
+	display: none;
+}
+.update-btn {
+	display: none;
+}
+.install-status-1 .update-btn {
+	display: none;
+}
+.install-status-4 .uninstall-btn {
+	display: block;
+}
+.install-status-4 .install-btn {
+	display: none;
+}
+.install-status-4 .update-btn {
+	display: none;
+}
+.install-status-2 .uninstall-btn {
+	display: block;
+	width: 40%;
+	border-radius: 0px 0px 5px 0px;
+	right: -10px;
+	left: auto;
+	border-left: 1px solid #000;
+}
+.install-status-2 .install-btn {
+	display: none;
+}
+.install-status-2 .update-btn {
+	display: block;
+}
+.install-status-1 {
+	display: none;
+}
+.install-status-2 {
+	display: none;
+}
+.install-status-0 {
+	display: block;
+}
+.install-status-4 {
+	display: none;
+}
+.install-view .install-status-1 {
+	display: block;
+}
+.install-view .install-status-2 {
+	display: block;
+}
+.install-view .install-status-0 {
+	display: none;
+}
+.install-view .install-status-4 {
+	display: block;
+}
+.cloud_main_radius h2 {
+	border-bottom:1px #AAA dashed;
+}
+.cloud_main_radius h3, .cloud_main_radius h4 {
+	font-size:12px;
+	color:#FC0;
+	font-weight:normal;
+	font-style: normal;
+}
+.cloud_main_radius h5 {
+	color:#FFF;
+	font-weight:normal;
+	font-style: normal;
+}
 </style>
 <script>
 var db_softcenter_ = {};
@@ -218,18 +224,6 @@ var currState = {
 	"lastStatus": "-1",
 	"module": ""
 };
-
-String.prototype.format = String.prototype.f = function() {
-	var s = this,
-		i = arguments.length;
-	while (i--) {
-		s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
-	}
-	return s;
-};
-String.prototype.capitalizeFirstLetter = function() {
-	return this.charAt(0).toUpperCase() + this.slice(1);
-}
 
 function checkField(o, f, d) {
 	if (typeof o[f] == "undefined") {
