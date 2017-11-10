@@ -72,7 +72,7 @@ function install_now(moduleInfo) {
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {
 		"id": id,
-		"method": "dummy_script.sh",
+		"method": "ks_tar_install.sh",
 		"params": [],
 		"fields": moduleInfo
 	};
