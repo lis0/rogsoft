@@ -2,9 +2,9 @@
 
 
 MODULE=swap
-VERSION=2.2
+VERSION=1.0
 TITLE=虚拟内存
-DESCRIPTION=老板，来一斤虚拟内存~
+DESCRIPTION=""
 HOME_URL=Module_swap.asp
 
 # Check and include base

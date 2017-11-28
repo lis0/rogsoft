@@ -21,6 +21,17 @@
             "tar_url": "ddnsto/ddnsto.tar.gz", 
             "title": "ddnsto", 
             "version": "1.2"
+        }, 
+        {
+            "build_date": "2017-11-28_21:51:56", 
+            "changelog": "", 
+            "description": "", 
+            "home_url": "Module_swap.asp", 
+            "md5": "98741150bd59b0da3fc4770a9f229bf5", 
+            "name": "swap", 
+            "tar_url": "swap/swap.tar.gz", 
+            "title": "虚拟内存", 
+            "version": "1.0"
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
