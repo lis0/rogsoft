@@ -10,7 +10,10 @@ export PERP_BASE=/koolshare/perp
 creat_start_up(){
 	echo $(date): 加入开机自动启动...
 	rm -rf /koolshare/init.d/S82SoftEther.sh
+	#for wan start
 	ln -sf /koolshare/softether/softether.sh /koolshare/init.d/S82SoftEther.sh
+	#for nat start
+	ln -sf /koolshare/softether/softether.sh /koolshare/init.d/N82SoftEther.sh
 }
 
 open_port(){
@@ -24,26 +27,6 @@ open_port(){
 		iptables -I INPUT -p tcp --dport 5555 -j ACCEPT
 		iptables -I INPUT -p tcp --dport 8888 -j ACCEPT
 		iptables -I INPUT -p tcp --dport 992 -j ACCEPT
-	fi
-
-
-	if [ ! -f /jffs/scripts/firewall-start ]; then
-		cat > /jffs/scripts/firewall-start <<-EOF
-		#!/bin/sh
-		EOF
-	fi
-	fire_rule=$(cat /jffs/scripts/firewall-start | grep "1701")
-	if [ -z "$fire_rule" ];then
-		cat >> /jffs/scripts/firewall-start <<-EOF
-			iptables -I INPUT -p udp --dport 1194 -j ACCEPT
-			iptables -I INPUT -p udp --dport 500 -j ACCEPT
-			iptables -I INPUT -p udp --dport 4500 -j ACCEPT
-			iptables -I INPUT -p udp --dport 1701 -j ACCEPT
-			iptables -I INPUT -p tcp --dport 443 -j ACCEPT
-			iptables -I INPUT -p tcp --dport 5555 -j ACCEPT
-			iptables -I INPUT -p tcp --dport 8888 -j ACCEPT
-			iptables -I INPUT -p tcp --dport 992 -j ACCEPT
-		EOF
 	fi
 }
 
@@ -59,39 +42,32 @@ close_port(){
 		iptables -D INPUT -p tcp --dport 8888 -j ACCEPT
 		iptables -D INPUT -p tcp --dport 992 -j ACCEPT
 	fi
-
-	fire_rule=$(cat /jffs/scripts/firewall-start | grep "1701")
-	if [ ! -z "$fire_rule" ];then
-		sed -i '/1194/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-		sed -i '/500/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-		sed -i '/4500/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-		sed -i '/1701/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-		sed -i '/443/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-		sed -i '/5555/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-		sed -i '/8888/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-		sed -i '/992/d' /jffs/scripts/firewall-start >/dev/null 2>&1
-	fi
 }
 
 case $ACTION in
 start)
-	modprobe tun
-	/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver start >/dev/null 2>&1
-	i=120
-	until [ ! -z "$tap" ]
-	do
-	    i=$(($i-1))
-		tap=`ifconfig | grep tap_ | awk '{print $1}'`
-	    if [ "$i" -lt 1 ];then
-	        echo $(date): "错误：不能正确启动vpnserver!"
-	        exit
-	    fi
-	    sleep 1
-	done
-	open_port
-	brctl addif br0 $tap
-	echo interface=tap_vpn > /jffs/configs/dnsmasq.d/softether.conf
-	service restart_dnsmasq
+	if [ "$softether_enable" == "1" ]; then
+		logger "[软件中心]: 启动softetherVPN！"
+		modprobe tun
+		/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver start >/dev/null 2>&1
+		i=120
+		until [ ! -z "$tap" ]
+		do
+		    i=$(($i-1))
+			tap=`ifconfig | grep tap_ | awk '{print $1}'`
+		    if [ "$i" -lt 1 ];then
+		        echo $(date): "错误：不能正确启动vpnserver!"
+		        exit
+		    fi
+		    sleep 1
+		done
+		open_port
+		brctl addif br0 $tap
+		echo interface=tap_vpn > /jffs/configs/dnsmasq.d/softether.conf
+		service restart_dnsmasq
+	else
+		logger "[软件中心]: softetherVPN未设置开机启动，跳过！"
+	fi
 	;;
 restart)
 	/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver stop >/dev/null 2>&1
@@ -126,8 +102,15 @@ restart)
 stop)
 	/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver stop
 	close_port
+	rm -rf /koolshare/init.d/S82SoftEther.sh
+	rm -rf /koolshare/init.d/N82SoftEther.sh
 	rm -rf /jffs/configs/dnsmasq.d/softether.conf
 	service restart_dnsmasq
-	rm -rf /koolshare/init.d/S82SoftEther.sh
+	;;
+start_nat)
+	if [ "$softether_enable" == "1" ]; then
+		close_port >/dev/null 2>&1
+		open_port
+	fi
 	;;
 esac
