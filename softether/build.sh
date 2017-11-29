@@ -2,10 +2,10 @@
 
 
 MODULE=softether
-VERSION=1.0
+VERSION=1.1
 TITLE="SoftEther_VPN_Server"
 DESCRIPTION="VPN全家桶"
-HOME_URL=Module_softcenter.asp
+HOME_URL=Module_softether.asp
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
