@@ -1,0 +1,9 @@
+{
+"version":"1.0",
+"md5":"30a32b1f799a66e7ca3809138eaef39f",
+"home_url":"Module_softcenter.asp",
+"title":"SoftEther_VPN_Server",
+"description":"VPN全家桶",
+"changelog":"",
+"build_date":"2017-11-29_20:44:17"
+}

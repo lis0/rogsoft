@@ -12,6 +12,17 @@
             "version": "0.1.12"
         }, 
         {
+            "build_date": "2017-11-29_20:44:17", 
+            "changelog": "", 
+            "description": "VPN全家桶", 
+            "home_url": "Module_softcenter.asp", 
+            "md5": "30a32b1f799a66e7ca3809138eaef39f", 
+            "name": "softether", 
+            "tar_url": "softether/softether.tar.gz", 
+            "title": "SoftEther_VPN_Server", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2017-11-29_19:43:32", 
             "changelog": "", 
             "description": "中文SSID，装逼利器！", 
