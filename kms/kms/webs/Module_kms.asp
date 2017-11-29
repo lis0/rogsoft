@@ -35,7 +35,7 @@ function init() {
 function get_dbus_data() {
 	$.ajax({
 		type: "GET",
-		url: "/_api/kms_",
+		url: "/_api/kms",
 		dataType: "json",
 		async: false,
 		success: function(data) {
@@ -48,13 +48,7 @@ function get_dbus_data() {
 	});
 }
 
-function onSubmitCtrl(o, s) {
-	document.form.action_mode.value = s;
-	showLoading(3);
-	document.form.submit();
-}
-
-function onSubmitCtrl() {
+function save() {
 	showLoading(3);
 	refreshpage(3);
 	// collect data from checkbox
@@ -95,7 +89,6 @@ function menu_hook(title, tab) {
 		<input type="hidden" name="action_wait" value="5" />
 		<input type="hidden" name="first_time" value="" />
 		<input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get(" preferred_lang "); %>"/>
-		<input type="hidden" name="SystemCmd" onkeydown="onSubmitCtrl(this, ' Refresh ')" value="kms.sh" />
 		<input type="hidden" name="firmver" value="<% nvram_get(" firmver "); %>"/>
 		<table class="content" align="center" cellpadding="0" cellspacing="0">
 			<tr>
@@ -157,8 +150,8 @@ function menu_hook(title, tab) {
 												</tr>
 											</table>
 											<div class="apply_gen">
-												<button id="cmdBtn" class="button_gen" onclick="onSubmitCtrl(this, ' Refresh ')">提交</button>
-											</div>
+                                        		<span><input class="button_gen" id="cmdBtn" onclick="save();" type="button" value="提交"/></span>
+											</div> 
 											<div id="NoteBox">
 													<h2>使用说明：</h2>
 													<h3>以管理员身份运行CMD输入以下命令，红色字体代表变量不是固定的，请参照自己的计算机修改。</h3>

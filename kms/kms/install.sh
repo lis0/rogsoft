@@ -15,8 +15,8 @@ cp -rf /tmp/kms/res/* /koolshare/res/
 # delete install tar
 rm -rf /tmp/kms* >/dev/null 2>&1
 
-chmod a+x /koolshare/scripts/kms.sh
-chmod 0755 /koolshare/bin/vlmcsd
+chmod +x /koolshare/scripts/kms*
+chmod +x /koolshare/bin/vlmcsd
 
 # re-enable kms
 if [ "$enable" == "1" ];then
