@@ -12,15 +12,15 @@
             "version": "0.1.12"
         }, 
         {
-            "build_date": "2017-11-29_22:38:26", 
+            "build_date": "2017-11-29_22:41:38", 
             "changelog": "", 
             "description": "kms", 
             "home_url": "Module_kms.asp", 
-            "md5": "948e70157a9e0cb412369898a3aee4fc", 
+            "md5": "5aa275b1fb4a42fe1618fc39d65a1d8d", 
             "name": "kms", 
             "tar_url": "kms/kms.tar.gz", 
             "title": "系统工具", 
-            "version": "1.1"
+            "version": "1.2"
         }, 
         {
             "build_date": "2017-11-29_21:13:32", 

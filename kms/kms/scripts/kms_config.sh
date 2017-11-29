@@ -13,12 +13,12 @@ start_kms(){
 	service restart_dnsmasq
 	# creat start_up file
 	if [ ! -L "/koolshare/init.d/N97Kms.sh" ]; then 
-		ln -sf /koolshare/scripts/kms.sh /koolshare/init.d/N97Kms.sh
+		ln -sf /koolshare/scripts/kms_config.sh /koolshare/init.d/N97Kms.sh
 	fi
 
 	# creat start_up file
 	if [ ! -L "/koolshare/init.d/S97Kms.sh" ]; then 
-		ln -sf /koolshare/scripts/kms.sh /koolshare/init.d/S97Kms.sh
+		ln -sf /koolshare/scripts/kms_config.sh /koolshare/init.d/S97Kms.sh
 	fi
 }
 
