@@ -25,6 +25,8 @@ start_kms(){
 stop_kms(){
 	killall vlmcsd
 	rm $CONFIG_FILE
+	rm -rf /koolshare/init.d/N97Kms.sh
+	rm -rf /koolshare/init.d/S97Kms.sh
 	service restart_dnsmasq
 }
 

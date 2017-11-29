@@ -1,9 +1,9 @@
 {
-"version":"1.2",
-"md5":"5aa275b1fb4a42fe1618fc39d65a1d8d",
+"version":"1.3",
+"md5":"1146dc827302bef4d99ab7c5ec0ce392",
 "home_url":"Module_kms.asp",
 "title":"系统工具",
 "description":"kms",
 "changelog":"",
-"build_date":"2017-11-29_22:41:38"
+"build_date":"2017-11-29_22:43:27"
 }
