@@ -12,6 +12,17 @@
             "version": "0.1.12"
         }, 
         {
+            "build_date": "2017-11-29_22:24:03", 
+            "changelog": "", 
+            "description": "kms", 
+            "home_url": "Module_kms.asp", 
+            "md5": "8c19d330cbe002e7b3276fcf78135336", 
+            "name": "kms", 
+            "tar_url": "kms/kms.tar.gz", 
+            "title": "系统工具", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2017-11-29_21:13:32", 
             "changelog": "", 
             "description": "VPN全家桶", 
