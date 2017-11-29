@@ -1,5 +1,5 @@
 #!/bin/sh
 
-rm -rf /koolshare/ssid
-rm -rf /scripts/ssid_*.sh
-rm -rf /webs/Module_ssid.asp
+rm -rf /koolshare/res/icon-ssid.png
+rm -rf /koolshare/scripts/ssid*
+rm -rf /koolshare/webs/Module_ssid.asp
