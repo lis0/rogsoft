@@ -12,15 +12,15 @@
             "version": "0.1.12"
         }, 
         {
-            "build_date": "2017-11-29_15:36:50", 
+            "build_date": "2017-11-29_19:40:20", 
             "changelog": "", 
             "description": "中文SSID，装逼利器！", 
             "home_url": "Module_ssid.asp", 
-            "md5": "626d13c414db79a71108d49506c22206", 
+            "md5": "28e687fdad52e73e9907fbffe5872679", 
             "name": "ssid", 
             "tar_url": "ssid/ssid.tar.gz", 
             "title": "中文SSID", 
-            "version": "1.0"
+            "version": "1.1"
         }, 
         {
             "build_date": "2017-11-09_13:59:36", 
