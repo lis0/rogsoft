@@ -14,6 +14,7 @@
 <link rel="stylesheet" type="text/css" href="ParentalControl.css">
 <link rel="stylesheet" type="text/css" href="css/icon.css">
 <link rel="stylesheet" type="text/css" href="css/element.css">
+<link rel="stylesheet" type="text/css" href="res/softcenter.css">
 <script type="text/javascript" src="/state.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
 <script type="text/javascript" src="/help.js"></script>
@@ -21,7 +22,6 @@
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/general.js"></script>
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
-<script type="text/javascript" src="/dbconf?p=ssid_&v=<% uptime(); %>"></script>
 <script type="text/javascript" src="/res/softcenter.js"></script>
 <script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
 <style>
@@ -43,60 +43,68 @@
 }
 #proceeding_img{
  	height:21px;
-	background:#C0D1D3 url(/images/ss_proceding.gif);
+	background:#C0D1D3 url(/res/proceding.gif);
 }	
 </style>
 <script>
+var db_ssid_ = {}
+	
 function init() {
 	show_menu();
-	conf2obj();
-    version_show();
-    setTimeout("version_show()", 3000);
+	get_dbus_data();
 }
 
-function onSubmitCtrl(o, s) {
-	document.form.action_mode.value = s;
-	show_ssid_LoadingBar(20);
-	document.form.submit();
-}
-
-function conf2obj(){
-	$j.ajax({
-	type: "get",
-	url: "dbconf?p=ssid_",
-	dataType: "script",
-	success: function(xhr) {
-    var p = "ssid_";
-        var params = ["24", "50"];
-        for (var i = 0; i < params.length; i++) {
-			if (typeof db_ssid_[p + params[i]] !== "undefined") {
-				$j("#ssid_"+params[i]).val(db_ssid_[p + params[i]]);
-			}
-        }
-	}
+function get_dbus_data() {
+	$.ajax({
+		type: "GET",
+		url: "/_api/ssid_",
+		dataType: "json",
+		async: false,
+		success: function(data) {
+			db_ssid_ = data.result[0];
+			//console.log(db_ssid_);
+			conf2obj();
+		}
 	});
 }
 
-function version_show(){
-	$j("#ssid_version_status").html("<i>当前版本：" + db_ssid_['ssid_version']);
-
-    $j.ajax({
-        url: 'https://raw.githubusercontent.com/koolshare/koolshare.github.io/acelan_softcenter_ui/ssid/config.json.js',
-        type: 'GET',
-        success: function(res) {
-            var txt = $j(res.responseText).text();
-            if(typeof(txt) != "undefined" && txt.length > 0) {
-                //console.log(txt);
-                var obj = $j.parseJSON(txt.replace("'", "\""));
-		$j("#ssid_version_status").html("<i>当前版本：" + obj.version);
-		if(obj.version != db_ssid_["ssid_version"]) {
-			$j("#ssid_version_status").html("<i>有新版本：" + obj.version);
-		}
-            }
-        }
-    });
+function menu_hook(title, tab) {
+	tabtitle[tabtitle.length - 1] = new Array("", "中文SSID");
+	tablink[tablink.length - 1] = new Array("", "Module_ssid.asp");
 }
 
+function onSubmitCtrl(){
+	showLoading(20);
+	refreshpage(20);
+	var params_input = ["ssid_24", "ssid_50"];
+	// collect data from input
+	for (var i = 0; i < params_input.length; i++) {
+		if(E(params_input[i])){
+			db_ssid_[params_input[i]] = E(params_input[i]).value;
+		}
+	}
+	// post data
+	var id = parseInt(Math.random() * 100000000);
+	var postData = {"id": id, "method": "ssid_config.sh", "params":[1], "fields": db_ssid_};
+	$.ajax({
+		url: "/_api/",
+		cache:false,
+		type: "POST",
+		dataType: "json",
+		data: JSON.stringify(postData)
+	});
+}
+
+
+function conf2obj() {
+	var p = "ssid_";
+	var params = ["24", "50"];
+	for (var i = 0; i < params.length; i++) {
+		if (typeof db_ssid_[p + params[i]] !== "undefined") {
+			$("#ssid_" + params[i]).val(db_ssid_[p + params[i]]);
+		}
+	}
+}
 
 function show_ssid_LoadingBar(seconds){
 	if(window.scrollTo)
@@ -162,7 +170,7 @@ function show_ssid_LoadingBar(seconds){
 function LoadingProgress(seconds){
 	document.getElementById("LoadingBar").style.visibility = "visible";
 	document.getElementById("loading_block3").innerHTML = "正在开始装逼..."
-	$j("#loading_block2").html("<li><font color='#ffcc00'>中文SSID可能会导致某些设备无法正常连接；</font></li>");
+	$("#loading_block2").html("<li><font color='#ffcc00'>中文SSID可能会导致某些设备无法正常连接；</font></li>");
 	y = y + progress;
 	if(typeof(seconds) == "number" && seconds >= 0){
 		if(seconds != 0){
@@ -190,7 +198,7 @@ function hideLoadingBar(){
 }
 
 function reload_Soft_Center(){
-location.href = "/Main_Soft_center.asp";
+location.href = "/Module_Softcenter.asp";
 }
 </script>
 </head>
@@ -213,7 +221,6 @@ location.href = "/Main_Soft_center.asp";
 	</table>
 	</div>
 	<iframe name="hidden_frame" id="hidden_frame" src="" width="0" height="0" frameborder="0"></iframe>
-	<form method="POST" name="form" action="/applydb.cgi?p=ssid_" target="hidden_frame">
 	<input type="hidden" name="current_page" value="Module_ssid.asp"/>
 	<input type="hidden" name="next_page" value="Module_ssid.asp"/>
 	<input type="hidden" name="group_id" value=""/>
@@ -223,7 +230,6 @@ location.href = "/Main_Soft_center.asp";
 	<input type="hidden" name="action_wait" value=""/>
 	<input type="hidden" name="first_time" value=""/>
 	<input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>"/>
-	<input type="hidden" name="SystemCmd" onkeydown="onSubmitCtrl(this, ' Refresh ')" value="ssid_config.sh"/>
 	<input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>"/>
 	<table class="content" align="center" cellpadding="0" cellspacing="0">
 		<tr>
@@ -244,17 +250,11 @@ location.href = "/Main_Soft_center.asp";
 										<div style="float:left;" class="formfonttitle">中文SSID</div>
 										<div style="float:right; width:15px; height:25px;margin-top:10px"><img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img></div>
 										<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
-										<div class="formfontdesc" style="padding-top:5px;margin-top:0px;float: left;" id="cmdDesc">中文SSID，然并卵~</div>
-										<div id="ssid_version_status" style="padding-top:5px;margin-left:30px;margin-right:0px;margin-top:0px;float: left;"><i>当前版本：<% dbus_get_def("ssid_version", "0"); %></i></div>
-										<div style="padding-top:5px;margin-top:25px;margin-left:-230px;float: left;" id="NoteBox" >
-											<li style="margin-top:5px;">在此页面，你可以修改你的无线SSID名为中文； </li>
-											<li style="margin-top:5px;">中文SSID可能会导致某些设备无法正常连接;</li>
-											<li style="margin-top:5px;">暂时不支持设置访客Wi-Fi网络;</li>
-											<li style="margin-top:5px;">设置中文SSID不会导致设备重启;</li>
-											<li style="margin-top:5px;">装逼虽好，可不要贪装哦~</li>					
+										<div id="NoteBox" >
+											<li>在此页面，你可以修改你的无线SSID名为中文； </li>
+											<li>中文SSID可能会导致某些设备无法正常连接;</li>
+											<li>暂时不支持设置访客Wi-Fi网络;</li>
 										</div>
-																	
-										<div class="formfontdesc" id="cmdDesc"></div>
 										<table style="margin:10px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" id="routing_table">
 											<thead>
 											<tr>
@@ -264,18 +264,18 @@ location.href = "/Main_Soft_center.asp";
 											<tr id="ssid_24_tr">
 												<th width="35%">2.4G SSID</th>
 												<td>
-													<input type="text" name="ssid_24" id="ssid_24" class="ssconfig input_ss_table" maxlength="100" value="<% nvram_get("wl0_ssid"); %>"></input>
+													<input type="text" name="ssid_24" id="ssid_24" class="input_ss_table" maxlength="100" value="<% nvram_get("wl0_ssid"); %>"></input>
 												</td>
 											</tr>
 											<tr id="ssid_50_tr">
 												<th width="35%">5G SSID</th>
 												<td>
-													<input type="text" name="ssid_50" id="ssid_50" class="ssconfig input_ss_table" maxlength="100" value="<% nvram_get("wl1_ssid"); %>"></input>
+													<input type="text" name="ssid_50" id="ssid_50" class="input_ss_table" maxlength="100" value="<% nvram_get("wl1_ssid"); %>"></input>
 												</td>
 											</tr>
                                     	</table>
 										<div class="apply_gen">
-											<button id="cmdBtn" class="button_gen" onclick="onSubmitCtrl(this, ' Refresh ')">开始装逼</button>
+                                        	<span><input class="button_gen" id="cmdBtn" onclick="onSubmitCtrl();" type="button" value="开始装逼"/></span>
 										</div>
 										<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
 										<div class="KoolshareBottom">
@@ -294,7 +294,6 @@ location.href = "/Main_Soft_center.asp";
 			</td>
 		</tr>
 	</table>
-	</form>
 	</td>
 	<div id="footer"></div>
 </body>
