@@ -67,19 +67,19 @@
             "version": "1.2"
         }, 
         {
-            "build_date": "2017-11-28_21:51:56", 
+            "build_date": "2017-11-30_17:09:32", 
             "changelog": "", 
             "description": "", 
             "home_url": "Module_swap.asp", 
-            "md5": "98741150bd59b0da3fc4770a9f229bf5", 
+            "md5": "e3bc969c132648a090b0284d736c48ce", 
             "name": "swap", 
             "tar_url": "swap/swap.tar.gz", 
             "title": "虚拟内存", 
-            "version": "1.0"
+            "version": "1.2"
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "c36955a52a25727927fddbf64f3275db", 
+    "md5": "0c0c46a0c0a17713657077ff93765bf2", 
     "tar_url": "softcenter/softcenter.tar.gz", 
-    "version": "1.1.7"
+    "version": "1.1.8"
 }

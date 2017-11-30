@@ -51,8 +51,6 @@
 <script>
 var db_swap_ = {};
 var dbus = {};
-var _responseLen;
-var noChange = 0;
 var usbDevicesList
 
 function init() {
@@ -64,7 +62,7 @@ function init() {
 function get_disks(){
 	require(['/require/modules/diskList.js'], function(diskList) {
 		usbDevicesList = diskList.list();
-		console.log(usbDevicesList)
+		//console.log(usbDevicesList)
 		var html = '';
 		html += '<thead>'
 		html += '<tr>'
@@ -110,7 +108,6 @@ function get_disks(){
 }
 
 function check_swap() {
-	//console.log(dbus)
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {"id": id, "method": "swap_check.sh", "params":[2], "fields": dbus};
 	$.ajax({
@@ -120,7 +117,6 @@ function check_swap() {
 		data: JSON.stringify(postData),
 		dataType: "json",
 		success: function(response) {
-			//console.log(response.result);
 			$("#warn").html("<em>" + response.result.split("@@")[0] + "</em>");
 			var menused = response.result.split("@@")[1]/1024;
 			var memtotal = response.result.split("@@")[2]/1024;
@@ -167,7 +163,6 @@ function conf2obj() {
 	});
 }
 
-
 function get_log(action){
 	showSWAPLoadingBar(action);
 	$.ajax({
@@ -185,23 +180,12 @@ function get_log(action){
 				count_down_close();
 				return true;
 			}
-			if (_responseLen == response.length) {
-				noChange++;
-			} else {
-				noChange = 0;
-			}
-			if (noChange > 1000) {
-				return false;
-			} else {
-				setTimeout("get_log();", 50);
-			}
+			setTimeout("get_log();", 200);
 			retArea.value = response.replace("XU6J03M6", " ");
 			retArea.scrollTop = retArea.scrollHeight;
-			_responseLen = response.length;
 		}
 	});
 }
-
 
 function showSWAPLoadingBar(action){
 	if(window.scrollTo)
