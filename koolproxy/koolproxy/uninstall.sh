@@ -16,4 +16,5 @@ rm -rf /koolshare/koolproxy/data/gen_ca.sh >/dev/null 2>&1
 rm -rf /koolshare/koolproxy/data/openssl.cnf >/dev/null 2>&1
 rm -rf /koolshare/koolproxy/data/serial >/dev/null 2>&1
 rm -rf /koolshare/koolproxy/data/version >/dev/null 2>&1
+find /koolshare/init.d/ -name "*koolproxy*" | xargs rm -rf
 
