@@ -37,6 +37,7 @@ detect_httpdb(){
 start(){
     detect_skipd
     detect_httpdb
+    sleep 5
 }
 
 start

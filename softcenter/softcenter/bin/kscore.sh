@@ -27,7 +27,7 @@ if [ ! -f "/jffs/scripts/nat-start" ];then
 	chmod +x /jffs/scripts/nat-start
 else
 	STARTCOMAND2=`cat /jffs/scripts/nat-start | grep ks-nat-start`
-	[ -z "$STARTCOMAND2" ] && sed -i '1a /koolshare/bin/ks-nat-start.sh start' /jffs/scripts/nat-start
+	[ -z "$STARTCOMAND2" ] && sed -i '1a /koolshare/bin/ks-nat-start.sh start_nat' /jffs/scripts/nat-start
 fi
 
 if [ ! -f "/jffs/scripts/post-mount" ];then
