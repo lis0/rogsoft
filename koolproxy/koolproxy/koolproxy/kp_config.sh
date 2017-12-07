@@ -30,24 +30,6 @@ stop_koolproxy(){
 	killall koolproxy >/dev/null 2>&1
 }
 
-# ===============================
-# this part for start up wan/nat
-creat_start_up(){
-	echo_date 加入开机自动启动...
-	[ ! -L "$SOFT_DIR/init.d/S93koolproxy.sh" ] && ln -sf $SOFT_DIR/scripts/KoolProxy_config.sh $SOFT_DIR/init.d/S93koolproxy.sh
-}
-
-write_nat_start(){
-	echo_date 添加nat-start触发事件...
-	[ ! -L "$SOFT_DIR/init.d/N93koolproxy.sh" ] && ln -sf $KP_DIR/kp_config.sh $SOFT_DIR/init.d/N93koolproxy.sh
-}
-
-remove_nat_start(){
-	echo_date 删除nat-start触发...
-	rm -rf $SOFT_DIR/init.d/N93koolproxy.sh
-}
-
-
 add_ipset_conf(){
 	if [ "$koolproxy_mode" == "2" ];then
 		echo_date 添加黑名单软连接...
@@ -95,11 +77,10 @@ remove_reboot_job(){
 creat_ipset(){
 	xt=`lsmod | grep xt_set`
 	OS=$(uname -r)
-	if [ -f /lib/modules/${OS}/kernel/net/netfilter/xt_set.ko ] && [ -z "$xt" ];then
+	if [ -z "$xt" ];then
 		echo_date "加载xt_set.ko内核模块！"
 		insmod /lib/modules/${OS}/kernel/net/netfilter/xt_set.ko
 	fi
-
 	echo_date 创建ipset名单
 	ipset -! creat white_kp_list nethash
 	ipset -! creat black_koolproxy nethash
@@ -171,10 +152,6 @@ flush_nat(){
 	ipset -F white_kp_list > /dev/null 2>&1 && ipset -X white_kp_list > /dev/null 2>&1
 }
 
-get_acl_para(){
-	echo `dbus get koolproxy_acl_list|sed 's/>/\n/g'|sed '/^$/d'|awk NR==$1{print}|cut -d "<" -f "$2"`
-}
-
 lan_acess_control(){
 	# lan access control
 	[ -z "$koolproxy_acl_default" ] && koolproxy_acl_default=1
@@ -200,20 +177,17 @@ lan_acess_control(){
 }
 
 load_nat(){
-	nat_ready=$(iptables -t nat -L PREROUTING -v -n --line-numbers|grep -v WANPREROUTING|grep -v destination)
+	nat_ready=$(iptables -t nat -L PREROUTING -v -n --line-numbers|grep -v PREROUTING|grep -v destination)
 	i=120
-	# laod nat rules
 	until [ -n "$nat_ready" ]
 	do
 	    i=$(($i-1))
 	    if [ "$i" -lt 1 ];then
-	        echo_date "Could not load nat rules!"
-	        sh $SOFT_DIR/ss/stop.sh
+	        echo_date "错误：不能正确加载nat规则!"
 	        exit
 	    fi
 	    sleep 1
 	done
-	
 	echo_date 加载nat规则！
 	#----------------------BASIC RULES---------------------
 	echo_date 写入iptables规则到nat表中...
@@ -274,27 +248,25 @@ get_rule_para(){
 
 case $1 in
 start)
-	nvram set ks_nat="1"
-	echo_date ============================ koolproxy启用 ===========================
-	rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
-	detect_cert
-	start_koolproxy
-	add_ipset_conf && restart_dnsmasq
-	creat_ipset
-	load_nat
-	dns_takeover
-	creat_start_up
-	write_nat_start
-	write_reboot_job
-	echo_date =====================================================================
-	nvram set ks_nat="0"
+	if [ "$koolproxy_enable" == "1" ];then
+		logger "[软件中心]: 启动koolproxy插件！"
+		rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
+		detect_cert >> /tmp/syslog.log
+		start_koolproxy >> /tmp/syslog.log
+		add_ipset_conf && restart_dnsmasq >> /tmp/syslog.log
+		creat_ipset >> /tmp/syslog.log
+		load_nat >> /tmp/syslog.log
+		dns_takeover >> /tmp/syslog.log
+		write_reboot_job >> /tmp/syslog.log
+	else
+		logger "[软件中心]: koolproxy插件未开启，不启动！"
+	fi
 	;;
 restart)
 	# now stop
 	echo_date ================================ 关闭 ===============================
 	rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
 	remove_reboot_job
-	remove_nat_start
 	flush_nat
 	stop_koolproxy
 	remove_ipset_conf && restart_dnsmasq
@@ -306,8 +278,6 @@ restart)
 	creat_ipset
 	load_nat
 	dns_takeover
-	creat_start_up
-	write_nat_start
 	write_reboot_job
 	echo_date koolproxy启用成功，请等待日志窗口自动关闭，页面会自动刷新...
 	[ ! -f "/tmp/koolprxoy.nat_lock" ] && touch /tmp/koolprxoy.nat_lock
@@ -317,7 +287,6 @@ stop)
 	echo_date ================================ 关闭 ===============================
 	remove_reboot_job
 	add_ipset_conf && restart_dnsmasq
-	remove_nat_start
 	flush_nat
 	stop_koolproxy
 	remove_ipset_conf && restart_dnsmasq
@@ -325,10 +294,11 @@ stop)
 	echo_date =====================================================================
 	;;
 start_nat)
-	WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
-	[ -n "$WAN_ACTION" ] && exit
-	[ ! -f "/tmp/koolprxoy.nat_lock" ] && exit 0
-	if [ "$koolproxy_enable" == "1" ] ;then
+	if [ "$koolproxy_enable" == "1" ];then
+		WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
+		[ -n "$WAN_ACTION" ] && exit
+		[ ! -f "/tmp/koolprxoy.nat_lock" ] && exit
+		logger "[软件中心]: koolproxy nat重启！"
 		flush_nat
 		creat_ipset
 		load_nat

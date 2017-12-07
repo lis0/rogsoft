@@ -1,4 +1,5 @@
 #! /bin/sh
+source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy`
 
 # stop first
@@ -36,6 +37,11 @@ fi
 cp -f /tmp/koolproxy/uninstall.sh /koolshare/scripts/uninstall_koolproxy.sh
 mkdir -p /tmp/upload
 touch /tmp/upload/kp_log.txt
+
+# 创建开机启动文件
+find /koolshare/init.d/ -name "*koolproxy*" | xargs rm -rf
+ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/S98koolproxy.sh
+ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/N98koolproxy.sh
 
 cd /
 
