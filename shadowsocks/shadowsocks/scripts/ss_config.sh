@@ -1,9 +1,25 @@
 #!/bin/sh
 
+export KSROOT=/koolshare
+source $KSROOT/scripts/base.sh
 eval `dbus export ss`
+mkdir -p /tmp/upload
+echo "" > /tmp/upload/ss_log.txt
+http_response "$1"
 
-if [ "$ss_basic_enable" == "1" ];then
-	sh /koolshare/ss/ssconfig.sh restart
-else
-	sh /koolshare/ss/ssconfig.sh stop
-fi
+case $2 in
+start)
+	if [ "$ss_basic_enable" == "1" ];then
+		sh /koolshare/ss/ssconfig.sh restart >> /tmp/upload/ss_log.txt
+	else
+		sh /koolshare/ss/ssconfig.sh stop >> /tmp/upload/ss_log.txt
+	fi
+	echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	;;
+update)
+	sh /koolshare/ss/ssconfig.sh update >> /tmp/upload/ss_log.txt 2>&1
+	echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	;;
+esac
+
+

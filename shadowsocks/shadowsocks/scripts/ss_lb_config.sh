@@ -5,7 +5,7 @@ eval `dbus export ss`
 # 引用环境变量等
 source /koolshare/scripts/base.sh
 username=`nvram get http_username`
-alias echo_date='echo $(date +%Y年%m月%d日\ %X):'
+alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 
 write_haproxy_cfg(){
 	echo_date 生成haproxy配置文件到/koolshare/configs目录.
@@ -193,12 +193,34 @@ start_haproxy(){
 	fi
 }
 
-
-if [ "$ss_lb_enable" == "1" ];then
-	killall haproxy >/dev/null 2>&1
-	write_haproxy_cfg
-	start_haproxy
-	echo_date 成功！
-else
-	killall haproxy >/dev/null 2>&1
+if [ -z "$2" ];then
+	#this is for autoupdate
+	if [ "$ss_lb_enable" == "1" ];then
+		killall haproxy > /dev/null 2>&1
+		write_haproxy_cfg >> /tmp/upload/ss_log.txt
+		start_haproxy >> /tmp/upload/ss_log.txt
+		echo_date 成功！
+	else
+		killall haproxy >/dev/null 2>&1
+	fi
 fi
+
+case $2 in
+start)
+	if [ "$ss_lb_enable" == "1" ];then
+		echo " " > /tmp/upload/ss_log.txt
+		http_response "$1"
+		killall haproxy > /dev/null 2>&1
+		write_haproxy_cfg >> /tmp/upload/ss_log.txt
+		start_haproxy >> /tmp/upload/ss_log.txt
+		echo_date 成功！ >> /tmp/upload/ss_log.txt
+		echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	else
+		echo " " > /tmp/upload/ss_log.txt
+		http_response "$1"
+		echo_date 关闭haproxy进程！>> /tmp/upload/ss_log.txt
+		killall haproxy >/dev/null 2>&1
+		echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	fi
+	;;
+esac
