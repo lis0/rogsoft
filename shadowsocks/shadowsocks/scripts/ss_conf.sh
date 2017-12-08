@@ -4,23 +4,25 @@ source $KSROOT/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 
 backup_conf(){
-	mkdir -p $KSROOT/webs/files
+	rm -rf /tmp/files
+	rm -rf /koolshare/webs/files
+	mkdir -p /tmp/files
+	ln -sf ln -sf /tmp/files /koolshare/webs/files
 	dbus list ss | grep -v "enable" | grep -v "ssid_" | sed 's/=/=\"/' | sed 's/$/\"/g'|sed 's/^/dbus set /' | sed '1 isource /koolshare/scripts/base.sh' |sed '1 i#!/bin/sh' > $KSROOT/webs/files/ssconf_backup.sh
 }
 
 backup_tar(){
-	mkdir -p $KSROOT/webs/files
-	rm -rf $KSROOT/webs/file/shadowsocks*
-	
+	rm -rf /tmp/files
+	rm -rf /koolshare/webs/files
+	mkdir -p /tmp/files
+	ln -sf ln -sf /tmp/files /koolshare/webs/files
 	echo_date "开始打包..."
-	
 	cd /tmp
 	mkdir shadowsocks
 	mkdir shadowsocks/bin
 	mkdir shadowsocks/scripts
 	mkdir shadowsocks/webs
 	mkdir shadowsocks/res
-	
 	echo_date "请等待一会儿..."
 	TARGET_FOLDER=/tmp/shadowsocks
 	cp /koolshare/scripts/ss_install.sh $TARGET_FOLDER/install.sh
@@ -54,11 +56,9 @@ backup_tar(){
 	cp /koolshare/res/shadowsocks.css $TARGET_FOLDER/res/
 	cp -r /koolshare/ss $TARGET_FOLDER/
 	rm -rf $TARGET_FOLDER/ss/*.json
-	
 	tar -czv -f /tmp/shadowsocks.tar.gz shadowsocks/
 	rm -rf $TARGET_FOLDER
-	
-	mv /tmp/shadowsocks.tar.gz $KSROOT/webs/files
+	mv /tmp/shadowsocks.tar.gz /tmp/files
 	echo_date "打包完毕！"
 }
 

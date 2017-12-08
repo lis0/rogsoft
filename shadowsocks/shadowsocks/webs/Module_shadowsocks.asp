@@ -33,9 +33,9 @@ var noChange = 0;
 var noChange2 = 0;
 var node_global_max = 0;
 var myid;
+var checkss = 0;
 var poped = 0;
 var db_ss = {};
-var checkss = 0;
 var x = 5;
 
 function init() {
@@ -441,15 +441,11 @@ function verifyFields(r) {
 	showhide("ss_obfs", (ssr_on == "0" && !koolgame_on && suk != "1"));
 	showhide("ss_obfs_host", (ssr_on == "0" && !koolgame_on && suk != "1" && E("ss_basic_ss_obfs").value != "0"));
 	//ssr-libev
-	if(r == undefined){
-		//showhide("ss_basic_rss_protocol_param_tr", (ssr_on == "1" && !koolgame_on && document.getElementById("ss_basic_rss_protocol_param").value != ""));
-		showhide("ss_basic_rss_protocol_param_tr", (ssr_on == "1" && !koolgame_on));
-	}else if (r == 0 || r == 1 || r == 2){
-		showhide("ss_basic_rss_protocol_param_tr", (ssr_on == "1" && !koolgame_on));
-	}
+	showhide("ss_basic_rss_protocol_param_tr", (ssr_on == "1" && !koolgame_on));
 	showhide("ss_basic_rss_protocol_tr", (ssr_on == "1" && !koolgame_on));
 	showhide("ss_basic_rss_obfs_tr", (ssr_on == "1" && !koolgame_on));
 	showhide("ss_basic_ticket_tr", (ssr_on == "1" && !koolgame_on));
+	//koolgame
 	showhide("ss_koolgame_udp_tr", koolgame_on);
 	//---------
 	//节点新增编辑窗口
@@ -457,7 +453,6 @@ function verifyFields(r) {
 		showhide("ss_obfs_support", ($("#ss_node_table_mode").val() != "3"));
 		showhide("ss_obfs_host_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_obfs").val() != "0"));
 	}
-
 	//kcp pannel
 	var kcp_trs = ["ss_basic_kcp_password_tr", "ss_basic_kcp_mode_tr", "ss_basic_kcp_encrypt_tr", "ss_basic_kcp_mtu_tr", "ss_basic_kcp_sndwnd_tr", "ss_basic_kcp_rcvwnd_tr", "ss_basic_kcp_conn_tr", "ss_basic_kcp_nocomp_tr", "ss_basic_kcp_extra_tr"]
 	if(E("ss_basic_kcp_method").value == "1"){
@@ -1557,7 +1552,6 @@ function edit_conf_table(o) { //编辑节点功能，显示编辑面板
 	E("ss_node_table_method").value = c["method"];
 	myid = id;
 }
-var myid;
 
 function edit_ss_node_conf(flag) { //编辑节点功能，数据重写
 	var ns = {};

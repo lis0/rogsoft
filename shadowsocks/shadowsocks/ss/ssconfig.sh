@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# shadowsocks script for AM382 kernel 4.1.27 merlin firmware
+# by sadog (sadoneli@gmail.com) from koolshare.cn
+
 eval `dbus export ss`
 source /koolshare/scripts/base.sh
 source helper.sh
@@ -683,7 +687,7 @@ load_cdn_site(){
 	# append china site
 	rm -rf /tmp/sscdn.conf
 
-	if [ "$ss_dns_plan" == "2" ] && [ "$ss_dns_foreign" != "5" ];then
+	if [ "$ss_dns_plan" == "2" ] && [ "$ss_dns_foreign" != "5" ] && [ "$ss_dns_foreign" != "6" ];then
 		echo_date 生成cdn加速列表到/tmp/sscdn.conf，加速用的dns：$CDN
 		echo "#for china site CDN acclerate" >> /tmp/sscdn.conf
 		cat /koolshare/ss/rules/cdn.txt | sed "s/^/server=&\/./g" | sed "s/$/\/&$CDN/g" | sort | awk '{if ($0!=line) print;line=$0}' >>/tmp/sscdn.conf

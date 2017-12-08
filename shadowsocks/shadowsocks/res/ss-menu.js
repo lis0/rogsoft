@@ -93,7 +93,7 @@ function browser_compatibility1(){
 		document.getElementById("FormTitle").className = "FormTitle_firefox";
 		if(current_url.indexOf("Main_Ss") == 0){
 			document.getElementById("FormTitle").style.marginTop = "0px"	
-			E("FormTitle").style.height = "969px";
+			E("FormTitle").style.height = "975px";
 		}
 	}
 }
@@ -516,6 +516,12 @@ function openssHint(itemNum) {
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;因为ChinaDNS自己具备cdn解析能力，所以没必要再使用<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/cdn.txt' target='_blank'><u><font color='#00F'>国内cdn名单</font></u></a>,因为使用这个名单会对dnsmasq造成很大的负担！"
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;为了保证ChinaDNS国外解析的效果，这里我给出的ChinaDNS国外DNS都是又经过了一层软件（dns2socks，dnscrypt-proxy，ss-tunnel）的；同时你也可以自定义ChinaDNS国外dns去直接去请求国外DNS服务器，但是cdn效果就不会有经过上层软件后好。这里如果选择dns2socks或者ss-tunnel，ChinaDNS解析国外DNS会向上游软件去请求，而这两个上游软件都会经过SS服务器，可以说能达到良好的国外CDN效果；"
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;因为gfwlist模式的原理，不需要用到这个软件，也有良好的cdn效果，所以并没有必要在gfwlist模式中集成该方案;"
+		//Pcap_DNSProxy
+		statusmenu += "</br><font color='#CC0066'>5:Pcap_DNSProxy：</font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;官方介绍：Pcap_DNSProxy 是一个基于 WinPcap/LibPcap 用于过滤 DNS 投毒污染的工具，提供支持正则表达式的 Hosts 提供更便捷和强大的修改 Hosts 的方法，以及对 DNSCurve/DNSCrypt 协议、并行和 TCP 协议请求的支持。多服务器并行请求功能，更可提高在恶劣网络环境下域名解析的可靠性。";
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;简单的说，Pcap_DNSProxy用底层抓包的方法来进行过滤DNS 投毒污染，其功能强大到令其它几种工具都汗颜，不过我们在集成该工具时考虑到其复杂性，因此都是预先为大家定义好了Pcap_DNSProxy的配置文件，如果你需要修改，可以进入路由器内的/koolshare/ss/dns文件夹去修改配置，Pcap_DNSProxy因为各种依赖，导致在merlin下用自带的工具链编译无法通过，使用了新的交叉编译工具链才顺利编译，其在merlin固件下运行的稳定性已经逐渐提高，但是其在解析DNS时发出大量的并发包，还是为路由器带来的不小的挑战，因此该解析软件对系统cpu和内存的暂用都要比其它几个稍高一些；"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;Pcap_DNSProxy也是具备国内CDN解析效果的,不过在前面ChinaDNS部分提到过，已经由国内DNS解析国内cdn名单，Pcap_DNSProxy解析国内域名也是进行扫尾工作：对于一些没有定义在国内cdn名单内的域名，能发挥作用；而对于国外的解析，由于是通过路由器直接请求国外DNS服务器，并没有经过SS服务器，解析到的ip地址和ss服务器的距离比较随机，所以国外cdn效果是相对比较弱的。";
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;Pcap_DNSProxy也是具备国内CDN解析效果的,所以没必要再使用<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/cdn.txt' target='_blank'><u><font color='#00F'>国内cdn名单</font></u></a>,因为使用这个名单会对dnsmasq造成很大的负担！";
 		_caption = "国外DNS";
 		return overlib(statusmenu, OFFSETX, -860, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	} else if (itemNum == 27) {
