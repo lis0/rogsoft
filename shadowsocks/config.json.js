@@ -1,9 +1,9 @@
 {
-"version":"1.0.1",
-"md5":"947cea3bc5ce80618a434c18712df153",
+"version":"1.0.2",
+"md5":"1bef28636e268c6bb9c5f8df86edefdd",
 "home_url":"Module_shadowsocks.asp",
 "title":"科学上网",
 "description":"科学上网",
 "changelog":"",
-"build_date":"2017-12-08_11:49:37"
+"build_date":"2017-12-08_16:33:02"
 }

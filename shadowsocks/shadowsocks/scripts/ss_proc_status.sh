@@ -60,18 +60,18 @@ echo_version(){
 	echo ① 程序版本（插件版本：$SOFVERSION）：
 	echo -----------------------------------------------------------
 	echo "程序			版本		备注"
-	echo "ss-redir		3.1.1		2017年12月25日编译"
-	echo "ss-tunnel		3.1.1 		2017年12月25日编译"
-	echo "ss-local		3.1.1		2017年12月25日编译"
-	echo "obfs-local		0.0.4		2017年12月25日编译"
-	echo "ssrr-redir		3.5.2 		2017年12月25日编译"
-	echo "ssrr-tunnel		3.5.2 		2017年12月25日编译"
-	echo "ssrr-local		3.5.2 		2017年12月25日编译"
-	echo "client_linux_arm5	20171201	kcptun"
-	echo "haproxy			1.8.1	"
-	echo "dns2socks		V2.0 	"
-	echo "dnscrypt-proxy		1.9.5 	"
-	echo "ChinaDNS		1.3.2 	"
+	echo "ss-redir		3.1.1		2017年12月05日编译"
+	echo "ss-tunnel		3.1.1 		2017年12月05日编译"
+	echo "ss-local		3.1.1		2017年12月05日编译"
+	echo "obfs-local		0.0.4		2017年12月05日编译"
+	echo "ssrr-redir		3.5.2 		2017年12月05日编译"
+	echo "ssrr-tunnel		3.5.2 		2017年12月05日编译"
+	echo "ssrr-local		3.5.2 		2017年12月05日编译"
+	echo "client_linux_arm7	20171201	kcptun"
+	echo "haproxy			1.8.1 		2017年12月05日编译"
+	echo "dns2socks		V2.0 		2017年12月05日编译"
+	echo "dnscrypt-proxy		1.9.5 		2017年12月05日编译"
+	echo "ChinaDNS		1.3.2"
 	echo -----------------------------------------------------------
 }
 
@@ -87,7 +87,7 @@ check_status(){
 	DNS2SOCKS=`pidof dns2socks`
 	DNS_CRYPT=`pidof dnscrypt-proxy`
 	CHINADNS=`pidof chinadns`
-	KCPTUN=`pidof client_linux_arm5`
+	KCPTUN=`pidof client_linux_arm7`
 	HAPROXY=`pidof haproxy`
 	CHINADNS=`pidof chinadns`
 	game_on=`dbus list ss_acl_mode|cut -d "=" -f 2 | grep 3`

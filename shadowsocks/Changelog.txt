@@ -1,5 +1,8 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+1.0.2
+   - fix	修复详细状态部分信息显示错误。
+
 1.0.1
    - update	修复版本回滚说明。
    - fix	修复插件内置在线更新地址。
