@@ -6,8 +6,8 @@ source helper.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 ss_basic_version_local=`cat /koolshare/ss/version`
 dbus set ss_basic_version_local=$ss_basic_version_local
-main_url="https://raw.githubusercontent.com/koolshare/koolshare.github.io/acelan_softcenter_ui/shadowsocks"
-backup_url="http://koolshare.ngrok.wang:5000/shadowsocks"
+main_url="https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks"
+backup_url="https://rogsoft.ngrok.wang/shadowsocks"
 CONFIG_FILE=/koolshare/ss/ss.json
 DNS_PORT=7913
 ISP_DNS=$(nvram get wan0_dns|sed 's/ /\n/g'|grep -v 0.0.0.0|grep -v 127.0.0.1|sed -n 1p)
