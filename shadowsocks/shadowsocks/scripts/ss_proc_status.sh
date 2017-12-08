@@ -48,6 +48,9 @@ get_dns_name() {
 				echo "chinadns, 上游dns方案自定义"
 			fi
 		;;
+		6)
+			echo "Pcap_DNSProxy"
+		;;
 		7)
 			echo "koolgame内置"
 		;;
@@ -71,7 +74,8 @@ echo_version(){
 	echo "haproxy			1.8.1 		2017年12月05日编译"
 	echo "dns2socks		V2.0 		2017年12月05日编译"
 	echo "dnscrypt-proxy		1.9.5 		2017年12月05日编译"
-	echo "ChinaDNS		1.3.2"
+	echo "chinadns		1.3.2 		2017年12月08日编译"
+	echo "Pcap_DNSProxy		0.4.9.5 	2017年12月08日编译"
 	echo -----------------------------------------------------------
 }
 
@@ -87,6 +91,7 @@ check_status(){
 	DNS2SOCKS=`pidof dns2socks`
 	DNS_CRYPT=`pidof dnscrypt-proxy`
 	CHINADNS=`pidof chinadns`
+	PCAP_DNSPROXY=`pidof Pcap_DNSProxy`
 	KCPTUN=`pidof client_linux_arm7`
 	HAPROXY=`pidof haproxy`
 	CHINADNS=`pidof chinadns`
@@ -163,6 +168,9 @@ check_status(){
 				fi
 			fi
 			[ -n "$CHINADNS" ] && echo "chinadns	工作中	pid：$CHINADNS" || echo "chinadns	未运行"
+			
+		elif [ "$ss_dns_foreign" == "6" ];then
+			[ -n "$PCAP_DNSPROXY" ] && echo "Pcap_DNSProxy	工作中	pid：$PCAP_DNSPROXY" || echo "Pcap_DNSProxy	未运行"
 		fi
 	fi
 

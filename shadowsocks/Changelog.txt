@@ -1,5 +1,9 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+1.0.3
+   - add	添加Pcap_DNSproxy，版本4.9.5
+   - update	更新chinadns二进制文件（更换AM382工具链编译）
+
 1.0.2
    - fix	修复详细状态部分信息显示错误。
 

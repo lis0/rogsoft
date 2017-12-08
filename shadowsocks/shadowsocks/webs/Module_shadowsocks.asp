@@ -249,7 +249,7 @@ function save() {
 	var dbus = {};
 	//key define
 	var params_input = ["ssconf_basic_node", "ss_basic_mode", "ss_basic_server", "ss_basic_port", "ss_basic_method", "ss_basic_koolgame_udp", "ss_basic_ss_obfs", "ss_basic_ss_obfs_host", "ss_basic_rss_protocol", "ss_basic_rss_protocol_param", "ss_basic_rss_obfs", "ss_basic_rss_obfs_param", "ss_basic_ping_node", "ss_basic_ping_method", "ss_dns_plan", "ss_dns_china", "ss_dns_china_user", "ss_dns_foreign", "ss_opendns", "ss_dns2socks_user", "ss_sstunnel", "ss_sstunnel_user", "ss_game2_dns_foreign", "ss_game2_dns2ss_user", "ss_chinadns_china", "ss_chinadns_china_user", "ss_chinadns_foreign_method", "ss_chinadns_foreign_method_user", "ss_chinadns_foreign_dns2socks", "ss_chinadns_foreign_dns2socks_user", "ss_chinadns_foreign_dnscrypt", "ss_chinadns_foreign_sstunnel", "ss_chinadns_foreign_sstunnel_user", "ss_basic_chromecast", "ss_basic_dnslookup", "ss_basic_dnslookup_server", "$ss_basic_kcp_lserver", "ss_basic_kcp_lport", "ss_basic_kcp_server", "ss_basic_kcp_port", "ss_basic_kcp_parameter", "ss_basic_rule_update", "ss_basic_rule_update_time", "ssr_subscribe_mode", "ssr_subscribe_obfspara", "ssr_subscribe_obfspara_val", "ss_basic_online_links_goss", "ss_basic_node_update", "ss_basic_node_update_day", "ss_basic_node_update_hr", "ss_base64_links", "ss_basic_refreshrate", "ss_basic_sleep", "ss_acl_default_port", "ss_online_action", "ss_acl_default_mode", "ss_basic_kcp_method", "ss_basic_kcp_password", "ss_basic_kcp_mode", "ss_basic_kcp_encrypt", "ss_basic_kcp_mtu", "ss_basic_kcp_sndwnd", "ss_basic_kcp_rcvwnd", "ss_basic_kcp_conn", "ss_basic_kcp_extra", "ss_basic_udp_software", "ss_basic_udp_node", "ss_basic_udpv1_lserver", "ss_basic_udpv1_lport", "ss_basic_udpv1_rserver", "ss_basic_udpv1_rport", "ss_basic_udpv1_password", "ss_basic_udpv1_mode", "ss_basic_udpv1_duplicate_nu", "ss_basic_udpv1_duplicate_time", "ss_basic_udpv1_jitter", "ss_basic_udpv1_report", "ss_basic_udpv1_drop", "ss_basic_udpv2_lserver", "ss_basic_udpv2_lport", "ss_basic_udpv2_rserver", "ss_basic_udpv2_rport", "ss_basic_udpv2_password", "ss_basic_udpv2_fec", "ss_basic_udpv2_timeout", "ss_basic_udpv2_mode", "ss_basic_udpv2_report", "ss_basic_udpv2_mtu", "ss_basic_udpv2_jitter", "ss_basic_udpv2_interval", "ss_basic_udpv2_drop", "ss_basic_udpv2_other", "ss_basic_udp2raw_lserver", "ss_basic_udp2raw_lport", "ss_basic_udp2raw_rserver", "ss_basic_udp2raw_rport", "ss_basic_udp2raw_password", "ss_basic_udp2raw_rawmode", "ss_basic_udp2raw_ciphermode", "ss_basic_udp2raw_authmode", "ss_basic_udp2raw_lowerlevel", "ss_basic_udp2raw_other", "ss_basic_udp_upstream_mtu", "ss_basic_udp_upstream_mtu_value"];
-	var params_check = ["ss_basic_enable", "ss_basic_use_kcp", "ss_basic_gfwlist_update", "ss_basic_chnroute_update", "ss_basic_cdn_update", "ss_basic_kcp_nocomp", "ss_basic_udp_boost_enable", "ss_basic_udpv1_disable_filter", "ss_basic_udpv2_disableobscure", "ss_basic_udp2raw_boost_enable", "ss_basic_udp2raw_a", "ss_basic_udp2raw_keeprule"];
+	var params_check = ["ss_basic_enable", "ss_basic_use_kcp", "ss_basic_gfwlist_update", "ss_basic_chnroute_update", "ss_basic_cdn_update", "ss_basic_pcap_update", "ss_basic_kcp_nocomp", "ss_basic_udp_boost_enable", "ss_basic_udpv1_disable_filter", "ss_basic_udpv2_disableobscure", "ss_basic_udp2raw_boost_enable", "ss_basic_udp2raw_a", "ss_basic_udp2raw_keeprule"];
 	var params_base64 = ["ss_basic_password", "ss_isp_website_web", "ss_dnsmasq", "ss_wan_white_ip", "ss_wan_white_domain", "ss_wan_black_ip", "ss_wan_black_domain", "ss_online_links"];
 	// collect data from input
 	for (var i = 0; i < params_input.length; i++) {
@@ -545,6 +545,8 @@ function update_visibility() {
 		E("ss_dns_china_user").style.display = "none";
 		E("ss_isp_website_web").style.display = "none";
 		E("show_isp_dns").style.display = "";
+		$("#show_isp_dns").html("Pcap_DNSProxy方案自带国内cdn加速，无需定义国内DNS");
+		$("#user_cdn_span").html("Pcap_DNSProxy方案自带国内cdn加速，无需定义cdn加速名单");
 	} else {
 		E("ss_dns_china").style.display = "";
 		showhide("ss_dns_china_user", (rdc == "12"));
@@ -1767,6 +1769,7 @@ function updatelist(arg) {
 	dbus["ss_basic_gfwlist_update"] = E("ss_basic_gfwlist_update").checked ? '1' : '0';
 	dbus["ss_basic_chnroute_update"] = E("ss_basic_chnroute_update").checked ? '1' : '0';
 	dbus["ss_basic_cdn_update"] = E("ss_basic_cdn_update").checked ? '1' : '0';
+	dbus["ss_basic_pcap_update"] = E("ss_basic_pcap_update").checked ? '1' : '0';
 	push_data("ss_rule_update.sh", arg,  dbus);
 }
 
@@ -3282,6 +3285,7 @@ function save_online_nodes(action) {
 															<option value="2">ss-tunnel</option>
 															<option value="3">dnscrypt-proxy</option>
 															<option value="5">ChinaDNS</option>
+															<option value="6">Pcap_DNSProxy</option>
 														</select>
 														<select id="ss_opendns" name="ss_opendns" class="input_option" style="width:320px"></select>
 														<input type="text" class="input_ss_table" id="ss_dns2socks_user" name="ss_dns2socks_user" maxlength="100" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">
@@ -3992,6 +3996,28 @@ taobao.com
 														</p>		
 													</td>		
 												</tr>
+												<tr  id="Routing_number">		
+													<th width="35%">Routing.txt（Pcap规则）</th>		
+													<td>		
+														<p>		
+														<% nvram_get("Routing_numbers"); %> &nbsp;条，最后更新版本：		
+															<a href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/Routing.txt" target="_blank">		
+																<i><% nvram_get("update_Routing"); %></i>		
+															</a>		
+														</p>		
+													</td>		
+												</tr>
+												<tr  id="WhiteList_number">		
+													<th width="35%">WhiteList.txt（Pcap规则）</th>		
+													<td>		
+														<p>		
+														<% nvram_get("WhiteList_numbers"); %>&nbsp;条，最后更新版本：		
+															<a href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/WhiteList_new.txt" target="_blank">		
+																<i><% nvram_get("update_WhiteList"); %></i>		
+															</a>		
+														</p>		
+													</td>		
+												</tr>
 												<tr id="update_rules">
 													<th width="35%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(44)">规则定时更新任务</a></th>
 													<td>
@@ -4030,11 +4056,17 @@ taobao.com
 																<input type="checkbox" id="ss_basic_gfwlist_update" title="选择此项应用gfwlist自动更新">gfwlist
 																<input type="checkbox" id="ss_basic_chnroute_update">chnroute
 																<input type="checkbox" id="ss_basic_cdn_update">CDN
+																<input type="checkbox" id="ss_basic_pcap_update">Pcap_list
 															</a>
+													</td>
+												</tr>
+												<tr>
+													<th width="35%">操作</th>
+													<td>
 														<a type="button" class="ss_btn" style="cursor:pointer" onclick="updatelist(1)">保存设置</a>
 														<a type="button" class="ss_btn" style="cursor:pointer" onclick="updatelist(2)">立即更新</a>
 													</td>
-												</tr>
+												</tr>	
 											</table>
 											<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"/></div>
 											<table id="conf_table1" style="margin:8px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">

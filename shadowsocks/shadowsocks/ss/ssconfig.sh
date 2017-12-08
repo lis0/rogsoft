@@ -201,6 +201,15 @@ kill_process(){
 	killall pdnsd
 	fi
 	#--------------------------------------------------------------------------
+	# kill Pcap_DNSProxy
+	Pcap_DNSProxy=$(ps | grep "Pcap_DNSProxy" | grep -v "grep")
+	if [ ! -z "$Pcap_DNSProxy" ];then 
+		echo_date 关闭Pcap_DNSProxy进程...
+		pid1=`ps|grep /koolshare/ss/dns/dns.sh | grep -v grep | awk '{print $1}'`
+		kill -9 $pid1 >/dev/null 2>&1
+		killall Pcap_DNSProxy >/dev/null 2>&1
+	fi
+	#--------------------------------------------------------------------------
 	# kill chinadns
 	chinadns=$(ps | grep "chinadns" | grep -v "grep")
 	if [ ! -z "$chinadns" ];then 
@@ -661,6 +670,11 @@ start_dns(){
 		fi
 		echo_date ┗开启chinadns进程！
 		chinadns -p $DNS_PORT -s "$rcc",127.0.0.1:1055 -m -d -c /koolshare/ss/rules/chnroute.txt  >/dev/null 2>&1 &
+	fi
+	# Start Pcap_DNSProxy
+	if [ "6" == "$ss_dns_foreign" ]; then
+		echo_date 开启Pcap_DNSProxy..
+		Pcap_DNSProxy -c /koolshare/ss/dns
 	fi
 }
 #--------------------------------------------------------------------------------------
@@ -1464,9 +1478,13 @@ write_numbers(){
 	nvram set update_ipset="$(cat /koolshare/ss/rules/version | sed -n 1p | sed 's/#/\n/g'| sed -n 1p)"
 	nvram set update_chnroute="$(cat /koolshare/ss/rules/version | sed -n 2p | sed 's/#/\n/g'| sed -n 1p)"
 	nvram set update_cdn="$(cat /koolshare/ss/rules/version | sed -n 4p | sed 's/#/\n/g'| sed -n 1p)"
+	nvram set update_Routing="$(cat /koolshare/ss/rules/version | sed -n 5p | sed 's/#/\n/g'| sed -n 1p)"
+	nvram set update_WhiteList="$(cat /koolshare/ss/rules/version | sed -n 7p | sed 's/#/\n/g'| sed -n 1p)"
 	nvram set ipset_numbers=$(cat /koolshare/ss/rules/gfwlist.conf | grep -c ipset)
 	nvram set chnroute_numbers=$(cat /koolshare/ss/rules/chnroute.txt | grep -c .)
 	nvram set cdn_numbers=$(cat /koolshare/ss/rules/cdn.txt | grep -c .)
+	nvram set Routing_numbers=$(cat /koolshare/ss/dns/Routing.txt |grep -c /)
+	nvram set WhiteList_numbers=$(cat /koolshare/ss/dns/WhiteList.txt |grep -Ec "Server=")
 }
 
 set_ulimit(){
