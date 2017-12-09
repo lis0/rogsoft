@@ -52,6 +52,7 @@ rm -rf /koolshare/bin/haproxy
 rm -rf /koolshare/bin/dnscrypt-proxy
 rm -rf /koolshare/bin/Pcap_DNSProxy
 rm -rf /koolshare/bin/dns2socks
+rm -rf /koolshare/bin/cdns
 rm -rf /koolshare/bin/client_linux_arm*
 rm -rf /koolshare/bin/chinadns
 rm -rf /koolshare/bin/resolveip
