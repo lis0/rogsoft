@@ -62,6 +62,7 @@ echo_version(){
 	echo "ssrr-local		3.5.2 		2017年12月05日编译"
 	echo "haproxy			1.8.1 		2017年12月05日编译"
 	echo "dns2socks		V2.0 		2017年12月05日编译"
+	echo "cdns			1.0 		2017年12月09日编译"
 	echo "ChinaDNS(EDNS)		2.0.0 		2017年12月09日编译"
 	echo "client_linux_arm7	20171201	kcptun"
 	echo -----------------------------------------------------------
