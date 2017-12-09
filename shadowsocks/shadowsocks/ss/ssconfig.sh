@@ -1300,7 +1300,6 @@ case $ACTION in
 start)
 	if [ "$ss_basic_enable" == "1" ];then
 		logger "[软件中心]: 启动科学上网插件！"
-		[ "$ss_basic_sleep" != "0" ] && sleep $ss_basic_sleep
 		set_ulimit >> /tmp/syslog.log
 		apply_ss >> /tmp/syslog.log
     	write_numbers >> /tmp/syslog.log
