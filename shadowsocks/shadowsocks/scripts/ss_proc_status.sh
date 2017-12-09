@@ -25,33 +25,22 @@ get_mode_name() {
 get_dns_name() {
 	case "$1" in
 		1)
-			echo "dns2socks"
+			echo "cdns"
 		;;
 		2)
+			echo "chinadns2"
+		;;
+		3)
+			echo "dns2socks"
+		;;
+		4)
 			if [ -n "$ss_basic_rss_obfs" ];then
 				echo "ssr-tunnel"
 			else
 				echo "ss-tunnel"
 			fi
 		;;
-		3)
-			echo "dnscrypt-proxy"
-		;;
 		5)
-			if [ "$ss_chinadns_foreign_method" == "1" ];then
-				echo "chinadns, 上游dns方案dns2socks"
-			elif [ "$ss_chinadns_foreign_method" == "2" ];then
-				echo "chinadns, 上游dns方案dnscrypt-proxy"
-			elif [ "$ss_chinadns_foreign_method" == "3" ];then
-				echo "chinadns, 上游dns方案ss-tunnel"
-			elif [ "$ss_chinadns_foreign_method" == "4" ];then
-				echo "chinadns, 上游dns方案自定义"
-			fi
-		;;
-		6)
-			echo "Pcap_DNSProxy"
-		;;
-		7)
 			echo "koolgame内置"
 		;;
 	esac
@@ -66,17 +55,15 @@ echo_version(){
 	echo "ss-redir		3.1.1		2017年12月05日编译"
 	echo "ss-tunnel		3.1.1 		2017年12月05日编译"
 	echo "ss-local		3.1.1		2017年12月05日编译"
-	echo "obfs-local		0.0.4		2017年12月05日编译"
+	echo "obfs-local		0.0.5		2017年12月05日编译"
 	echo "ssrr-redir		3.5.2 		2017年12月05日编译"
 	echo "ssrr-tunnel		3.5.2 		2017年12月05日编译"
 	echo "ssrr-local		3.5.2 		2017年12月05日编译"
 	echo "ssrr-local		3.5.2 		2017年12月05日编译"
-	echo "client_linux_arm7	20171201	kcptun"
 	echo "haproxy			1.8.1 		2017年12月05日编译"
 	echo "dns2socks		V2.0 		2017年12月05日编译"
-	echo "dnscrypt-proxy		1.9.5 		2017年12月08日编译"
-	echo "chinadns		1.3.2 		2017年12月08日编译"
-	echo "Pcap_DNSProxy		0.4.9.5 	2017年12月08日编译"
+	echo "ChinaDNS(EDNS)		2.0.0 		2017年12月09日编译"
+	echo "client_linux_arm7	20171201	kcptun"
 	echo -----------------------------------------------------------
 }
 
@@ -90,9 +77,7 @@ check_status(){
 	SSR_TUNNEL=`pidof rss-tunnel`
 	KOOLGAME=`pidof koolgame`
 	DNS2SOCKS=`pidof dns2socks`
-	DNS_CRYPT=`pidof dnscrypt-proxy`
 	CHINADNS=`pidof chinadns`
-	PCAP_DNSPROXY=`pidof Pcap_DNSProxy`
 	KCPTUN=`pidof client_linux_arm7`
 	HAPROXY=`pidof haproxy`
 	CHINADNS=`pidof chinadns`
@@ -101,7 +86,7 @@ check_status(){
 	if [ -n "$ss_basic_rss_obfs" ];then
 		echo_version
 		echo
-		echo ② 检测当前相关进程工作状态：（你正在使用SSR-libev,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_dns_foreign)）
+		echo ② 检测当前相关进程工作状态：（你正在使用SSR-libev,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_foreign_dns)）
 		echo -----------------------------------------------------------
 		echo "程序		状态	PID"
 		[ -n "$SSR_REDIR" ] && echo "ssr-redir	工作中	pid：$SSR_REDIR" || echo "ssr-redir	未运行"
@@ -109,7 +94,7 @@ check_status(){
 		if [ -n "$ss_basic_koolgame_udp" ];then
 			echo_version
 			echo
-			echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_dns_foreign)）
+			echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_foreign_dns)）
 			echo -----------------------------------------------------------
 			echo "程序		状态	PID"
 			[ -n "$KOOLGAME" ] && echo "koolgame	工作中	pid：$KOOLGAME" || echo "koolgame	未运行"
@@ -133,7 +118,7 @@ check_status(){
 		 	[ -n "$HAPROXY" ] && echo "haproxy		工作中	pid：$HAPROXY" || echo "haproxy		未运行"
 		fi
 		
-		if [ "$ss_dns_foreign" == "1" ];then
+		if [ "$ss_foreign_dns" == "1" ];then
 			if [ -n "$ss_basic_rss_obfs" ];then
 				[ -n "$SSR_LOCAL" ] && echo "ssr-local	工作中	pid：$SSR_LOCAL" || echo "ssr-local	未运行"
 				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
@@ -141,37 +126,14 @@ check_status(){
 				[ -n "$SS_LOCAL" ] && echo "ss-local	工作中	pid：$SS_LOCAL" || echo "ss-local	未运行"
 				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
 			fi
-		elif [ "$ss_dns_foreign" == "2" ];then
+		elif [ "$ss_foreign_dns" == "2" ];then
 			if [ -n "$ss_basic_rss_obfs" ];then
 				[ -n "$SSR_TUNNEL" ] && echo "ssr-tunnel	工作中	pid：$SSR_TUNNEL" || echo "ssr-tunnel	未运行"
 			else
 				[ -n "$SS_TUNNEL" ] && echo "ss-tunnel	工作中	pid：$SS_TUNNEL" || echo "ss-tunnel	未运行"
 			fi
-		elif [ "$ss_dns_foreign" == "3" ];then
-			[ -n "$DNS_CRYPT" ] && echo "dnscrypt-proxy	工作中	pid：$DNS_CRYPT" || echo "dnscrypt-proxy	未运行"
-
-		elif [ "$ss_dns_foreign" == "5" ];then
-			if [ "$ss_chinadns_foreign_method" == "1" ];then
-				if [ -n "$ss_basic_rss_obfs" ];then
-					[ -n "$SSR_LOCAL" ] && echo "ssr-local	工作中	pid：$SSR_LOCAL" || echo "ssr-local	未运行"
-					[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
-				else
-					[ -n "$SS_LOCAL" ] && echo "ss-local	工作中	pid：$SS_LOCAL" || echo "ss-local	未运行"
-					[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
-				fi
-			elif [ "$ss_chinadns_foreign_method" == "2" ];then
-				[ -n "$DNS_CRYPT" ] && echo "dnscrypt-proxy	工作中	pid：$DNS_CRYPT" || echo "dnscrypt-proxy	未运行"
-			elif [ "$ss_chinadns_foreign_method" == "3" ];then
-				if [ -n "$ss_basic_rss_obfs" ];then
-					[ -n "$SSR_TUNNEL" ] && echo "ssr-tunnel	工作中	pid：$SSR_TUNNEL" || echo "ssr-tunnel	未运行"
-				else
-					[ -n "$SS_TUNNEL" ] && echo "ss-tunnel	工作中	pid：$SS_TUNNEL" || echo "ss-tunnel	未运行"
-				fi
-			fi
+		elif [ "$ss_foreign_dns" == "5" ];then
 			[ -n "$CHINADNS" ] && echo "chinadns	工作中	pid：$CHINADNS" || echo "chinadns	未运行"
-			
-		elif [ "$ss_dns_foreign" == "6" ];then
-			[ -n "$PCAP_DNSPROXY" ] && echo "Pcap_DNSProxy	工作中	pid：$PCAP_DNSPROXY" || echo "Pcap_DNSProxy	未运行"
 		fi
 	fi
 
