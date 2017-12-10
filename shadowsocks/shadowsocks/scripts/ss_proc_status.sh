@@ -63,7 +63,7 @@ echo_version(){
 	echo "haproxy			1.8.1 		2017年12月05日编译"
 	echo "dns2socks		V2.0 		2017年12月05日编译"
 	echo "cdns			1.0 		2017年12月09日编译"
-	echo "ChinaDNS(EDNS)		2.0.0 		2017年12月09日编译"
+	echo "chinadns2		2.0.0 		2017年12月09日编译"
 	echo "client_linux_arm7	20171201	kcptun"
 	echo -----------------------------------------------------------
 }
@@ -78,10 +78,10 @@ check_status(){
 	SSR_TUNNEL=`pidof rss-tunnel`
 	KOOLGAME=`pidof koolgame`
 	DNS2SOCKS=`pidof dns2socks`
+	CDNS=`pidof cdns`
 	CHINADNS=`pidof chinadns`
 	KCPTUN=`pidof client_linux_arm7`
 	HAPROXY=`pidof haproxy`
-	CHINADNS=`pidof chinadns`
 	game_on=`dbus list ss_acl_mode|cut -d "=" -f 2 | grep 3`
 	
 	if [ -n "$ss_basic_rss_obfs" ];then
@@ -120,6 +120,10 @@ check_status(){
 		fi
 		
 		if [ "$ss_foreign_dns" == "1" ];then
+			[ -n "$CDNS" ] && echo "cdns	工作中	pid：$CDNS" || echo "cdns	未运行"
+		elif [ "$ss_foreign_dns" == "2" ];then
+			[ -n "$CHINADNS" ] && echo "chinadns	工作中	pid：$CHINADNS" || echo "chinadns	未运行"
+		elif [ "$ss_foreign_dns" == "3" ];then
 			if [ -n "$ss_basic_rss_obfs" ];then
 				[ -n "$SSR_LOCAL" ] && echo "ssr-local	工作中	pid：$SSR_LOCAL" || echo "ssr-local	未运行"
 				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
@@ -127,14 +131,12 @@ check_status(){
 				[ -n "$SS_LOCAL" ] && echo "ss-local	工作中	pid：$SS_LOCAL" || echo "ss-local	未运行"
 				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
 			fi
-		elif [ "$ss_foreign_dns" == "2" ];then
+		elif [ "$ss_foreign_dns" == "4" ];then
 			if [ -n "$ss_basic_rss_obfs" ];then
 				[ -n "$SSR_TUNNEL" ] && echo "ssr-tunnel	工作中	pid：$SSR_TUNNEL" || echo "ssr-tunnel	未运行"
 			else
 				[ -n "$SS_TUNNEL" ] && echo "ss-tunnel	工作中	pid：$SS_TUNNEL" || echo "ss-tunnel	未运行"
 			fi
-		elif [ "$ss_foreign_dns" == "5" ];then
-			[ -n "$CHINADNS" ] && echo "chinadns	工作中	pid：$CHINADNS" || echo "chinadns	未运行"
 		fi
 	fi
 
