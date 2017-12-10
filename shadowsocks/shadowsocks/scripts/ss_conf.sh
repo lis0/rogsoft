@@ -41,6 +41,7 @@ backup_tar(){
 	#cp /koolshare/bin/dnscrypt-proxy $TARGET_FOLDER/bin/
 	#cp /koolshare/bin/Pcap_DNSProxy $TARGET_FOLDER/bin/
 	cp /koolshare/bin/chinadns $TARGET_FOLDER/bin/
+	cp /koolshare/bin/chinadns1 $TARGET_FOLDER/bin/
 	cp /koolshare/bin/resolveip $TARGET_FOLDER/bin/
 	cp /koolshare/bin/haproxy $TARGET_FOLDER/bin/
 	cp /koolshare/bin/client_linux_arm7 $TARGET_FOLDER/bin/

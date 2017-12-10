@@ -173,6 +173,11 @@ kill_process(){
 		echo_date 关闭chinadns2进程...
 		killall chinadns
 	fi
+	chinadns1_process=`pidof chinadns1`
+	if [ -n "$chinadns1_process" ];then 
+		echo_date 关闭chinadns1进程...
+		killall chinadns1
+	fi
 	cdns_process=`pidof cdns`
 	if [ -n "$cdns_process" ];then 
 		echo_date 关闭cdns进程...
@@ -461,9 +466,17 @@ start_dns(){
 			if [ "$ss_basic_ss_obfs" == "0" ];then
 				ss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user -u -f /var/run/sstunnel.pid >/dev/null 2>&1
 			else
-				ss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user $ARG_OBFS -u -f /var/run/sstunnel.pid >/dev/null 2>&1
+				ss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user $ARG_OBFS -u -f /var/run/sstunnel.pid
 			fi
 		fi
+	fi
+	
+	#start chinadns1
+	if [ "$ss_foreign_dns" == "5" ];then
+		echo_date 开启chinadns1，用于dns解析...
+		[ "$ss_dns_china" == "1" ] && RCC="114.114.114.114" || RCC="$CDN"
+		dns2socks 127.0.0.1:23456 "$ss_chinadns1_user" 127.0.0.1:1055 > /dev/null 2>&1 &
+		chinadns1 -p $DNS_PORT -s $RCC,127.0.0.1:1055 -m -d -c /koolshare/ss/rules/chnroute.txt > /dev/null 2>&1 &
 	fi
 }
 #--------------------------------------------------------------------------------------
@@ -1182,7 +1195,7 @@ apply_nat_rules(){
 chromecast(){
 	chromecast_nu=`iptables -t nat -L PREROUTING -v -n --line-numbers|grep "dpt:53"|awk '{print $1}'`
 	if [ -z "$chromecast_nu" ]; then
-		iptables -t nat $IPT_ACTION PREROUTING -p udp --dport 53 -j DNAT --to $lan_ipaddr >/dev/null 2>&1
+		iptables -t nat -A PREROUTING -p udp --dport 53 -j DNAT --to $lan_ipaddr >/dev/null 2>&1
 		echo_date 开启chromecast功能（DNS劫持功能）
 	else
 		echo_date DNS劫持规则已经添加，跳过~

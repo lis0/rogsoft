@@ -41,7 +41,7 @@ get_dns_name() {
 			fi
 		;;
 		5)
-			echo "koolgame内置"
+			echo "chinadns1 + dns2socks上游"
 		;;
 	esac
 }
@@ -59,10 +59,10 @@ echo_version(){
 	echo "ssrr-redir		3.5.2 		2017年12月05日编译"
 	echo "ssrr-tunnel		3.5.2 		2017年12月05日编译"
 	echo "ssrr-local		3.5.2 		2017年12月05日编译"
-	echo "ssrr-local		3.5.2 		2017年12月05日编译"
 	echo "haproxy			1.8.1 		2017年12月05日编译"
 	echo "dns2socks		V2.0 		2017年12月05日编译"
 	echo "cdns			1.0 		2017年12月09日编译"
+	echo "chinadns1		1.3.2 		2017年12月09日编译"
 	echo "chinadns2		2.0.0 		2017年12月09日编译"
 	echo "client_linux_arm7	20171201	kcptun"
 	echo -----------------------------------------------------------
@@ -79,6 +79,7 @@ check_status(){
 	KOOLGAME=`pidof koolgame`
 	DNS2SOCKS=`pidof dns2socks`
 	CDNS=`pidof cdns`
+	CHINADNS1=`pidof chinadns1`
 	CHINADNS=`pidof chinadns`
 	KCPTUN=`pidof client_linux_arm7`
 	HAPROXY=`pidof haproxy`
@@ -120,7 +121,7 @@ check_status(){
 		fi
 		
 		if [ "$ss_foreign_dns" == "1" ];then
-			[ -n "$CDNS" ] && echo "cdns	工作中	pid：$CDNS" || echo "cdns	未运行"
+			[ -n "$CDNS" ] && echo "cdns		工作中	pid：$CDNS" || echo "cdns	未运行"
 		elif [ "$ss_foreign_dns" == "2" ];then
 			[ -n "$CHINADNS" ] && echo "chinadns	工作中	pid：$CHINADNS" || echo "chinadns	未运行"
 		elif [ "$ss_foreign_dns" == "3" ];then
@@ -137,6 +138,9 @@ check_status(){
 			else
 				[ -n "$SS_TUNNEL" ] && echo "ss-tunnel	工作中	pid：$SS_TUNNEL" || echo "ss-tunnel	未运行"
 			fi
+		elif [ "$ss_foreign_dns" == "5" ];then
+			[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
+			[ -n "$CHINADNS1" ] && echo "chinadns1	工作中	pid：$CHINADNS1" || echo "chinadns1	未运行"
 		fi
 	fi
 
