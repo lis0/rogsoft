@@ -322,8 +322,6 @@ function hideSSLoadingBar() {
 	x = -1;
 	E("LoadingBar").style.visibility = "hidden";
 	checkss = 0;
-	var action = db_ss["ss_basic_action"];
-	var oaction = db_ss["ss_online_action"];
 	refreshpage();
 }
 
@@ -335,7 +333,6 @@ function openssHint(itemNum) {
 		statusmenu = "如果发现开关不能开启，那么请检查<a href='Advanced_System_Content.asp'><u><font color='#00F'>系统管理 -- 系统设置</font></u></a>页面内Enable JFFS custom scripts and configs是否开启。";
 		_caption = "服务器说明";
 	}
-
 	if (itemNum == 0) {
 		width = "750px";
 		bgcolor = "#CC0066",
@@ -366,7 +363,6 @@ function openssHint(itemNum) {
 		_caption = "状态检测";
 		return overlib(statusmenu, OFFSETX, -460, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	}
-
 	if (itemNum == 1) {
 		width = "700px";
 		bgcolor = "#CC0066",
@@ -401,7 +397,6 @@ function openssHint(itemNum) {
 		_caption = "模式说明";
 		return overlib(statusmenu, OFFSETX, -860, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	} else if (itemNum == 2) {
-
 		statusmenu = "此处填入你的SS服务器的地址。</br>建议优先填入<font color='#F46'>IP地址</font>。填入域名，特别是一些服务商给的复杂域名，有时遇到无法解析会导致Problem detected!";
 		_caption = "服务器";
 	} else if (itemNum == 3) {
@@ -416,12 +411,6 @@ function openssHint(itemNum) {
 	} else if (itemNum == 6) {
 		statusmenu = "此处选择你希望UDP的通道。</br>很多游戏都走udp的初衷就是加速udp连接。</br>如果你到vps的udp链接较快，可以选择udp in udp，如果你的运营商封锁了udp，可以选择udp in tcp。";
 		_caption = "游戏模式V2 UDP通道";
-	} else if (itemNum == 7) {
-		statusmenu = "此处选择一次性验证(OTA)选项。</br><font color='#F46'>注意：</font>一次性验证需要服务器端开启支持，才能选择！</br>一般自己搭建原生SS服务器，建议开启此选项，OTA有抗重放攻击的能力。"
-		statusmenu += "</br>shadowsocks-libev和最新的shadowsocks-python服务器端都能支持OTA选项的开启。"
-		statusmenu += "</br>shadowsocksR服务器端也兼容OTA，你需要在服务端配置协议为verify_sha1_compatible，混淆可选择任意一个，但必须是兼容版的。"
-		statusmenu += "</br>更多信息，请参考<a href='https://shadowsocks.org/en/spec/one-time-auth.html' target='_blank'><u><font color='#00F'>一次性验证(OTA)</font></u></a>";
-		_caption = "一次性验证(OTA)";
 	} else if (itemNum == 8) {
 		statusmenu = "更多信息，请参考<a href='https://github.com/koolshare/shadowsocks-rss/blob/master/ssr.md' target='_blank'><u><font color='#00F'>ShadowsocksR 协议插件文档</font></u></a>"
 		_caption = "协议插件（protocol）";
@@ -487,9 +476,7 @@ function openssHint(itemNum) {
 		_caption = "导出恢复";
 	} else if (itemNum == 25) {
 		statusmenu = "<font color='#CC0066'>1&nbsp;&nbsp;在gfwlist模式下：</font>";
-		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;将用此处定义的国内DNS解析<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/gfwlist.conf' target='_blank'><u><font color='#00F'>gfwlist</font></u></a>以外的网址，包括全部国内网址和国外未被墙的网址。"
-		statusmenu += "</br></br><font color='#CC0066'>2&nbsp;&nbsp;在大陆白名单模式，游戏模式下：</font>";
-		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;将用此处定义的国内DNS将解析国内<a href='https://github.com/koolshare/koolshare.github.io' target='_blank'><font color='#00F'>2W+个域名（CDN名单）</font></a> 参与维护这个列表。"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;此处定义的国内DNS仅在dns2socks和ss-tunnel下有效，cdns和chinadns2因为自带了国内外cdn，所以不需要。"
 		_caption = "国内DNS";
 	} else if (itemNum == 26) {
 		width = "750px";
@@ -560,11 +547,6 @@ function openssHint(itemNum) {
 	} else if (itemNum == 42) {
 		statusmenu = "此处定义ss状态检测更新时间间隔，默认5秒。"
 		_caption = "状态更新间隔";
-	} else if (itemNum == 43) {
-		statusmenu = "chromecast功能能将所有来自局域网的DNS请求强行劫持到路由器自己的53端口上。"
-		statusmenu += "</br>如果你不能防止局域网中的别人自定义DNS服务器，那么未必防止DNS污染，可以开启此选项；"
-		statusmenu += "</br>开启后不管在电脑上定义什么DNS，都将会被劫持到你在路由器定义的DNS。"
-		_caption = "chromecast";
 	} else if (itemNum == 44) {
 		statusmenu = "shadowsocks规则更新包括了gfwlist模式中用到的<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/gfwlist.conf' target='_blank'><font color='#00F'><u>gfwlist</u></font></a>，在大陆白名单模式和游戏模式中用到的<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/chnroute.txt' target='_blank'><u><font color='#00F'>chnroute</font></u></a>和<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/cdn.txt' target='_blank'><u><font color='#00F'>国内cdn名单</font></u></a>"
 		statusmenu += "</br>建议更新时间在凌晨闲时进行，以避免更新时重启ss服务器造成网络访问问题。"
@@ -575,19 +557,6 @@ function openssHint(itemNum) {
 	} else if (itemNum == 46) {
 		statusmenu = "一些用户的网络拨号可能比较滞后，为了保证SS在路由器开机后能正常启动，可以通过此功能，为ss的启动增加开机延迟。"
 		_caption = "开机启动延迟";
-	} else if (itemNum == 50) {
-		statusmenu = "通过此开关，你可以开启或者关闭侧边栏面板上的shadowsocks入口;"
-		statusmenu += "</br>该开关在固件版本6.6.1（不包括6.6.1）以上起作用。"
-		_caption = "侧边栏开关";
-	} else if (itemNum == 52) {
-		statusmenu = "KCP协议，ss-libev混淆，负载均衡下均不支持UDP！"
-		statusmenu += "</br>请检查你是否启用了其中之一。"
-		_caption = "侧边栏开关";
-	} else if (itemNum == 53) {
-		statusmenu = "此处可以自定义你偏向使用的DNS解析方案"
-		statusmenu += "</br></br>国内优先：国外dns解析gfwlist名单内的国外域名，其余域名用国内dns解析，需要<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/gfwlist.conf' target='_blank'><u><font color='#00F'>gfwlist</font></u></a>，占用cpu较小，国内解析效果好。"
-		statusmenu += "</br></br>国外优先：国内dns解析cdn名单内的国内域名用，其余域名用国外dns解析，需要<a href='https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/cdn.txt' target='_blank'><u><font color='#00F'>国内cdn名单</font></u></a>，占用cpu较大，国外解析效果好。"
-		_caption = "侧边栏开关";
 	} else if (itemNum == 54) {
 		statusmenu = "更多信息，请参考<a href='https://breakwa11.blogspot.jp/2017/01/shadowsocksr-mu.html' target='_blank'><u><font color='#00F'>ShadowsocksR 协议参数文档</font></u></a>"
 		_caption = "协议参数（protocol）";

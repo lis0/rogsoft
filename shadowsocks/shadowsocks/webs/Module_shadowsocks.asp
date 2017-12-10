@@ -1365,7 +1365,6 @@ function updatelist(arg) {
 	dbus["ss_basic_gfwlist_update"] = E("ss_basic_gfwlist_update").checked ? '1' : '0';
 	dbus["ss_basic_chnroute_update"] = E("ss_basic_chnroute_update").checked ? '1' : '0';
 	dbus["ss_basic_cdn_update"] = E("ss_basic_cdn_update").checked ? '1' : '0';
-	dbus["ss_basic_pcap_update"] = E("ss_basic_pcap_update").checked ? '1' : '0';
 	push_data("ss_rule_update.sh", arg,  dbus);
 }
 
