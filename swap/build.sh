@@ -2,7 +2,7 @@
 
 
 MODULE=swap
-VERSION=1.2
+VERSION=1.3
 TITLE=虚拟内存
 DESCRIPTION=""
 HOME_URL=Module_swap.asp

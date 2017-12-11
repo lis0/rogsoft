@@ -85,7 +85,7 @@ start_make(){
 			exit
 		fi
 	fi
-	echo_date "日志窗口将在10秒内自动关闭，鼠标点击日志串口将停止倒计时~"
+	echo_date "日志窗口将在10秒内自动关闭，鼠标点击日志窗口将停止倒计时~"
 	echo XU6J03M6
 }
 
