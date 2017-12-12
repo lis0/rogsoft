@@ -432,7 +432,7 @@ start_dns(){
 
 	if [ "$ss_foreign_dns" == "2" ]; then
 		echo_date 开启chinadns2，用于dns解析...
-		public_ip=`/koolshare/bin/curl --connect-timeout 4 -s 'http://members.3322.org/dyndns/getip'`
+		public_ip=`url --connect-timeout 4 -s 'http://members.3322.org/dyndns/getip'`
 		if [ "$?" == "0" ] && [ -n "$public_ip" ];then
 			dbus set ss_basic_publicip="$public_ip"
 			clinet_ip=$public_ip
