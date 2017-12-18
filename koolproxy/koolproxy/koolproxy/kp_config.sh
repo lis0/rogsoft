@@ -258,6 +258,7 @@ start)
 		load_nat >> /tmp/syslog.log
 		dns_takeover >> /tmp/syslog.log
 		write_reboot_job >> /tmp/syslog.log
+		[ ! -f "/tmp/koolprxoy.nat_lock" ] && exit
 	else
 		logger "[软件中心]: koolproxy插件未开启，不启动！"
 	fi
