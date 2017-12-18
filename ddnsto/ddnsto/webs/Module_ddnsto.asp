@@ -336,7 +336,7 @@ function reload_Soft_Center(){
                                             <tr>
                                                 <th>ddnsto Token</th>
                                                 <td>
-                                                    <input style="width:300px;background-image: none;background-color: #576d73;border:1px solid gray" type="text" class="input_ss_table" id="ddnsto_token" name="ddnsto_token" maxlength="100" value="">
+                                                    <input style="width:300px;" type="text" class="input_ss_table" id="ddnsto_token" name="ddnsto_token" maxlength="100" value="">
                                                 </td>
                                             </tr>
                                             <tr id="rule_update_switch">
