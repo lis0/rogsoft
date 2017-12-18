@@ -1332,6 +1332,7 @@ start)
 		set_ulimit >> /tmp/syslog.log
 		apply_ss >> /tmp/syslog.log
     	write_numbers >> /tmp/syslog.log
+		[ ! -f "/tmp/shadowsocks.nat_lock" ] && touch /tmp/shadowsocks.nat_lock
 	else
 		logger "[软件中心]: 科学上网插件未开启，不启动！"
 	fi

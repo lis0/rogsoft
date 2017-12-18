@@ -1,5 +1,9 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+1.1.3
+   - fix	修复开机后nat可能不加载的问题。
+   - add	添加GT-AC5300支持。
+
 1.0.9 - 1.1.2
    - fix	修复kcptun重启失败。
    - fix	修复chinadns2某些情况下开启失败的问题。
