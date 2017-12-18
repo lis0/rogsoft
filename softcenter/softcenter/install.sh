@@ -1,5 +1,7 @@
 #!/bin/sh
 
+MODEL=`nvram get model`
+
 softcenter_install() {
 	if [ -d "/tmp/softcenter" ]; then
 		# make some folders
@@ -15,6 +17,10 @@ softcenter_install() {
 		# coping files
 		cp -rf /tmp/softcenter/webs/* /koolshare/webs/
 		cp -rf /tmp/softcenter/res/* /koolshare/res/
+		if [ "$MODEL" == "GT-AC5300" ];then
+			cp -rf /tmp/softcenter/GT-AC5300/webs/* /koolshare/webs/
+			cp -rf /tmp/softcenter/GT-AC5300/res/* /koolshare/res/
+		fi
 		cp -rf /tmp/softcenter/init.d/* /koolshare/init.d/
 		cp -rf /tmp/softcenter/bin/* /koolshare/bin/
 		cp -rf /tmp/softcenter/perp /koolshare/
@@ -22,10 +28,10 @@ softcenter_install() {
 
 		# make some link
 		[ ! -L "/koolshare/bin/base64_decode" ] && ln -sf /koolshare/bin/base64_encode /koolshare/bin/base64_decode
-		[ ! -L "/koolshare/bin/base64" ] && rm -rf /koolshare/bin/base64
 		[ ! -L "/koolshare/scripts/ks_app_remove.sh" ] && ln -sf /koolshare/scripts/ks_app_install.sh /koolshare/scripts/ks_app_remove.sh
 		[ ! -L "/jffs/.asusrouter" ] && ln -sf /koolshare/bin/kscore.sh /jffs/.asusrouter
 		[ ! -L "/jffs/configs/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/configs/profile
+		[ -L "/koolshare/bin/base64" ] && rm -rf /koolshare/bin/base64
 
 		chmod 755 /koolshare/bin/*
 		chmod 755 /koolshare/init.d/*

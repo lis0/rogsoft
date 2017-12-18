@@ -130,14 +130,15 @@ input[type=button]:focus {
 	border-right: 1px solid #000;
 }
 .show-install-btn, .show-uninstall-btn {
-	border: none;
-	background: #444;
+	border: 1px solid #91071f;
+	background: none;
 	color: #fff;
 	padding: 10px 20px;
 	border-radius: 5px 5px 0px 0px;
 }
 .active {
-	background: #444f53;
+	background: #91071f;
+	border: 1px solid #91071f;
 }
 .install-status-1 .uninstall-btn {
 	display: block;
@@ -659,15 +660,15 @@ function notice_show() {
 	                            <div>
 	                                <table width="760px" border="0" cellpadding="5" cellspacing="0" bordercolor="#6b8fa3" class="FormTitle" id="FormTitle">
 	                                    <tr>
-	                                        <td bgcolor="#4D595D" colspan="3" valign="top">
+	                                        <td colspan="3" valign="top">
 	                                            <div>&nbsp;</div>
 	                                            <div class="formfonttitle">Software Center <% nvram_get("model"); %></div>
 	                                            <div style="margin-left:5px;margin-top:5px;margin-bottom:5px"><img src="/images/New_ui/export/line_export.png"></div>
 	                                                <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" >
 	                                                </table>
 	                                                <table width="100%" height="150px" style="border-collapse:collapse;">
-	                                                    <tr bgcolor="#444f53">
-	                                                        <td colspan="5" bgcolor="#444f53" class="cloud_main_radius">
+	                                                    <tr>
+	                                                        <td colspan="5" class="cloud_main_radius">
 	                                                            <div style="padding:10px;width:95%;font-style:italic;font-size:14px;">
 	                                                                <br/><br/>
 	                                                                <table width="100%" >
@@ -704,7 +705,7 @@ function notice_show() {
 	                                                        <td colspan="3"></td>
 	                                                    </tr>
 	
-	                                                    <tr bgcolor="#444f53" id="install_status" style="display: none;" width="235px">
+	                                                    <tr id="install_status" style="display: none;" width="235px">
 	                                                        <td>
 	                                                            <div style="padding:10px;width:95%;font-size:14px;" id="appInstallInfo">
 	                                                            </div>
@@ -722,8 +723,8 @@ function notice_show() {
 	                                                        </td>
 	                                                    </tr>
 	
-	                                                    <tr bgcolor="#444f53" width="235px">
-	                                                        <td colspan="4" id="IconContainer">
+	                                                    <tr width="235px">
+	                                                        <td colspan="4" id="IconContainer" style="border: 1px solid #91071f;">
 	                                                            <div style="text-align:center; line-height: 4em;">更新中...</div>
 	                                                        </td>
 	                                                    </tr>
