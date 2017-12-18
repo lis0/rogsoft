@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source /usr/sbin/helper.sh
+source /koolshare/bin/helper.sh
 CONFIG=$1
 
 ss_dns_china=`dbus get ss_dns_china`
