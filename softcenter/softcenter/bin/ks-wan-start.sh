@@ -21,13 +21,13 @@ do
             #set $1
             logger "plugin_log_1 $i"
             if [ -r "$i" ]; then
-            . $i $ACTION
+            $i $ACTION
             fi
             ;;
         *)
             # No sh extension, so fork subprocess.
             logger "plugin_log_2 $i"
-            $i $ACTION
+            . $i $ACTION
             ;;
     esac
 done
