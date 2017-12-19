@@ -77,7 +77,7 @@ remove_reboot_job(){
 creat_ipset(){
 	xt=`lsmod | grep xt_set`
 	OS=$(uname -r)
-	if [ -z "$xt" ];then
+	if [ -z "$xt" ] && [ -f "/lib/modules/${OS}/kernel/net/netfilter/xt_set.ko" ];then
 		echo_date "加载xt_set.ko内核模块！"
 		insmod /lib/modules/${OS}/kernel/net/netfilter/xt_set.ko
 	fi
@@ -184,7 +184,6 @@ load_nat(){
 	    i=$(($i-1))
 	    if [ "$i" -lt 1 ];then
 	        echo_date "错误：不能正确加载nat规则!"
-	        exit
 	    fi
 	    sleep 1
 	done
@@ -258,7 +257,7 @@ start)
 		load_nat >> /tmp/syslog.log
 		dns_takeover >> /tmp/syslog.log
 		write_reboot_job >> /tmp/syslog.log
-		[ ! -f "/tmp/koolprxoy.nat_lock" ] && exit
+		[ ! -f "/tmp/koolprxoy.nat_lock" ] && touch /tmp/koolprxoy.nat_lock
 	else
 		logger "[软件中心]: koolproxy插件未开启，不启动！"
 	fi
