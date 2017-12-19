@@ -1,6 +1,7 @@
 #! /bin/sh
 source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy`
+MODEL=`nvram get model`
 
 # stop first
 [ "$koolproxy_enable" == "1" ] && sh /koolshare/koolproxy/kp_config.sh stop
@@ -26,6 +27,10 @@ mkdir -p /koolshare/koolproxy/data
 cp -rf /tmp/koolproxy/scripts/* /koolshare/scripts/
 cp -rf /tmp/koolproxy/webs/* /koolshare/webs/
 cp -rf /tmp/koolproxy/res/* /koolshare/res/
+if [ "$MODEL" == "GT-AC5300" ];then
+	cp -rf /tmp/koolproxy/GT-AC5300/webs/* /koolshare/webs/
+	cp -rf /tmp/koolproxy/GT-AC5300/res/* /koolshare/res/
+fi
 if [ ! -f /koolshare/koolproxy/data/rules/user.txt ];then
 	cp -rf /tmp/koolproxy/koolproxy /koolshare/
 else
