@@ -1,13 +1,19 @@
 #!/bin/sh
-
+source $KSROOT/scripts/base.sh
+eval `dbus export koolproxy`
 MODULE=ddnsto
 title="DDNSTO远程控制"
 VERSION="2.2"
+MODEL=`nvram get model`
+
 cd /
 rm -rf /koolshare/init.d/S70ddnsto.sh
 cp -rf /tmp/$MODULE/bin/* /koolshare/bin/
 cp -rf /tmp/$MODULE/scripts/* /koolshare/scripts/
 cp -rf /tmp/$MODULE/webs/* /koolshare/webs/
+if [ "$MODEL" == "GT-AC5300" ];then
+	cp -rf /tmp/$MODULE/GT-AC5300/webs/* /koolshare/webs/
+fi
 cp -rf /tmp/$MODULE/res/* /koolshare/res/
 cp -rf /tmp/$MODULE/init.d/* /koolshare/init.d/
 cp -rf /tmp/$MODULE/uninstall.sh /koolshare/scripts/uninstall_ddnsto.sh
@@ -26,8 +32,7 @@ dbus set softcenter_module_ddnsto_install=1
 dbus set softcenter_module_ddnsto_name=${MODULE}
 dbus set softcenter_module_ddnsto_title="ddnsto远程控制"
 dbus set softcenter_module_ddnsto_description="ddnsto：koolshare小宝开发的基于http2的远程控制，仅支持远程管理路由器+nas+windows远程桌面。"
-str_ddnsto_token=`dbus get ddnsto_token`
-if [[ "${str_ddnsto_token}" == "" ]]; then
+if [ -z "$ddnsto_token" ]; then
     dbus set ddnsto_enable="0"
     dbus remove ddnsto_password
     dbus remove ddnsto_name
