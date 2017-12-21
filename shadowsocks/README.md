@@ -1,4 +1,4 @@
-### merlin科学上网插件 for AM382 4.1.27内核 非ROG皮肤版本
+### merlin科学上网插件 for AM382 4.1.27内核
 ***
 ##### 此项目仅用于merlin koolshare ARM架构，AM382代码，内核为4.1.27且为非ROG皮肤的改版固件</b><br/>
 - **shadowsocks/ss**：该文件夹用于存放shadowsocks相关脚本和规则文件：
@@ -6,6 +6,7 @@
 - **shadowsocks/res**：该文件夹用于存放科学上网插件相关的网页元素，如js，css等。
 - **shadowsocks/bin**：该文件夹用于存放shadowsocks的二进制文件。
 - **shadowsocks/scripts**：该文件夹用于存放web调用的脚本文件。
+- **shadowsocks/GT-AC5300**：该文件夹用于存放ROG皮肤的网页或css文件，用于GT-AC5300机器上。
 - **history**：存放插件历史安装包，需要回滚历史版本的，可以下载对应版本，然后手动安装。
 - **version**：在线版本号和shadowsocks.tar.gz的md5校验值，用于判断更新。
 - **shadowsocks.tar.gz**：shadowsocks文件夹的打包，插件最新版本的包，插件内置的在线更新访问此文件的[链接 ](https://raw.githubusercontent.com/koolshare/koolshare.github.io/master/shadowsocks/shadowsocks.tar.gz) 获取安装包更新。
