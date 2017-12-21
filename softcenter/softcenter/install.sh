@@ -7,6 +7,7 @@ softcenter_install() {
 		# make some folders
 		mkdir -p /jffs/configs/dnsmasq.d
 		mkdir -p /jffs/scripts
+		mkdir -p /jffs/etc
 		mkdir -p /koolshare/bin/
 		mkdir -p /koolshare/init.d/
 		mkdir -p /koolshare/scripts/
@@ -14,6 +15,11 @@ softcenter_install() {
 		mkdir -p /koolshare/webs/
 		mkdir -p /koolshare/res/
 		mkdir -p /tmp/upload
+		# remoce useless files
+		[ -L "/jffs/configs/profile" ] && rm -rf /jffs/configs/profile
+		[ -L "/koolshare/webs/files" ] && rm -rf /koolshare/webs/files
+		[ -d "/tmp/files" ] && rm -rf /tmp/files
+		
 		# coping files
 		cp -rf /tmp/softcenter/webs/* /koolshare/webs/
 		cp -rf /tmp/softcenter/res/* /koolshare/res/
@@ -30,9 +36,12 @@ softcenter_install() {
 		[ ! -L "/koolshare/bin/base64_decode" ] && ln -sf /koolshare/bin/base64_encode /koolshare/bin/base64_decode
 		[ ! -L "/koolshare/scripts/ks_app_remove.sh" ] && ln -sf /koolshare/scripts/ks_app_install.sh /koolshare/scripts/ks_app_remove.sh
 		[ ! -L "/jffs/.asusrouter" ] && ln -sf /koolshare/bin/kscore.sh /jffs/.asusrouter
-		[ ! -L "/jffs/configs/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/configs/profile
 		[ -L "/koolshare/bin/base64" ] && rm -rf /koolshare/bin/base64
-
+		if [ "$MODEL" == "GT-AC5300" ];then
+			[ ! -L "/jffs/etc/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/etc/profile
+		else
+			[ ! -L "/jffs/configs/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/configs/profile
+		fi
 		chmod 755 /koolshare/bin/*
 		chmod 755 /koolshare/init.d/*
 		chmod 755 /koolshare/perp/*
@@ -44,20 +53,38 @@ softcenter_install() {
 
 		# remove install package
 		rm -rf /tmp/softcenter
-		# creat wan-start and nat-start when not exist
+		# creat wan-start nat-start post-mount
 		if [ ! -f "/jffs/scripts/wan-start" ];then
 			cat > /jffs/scripts/wan-start <<-EOF
 			#!/bin/sh
 			/koolshare/bin/ks-wan-start.sh start
 			EOF
 			chmod +x /jffs/scripts/wan-start
+		else
+			STARTCOMAND1=`cat /jffs/scripts/wan-start | grep "/koolshare/bin/ks-wan-start.sh start'"`
+			[ -z "$STARTCOMAND1" ] && sed -i '1a /koolshare/bin/ks-wan-start.sh start' /jffs/scripts/wan-start
 		fi
+		
 		if [ ! -f "/jffs/scripts/nat-start" ];then
 			cat > /jffs/scripts/nat-start <<-EOF
 			#!/bin/sh
 			/koolshare/bin/ks-nat-start.sh start_nat
 			EOF
 			chmod +x /jffs/scripts/nat-start
+		else
+			STARTCOMAND2=`cat /jffs/scripts/nat-start | grep "/koolshare/bin/ks-nat-start.sh start"`
+			[ -z "$STARTCOMAND2" ] && sed -i '1a /koolshare/bin/ks-nat-start.sh start' /jffs/scripts/nat-start
+		fi
+		
+		if [ ! -f "/jffs/scripts/post-mount" ];then
+			cat > /jffs/scripts/post-mount <<-EOF
+			#!/bin/sh
+			/koolshare/bin/ks-mount-start.sh start
+			EOF
+			chmod +x /jffs/scripts/post-mount
+		else
+			STARTCOMAND2=`cat /jffs/scripts/post-mount | grep "/koolshare/bin/ks-mount-start.sh start"`
+			[ -z "$STARTCOMAND2" ] && sed -i '1a /koolshare/bin/ks-mount-start.sh start' /jffs/scripts/post-mount
 		fi
 
 		# now try to reboot httpdb if httpdb not started

@@ -15,7 +15,7 @@ if [ ! -f "/jffs/scripts/wan-start" ];then
 	EOF
 	chmod +x /jffs/scripts/wan-start
 else
-	STARTCOMAND1=`cat /jffs/scripts/wan-start | grep ks-wan-start`
+	STARTCOMAND1=`cat /jffs/scripts/wan-start | grep "/koolshare/bin/ks-wan-start.sh start'"`
 	[ -z "$STARTCOMAND1" ] && sed -i '1a /koolshare/bin/ks-wan-start.sh start' /jffs/scripts/wan-start
 fi
 
@@ -26,8 +26,8 @@ if [ ! -f "/jffs/scripts/nat-start" ];then
 	EOF
 	chmod +x /jffs/scripts/nat-start
 else
-	STARTCOMAND2=`cat /jffs/scripts/nat-start | grep ks-nat-start`
-	[ -z "$STARTCOMAND2" ] && sed -i '1a /koolshare/bin/ks-nat-start.sh start_nat' /jffs/scripts/nat-start
+	STARTCOMAND2=`cat /jffs/scripts/nat-start | grep "/koolshare/bin/ks-nat-start.sh start"`
+	[ -z "$STARTCOMAND2" ] && sed -i '1a /koolshare/bin/ks-nat-start.sh start' /jffs/scripts/nat-start
 fi
 
 if [ ! -f "/jffs/scripts/post-mount" ];then
@@ -37,7 +37,7 @@ if [ ! -f "/jffs/scripts/post-mount" ];then
 	EOF
 	chmod +x /jffs/scripts/post-mount
 else
-	STARTCOMAND2=`cat /jffs/scripts/post-mount | grep ks-mount-start`
+	STARTCOMAND2=`cat /jffs/scripts/post-mount | grep "/koolshare/bin/ks-mount-start.sh start"`
 	[ -z "$STARTCOMAND2" ] && sed -i '1a /koolshare/bin/ks-mount-start.sh start' /jffs/scripts/post-mount
 fi
 #============================================
