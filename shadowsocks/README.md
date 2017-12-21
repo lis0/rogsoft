@@ -18,7 +18,7 @@ tar -zxvf /tmp/shadowsocks.tar.gz
 sh /tmp/shadowsocks/install.sh
 ```
 
-#### 插件手动更新（历时版本，1.0.0为例）： 
+#### 插件手动更新（历史版本，1.0.0为例）： 
 
 ```bash
 cd /tmp
