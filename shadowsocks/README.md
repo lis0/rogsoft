@@ -11,7 +11,17 @@
 - **version**：在线版本号和shadowsocks.tar.gz的md5校验值，用于判断更新。
 - **shadowsocks.tar.gz**：shadowsocks文件夹的打包，插件最新版本的包，插件内置的在线更新访问此文件的[链接 ](https://raw.githubusercontent.com/koolshare/koolshare.github.io/master/shadowsocks/shadowsocks.tar.gz) 获取安装包更新。
 
-#### 插件手动更新（最新版）：
+#### 科学上网插件安装方法
+由于因为政策原因，该插件不能在软件中心上架，所以需要手动安装，提供以下方法：
+
+#### 离线安装
+1. [下载最新安装包](https://raw.githubusercontent.com/koolshare/koolshare.github.io/master/shadowsocks/shadowsocks.tar.gz)
+2. 确保安装包的名字为shadowsocks.tar.gz
+3. 在软件中心顶部找到离线安装标签页，点击进入离线安装页面
+4. 上传并完成离线安装
+
+#### ssh安装科学上网插件最新版
+用ssh客户端登陆路由器后输入以下命令：
 ```bash
 cd /tmp
 wget --no-check-certificate https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks/shadowsocks.tar.gz
@@ -19,8 +29,8 @@ tar -zxvf /tmp/shadowsocks.tar.gz
 sh /tmp/shadowsocks/install.sh
 ```
 
-#### 插件手动更新（历史版本，1.0.0为例）： 
-
+#### ssh安装科学上网插件历史版本（1.0.0为例）： 
+用ssh客户端登陆路由器后输入以下命令：
 ```bash
 cd /tmp
 wget --no-check-certificate https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks/history/shadowsocks_1.0.0.tar.gz
@@ -28,8 +38,7 @@ tar -zxvf /tmp/shadowsocks.tar.gz
 sh /tmp/shadowsocks/install.sh
 ```
 
-<b>怎样提交修改</b>
-###### 需要再次说明的是，ss的在线更新是通过请求shadowsocks.tar.gz文件进行的，如果你有发现bug，并希望提交你的更改，需要做以下几点：<br/>
+###### 如果你有发现bug，并希望提交你的更改，需要做以下几点：<br/>
 1. 发现bug，修改需要修改的文件；<br/>
 2. 更新shadowsocks/ss/version，更新版本号；<br/>
 3. 修改Changelog.txt文件，添加更新日志；<br/>
