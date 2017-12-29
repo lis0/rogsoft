@@ -1,6 +1,6 @@
 ### merlin科学上网插件 for AM382 4.1.27内核
 ***
-##### 此项目仅用于merlin koolshare ARM架构，AM382代码，内核为4.1.27且为非ROG皮肤的改版固件</b><br/>
+##### 此插件适用于ARM架构，AM382代码，内核为4.1.27的梅林固件（86U），和GT-AC5300的官改固件</b><br/>
 - **shadowsocks/ss**：该文件夹用于存放shadowsocks相关脚本和规则文件：
 - **shadowsocks/webs**：该文件夹用于存放shadowsocks的网页。
 - **shadowsocks/res**：该文件夹用于存放科学上网插件相关的网页元素，如js，css等。
