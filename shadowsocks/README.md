@@ -11,6 +11,7 @@
 - **version**：在线版本号和shadowsocks.tar.gz的md5校验值，用于判断更新。
 - **shadowsocks.tar.gz**：shadowsocks文件夹的打包，插件最新版本的包，插件内置的在线更新访问此文件的[链接 ](https://raw.githubusercontent.com/koolshare/koolshare.github.io/master/shadowsocks/shadowsocks.tar.gz) 获取安装包更新。
 
+---
 #### 科学上网插件安装方法
 由于因为政策原因，该插件不能在软件中心上架，所以需要手动安装，提供以下方法：
 
@@ -37,8 +38,8 @@ wget --no-check-certificate https://raw.githubusercontent.com/koolshare/rogsoft/
 tar -zxvf /tmp/shadowsocks.tar.gz
 sh /tmp/shadowsocks/install.sh
 ```
-
-##### 如果你有发现bug，并希望提交你的更改，需要做以下几点：<br/>
+---
+#### 如果你有发现bug，并希望提交你的更改，需要做以下几点：<br/>
 1. 发现bug，修改需要修改的文件；<br/>
 2. 更新shadowsocks/ss/version，更新版本号；<br/>
 3. 修改Changelog.txt文件，添加更新日志；<br/>
