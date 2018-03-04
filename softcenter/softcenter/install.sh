@@ -62,7 +62,7 @@ softcenter_install() {
 			chmod +x /jffs/scripts/wan-start
 		else
 			STARTCOMAND1=`cat /jffs/scripts/wan-start | grep -c "/koolshare/bin/ks-wan-start.sh start"`
-			[ "$STARTCOMAND1" -gt "1" ] && sed -i '/ks-wan-start.sh/d' /jffs/scripts/wan-start
+			[ "$STARTCOMAND1" -gt "1" ] && sed -i '/ks-wan-start.sh/d' /jffs/scripts/wan-start && sed -i '1a /koolshare/bin/ks-wan-start.sh start' /jffs/scripts/wan-start
 			[ "$STARTCOMAND1" == "0" ] && sed -i '1a /koolshare/bin/ks-wan-start.sh start' /jffs/scripts/wan-start
 		fi
 		
@@ -74,7 +74,7 @@ softcenter_install() {
 			chmod +x /jffs/scripts/nat-start
 		else
 			STARTCOMAND2=`cat /jffs/scripts/nat-start | grep -c "/koolshare/bin/ks-nat-start.sh start"`
-			[ "$STARTCOMAND2" -gt "1" ] && sed -i '/ks-nat-start.sh/d' /jffs/scripts/nat-start
+			[ "$STARTCOMAND2" -gt "1" ] && sed -i '/ks-nat-start.sh/d' /jffs/scripts/nat-start && sed -i '1a /koolshare/bin/ks-nat-start.sh start' /jffs/scripts/nat-start
 			[ "$STARTCOMAND2" == "0" ] && sed -i '1a /koolshare/bin/ks-nat-start.sh start' /jffs/scripts/nat-start
 		fi
 		
