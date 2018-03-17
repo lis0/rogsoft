@@ -76,10 +76,21 @@
             "tar_url": "swap/swap.tar.gz", 
             "title": "虚拟内存", 
             "version": "1.3"
+        }, 
+        {
+            "build_date": "2017-12-19_10:29:25", 
+            "changelog": "", 
+            "description": "科学上网", 
+            "home_url": "Module_shadowsocks.asp", 
+            "md5": "0d96775d1cea2b75edeb47af5cfc2974", 
+            "name": "shadowsocks", 
+            "tar_url": "shadowsocks/shadowsocks.tar.gz", 
+            "title": "科学上网", 
+            "version": "1.1.6"
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "d55ac325bbe3d183b10212ad4eecda09", 
+    "md5": "ba00cb7522c2413c9dc5cffad67b05ca", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.2.5"
 }
