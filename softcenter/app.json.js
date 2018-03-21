@@ -34,6 +34,17 @@
             "version": "1.2"
         }, 
         {
+            "build_date": "2018-03-21_18:20:04", 
+            "changelog": "", 
+            "description": "aliddns", 
+            "home_url": "Module_aliddns.asp", 
+            "md5": "e3341c29f729470a5e639db8b531eaf4", 
+            "name": "aliddns", 
+            "tar_url": "aliddns/aliddns.tar.gz", 
+            "title": "阿里DDNS", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2017-11-29_19:43:32", 
             "changelog": "", 
             "description": "中文SSID，装逼利器！", 
@@ -101,7 +112,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "b1dfdc8a2cfa1bfae91c2278f3c0a68a", 
+    "md5": "a8ec660c1dafb1a6a5d2a198260b8812", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.2.5"
 }
