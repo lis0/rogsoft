@@ -56,6 +56,17 @@
             "version": "2.2"
         }, 
         {
+            "build_date": "2018-03-21_12:28:38", 
+            "changelog": "", 
+            "description": "ss-server", 
+            "home_url": "Module_ssserver.asp", 
+            "md5": "3c2f6af19281a87cb13ee36e642cce57", 
+            "name": "ssserver", 
+            "tar_url": "ssserver/ssserver.tar.gz", 
+            "title": "ss-server", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2017-12-19_19:08:14", 
             "changelog": "", 
             "description": "ddnsto内网穿透", 
@@ -90,7 +101,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "ba00cb7522c2413c9dc5cffad67b05ca", 
+    "md5": "b1dfdc8a2cfa1bfae91c2278f3c0a68a", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.2.5"
 }
