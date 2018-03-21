@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" href="ParentalControl.css">
 <link rel="stylesheet" type="text/css" href="css/icon.css">
 <link rel="stylesheet" type="text/css" href="css/element.css">
-<link rel="stylesheet" type="text/css" href="res/shadowsocks.css">
+<link rel="stylesheet" type="text/css" href="res/softcenter.css">
 <script type="text/javascript" src="/state.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
 <script type="text/javascript" src="/help.js"></script>
