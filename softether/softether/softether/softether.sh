@@ -6,16 +6,6 @@ eval `dbus export softether`
 source /koolshare/scripts/base.sh
 export PERP_BASE=/koolshare/perp
 
-
-creat_start_up(){
-	echo $(date): 加入开机自动启动...
-	rm -rf /koolshare/init.d/S82SoftEther.sh
-	#for wan start
-	ln -sf /koolshare/softether/softether.sh /koolshare/init.d/S82SoftEther.sh
-	#for nat start
-	ln -sf /koolshare/softether/softether.sh /koolshare/init.d/N82SoftEther.sh
-}
-
 open_port(){
 	ifopen=`iptables -S -t filter | grep INPUT | grep dport |grep 1701`
 	if [ -z "$ifopen" ];then
@@ -49,7 +39,7 @@ start)
 	if [ "$softether_enable" == "1" ]; then
 		logger "[软件中心]: 启动softetherVPN！"
 		modprobe tun
-		/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver start >/dev/null 2>&1
+		/koolshare/softether/vpnserver start >/dev/null 2>&1
 		i=120
 		until [ ! -z "$tap" ]
 		do
@@ -70,7 +60,7 @@ start)
 	fi
 	;;
 restart)
-	/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver stop >/dev/null 2>&1
+	/koolshare/softether/vpnserver stop >/dev/null 2>&1
 	pid=`pidof vpnserver`
 	if [ ! -z "$pid" ];then
 		kill -9 $pid
@@ -80,7 +70,7 @@ restart)
 	if [ -z "$mod" ];then
 		modprobe tun
 	fi
-	/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver start >/dev/null 2>&1
+	/koolshare/softether/vpnserver start >/dev/null 2>&1
 	
 	i=180
 	until [ ! -z "$tap" ]
@@ -97,13 +87,10 @@ restart)
 	brctl addif br0 $tap
 	echo interface=tap_vpn > /jffs/configs/dnsmasq.d/softether.conf
 	service restart_dnsmasq
-	creat_start_up
 	;;
 stop)
-	/usr/bin/env LANG=en_US.UTF-8 /koolshare/softether/vpnserver stop
+	/koolshare/softether/vpnserver stop
 	close_port
-	rm -rf /koolshare/init.d/S82SoftEther.sh
-	rm -rf /koolshare/init.d/N82SoftEther.sh
 	rm -rf /jffs/configs/dnsmasq.d/softether.conf
 	service restart_dnsmasq
 	;;
