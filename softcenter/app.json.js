@@ -34,15 +34,15 @@
             "version": "1.4"
         }, 
         {
-            "build_date": "2018-03-30_01:40:10", 
+            "build_date": "2018-03-30_01:42:51", 
             "changelog": "", 
             "description": "linux下载利器", 
             "home_url": "Module_aria2.asp", 
-            "md5": "94e4984d9e1de16b2695f0cd7829e59e", 
+            "md5": "15507b084aaa8f6cc88bdf7c3e6aa61a", 
             "name": "aria2", 
             "tar_url": "aria2/aria2.tar.gz", 
             "title": "aria2", 
-            "version": "1.0"
+            "version": "1.1"
         }, 
         {
             "build_date": "2018-03-21_18:20:04", 
