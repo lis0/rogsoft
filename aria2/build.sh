@@ -1,7 +1,7 @@
 #!/bin/sh
 
 MODULE=aria2
-VERSION=1.3
+VERSION=1.4
 TITLE=aria2
 DESCRIPTION="linux下载利器"
 HOME_URL="Module_aria2.asp"

@@ -232,6 +232,7 @@ function buildswitch() {
 			$('.show-btn2').removeClass('active');
 			$('.show-btn3').removeClass('active');
 			$('.show-btn4').removeClass('active');
+			$('.show-btn5').removeClass('active');
 		} else {
 			db_aria2_["aria2_enable"] = 0;
 			E('aria2-webui').style.display = "none";
@@ -355,7 +356,7 @@ function toggle_func() {
 			$('.show-btn3').addClass('active');
 			$('.show-btn4').removeClass('active');
 			$('.show-btn5').removeClass('active');
-			E("aria2_base_tabe").style.display = "none";
+			E("aria2_base_table").style.display = "none";
 			E("aria2_rpc_table").style.display = "none";
 			E("aria2_limit_table").style.display = "";
 			E("aria2_bt_table").style.display = "none";

@@ -23,7 +23,7 @@ chmod +x /koolshare/scripts/uninstall_aria2.sh
 [ ! -L "/koolshare/init.d/M99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/M99Aria2.sh
 [ ! -L "/koolshare/init.d/N99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/N99Aria2.sh
 
-dbus set aria2_version="1.3"
+dbus set aria2_version="1.4"
 dbus set softcenter_module_aria2_install=1
 dbus set softcenter_module_aria2_name="aria2"
 dbus set softcenter_module_aria2_title="aria2"
