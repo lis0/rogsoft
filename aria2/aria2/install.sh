@@ -5,7 +5,7 @@ MODEL=`nvram get model`
 aria2_enable=`dbus get aria2_enable`
 
 if [ "$aria2_enable" == "1" ];then
-	[ -f "/koolshare/scripts/aria2_config.sh"] && sh /koolshare/scripts/aria2_config.sh stop
+	[ -f "/koolshare/scripts/aria2_config.sh" ] && sh /koolshare/scripts/aria2_config.sh stop
 fi
 
 cp -rf /tmp/aria2/bin/* /koolshare/bin/
@@ -20,10 +20,10 @@ rm -fr /tmp/aria2* >/dev/null 2>&1
 chmod +x /koolshare/bin/*
 chmod +x /koolshare/scripts/aria2*.sh
 chmod +x /koolshare/scripts/uninstall_aria2.sh
-[ !-L "/koolshare/init.d/M99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/M99Aria2.sh
-[ !-L "/koolshare/init.d/N99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/N99Aria2.sh
+[ ! -L "/koolshare/init.d/M99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/M99Aria2.sh
+[ ! -L "/koolshare/init.d/N99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/N99Aria2.sh
 
-dbus set aria2_version="1.1"
+dbus set aria2_version="1.2"
 dbus set softcenter_module_aria2_install=1
 dbus set softcenter_module_aria2_name="aria2"
 dbus set softcenter_module_aria2_title="aria2"
@@ -31,6 +31,6 @@ dbus set softcenter_module_aria2_description="linux下载利器"
 sleep 1
 
 if [ "$aria2_enable" == "1" ];then
-	[ -f "/koolshare/scripts/aria2_config.sh"] && sh /koolshare/scripts/aria2_config.sh start
+	[ -f "/koolshare/scripts/aria2_config.sh" ] && sh /koolshare/scripts/aria2_config.sh start
 fi
 
