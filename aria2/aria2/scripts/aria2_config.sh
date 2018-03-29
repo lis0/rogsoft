@@ -12,9 +12,9 @@ perpare(){
 			dbus set aria2_dir="/tmp"
 		fi
 	fi
-	[ !-f "/koolshare/aria2/aria2.session" ] && touch /koolshare/aria2/aria2.session
-	[ !-L "/koolshare/init.d/M99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/M99Aria2.sh
-	[ !-L "/koolshare/init.d/N99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/N99Aria2.sh
+	[ ! -f "/koolshare/aria2/aria2.session" ] && touch /koolshare/aria2/aria2.session
+	[ ! -L "/koolshare/init.d/M99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/M99Aria2.sh
+	[ ! -L "/koolshare/init.d/N99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/N99Aria2.sh
 	
 	sleep 1
 
