@@ -34,6 +34,17 @@
             "version": "1.4"
         }, 
         {
+            "build_date": "2018-03-30_01:40:10", 
+            "changelog": "", 
+            "description": "linux下载利器", 
+            "home_url": "Module_aria2.asp", 
+            "md5": "94e4984d9e1de16b2695f0cd7829e59e", 
+            "name": "aria2", 
+            "tar_url": "aria2/aria2.tar.gz", 
+            "title": "aria2", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2018-03-21_18:20:04", 
             "changelog": "", 
             "description": "aliddns", 
@@ -112,7 +123,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "a8ec660c1dafb1a6a5d2a198260b8812", 
+    "md5": "1d340d2aed4ed3551e72efa266bb30d3", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.2.5"
 }
