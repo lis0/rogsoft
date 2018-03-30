@@ -1,4 +1,6 @@
 #! /bin/sh
+
+find /koolshare/init.d/ -name "*swap.sh*"|xargs rm -rf
 cd /tmp
 cp -rf /tmp/swap/bin/* /koolshare/bin/
 cp -rf /tmp/swap/scripts/* /koolshare/scripts/
@@ -23,5 +25,3 @@ chmod +x /jffs/scripts/post-mount
 chmod +X /koolshare/bin/*
 chmod +X /koolshare/scripts/swap*
 chmod +X /koolshare/init.d/*
-
-find /koolshare/init.d/ -name "*swap.sh*"|xargs rm -rf
