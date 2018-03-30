@@ -1,0 +1,5 @@
+Koolshare Frpc for hnd router Changelog
+===========================================
+
+1.0 - 1.1 ( 2018-3-30 15:08 )
+  - Add    添加frp插件
