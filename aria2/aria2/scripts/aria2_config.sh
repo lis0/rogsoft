@@ -61,11 +61,17 @@ add_cpulimit(){
 }
 
 # ==========================================================
-# this part for start up
+# this part for start up by post-mount
 case $1 in
 start)
 	# startup by post-mount
     if [ "$aria2_enable" == "1" ];then
+		# incase disk re-plug
+		killall aria2c >/dev/null 2>&1
+		killall cpulimit >/dev/null 2>&1
+		close_port
+		sleep 1
+		# start
         perpare
 		start_aria2
 		open_port
@@ -76,7 +82,7 @@ stop)
 	# startup by post-mount
     if [ "$aria2_enable" == "1" ];then
 		killall aria2c >/dev/null 2>&1
-		killall cpulimit
+		killall cpulimit >/dev/null 2>&1
 		close_port
     fi
     ;;
@@ -95,7 +101,7 @@ case $2 in
 	if [ "$aria2_enable" == "1" ];then
 		# try stop first
 		killall aria2c >/dev/null 2>&1
-		killall cpulimit
+		killall cpulimit >/dev/null 2>&1
 		close_port
 		sleep 1
 		# start
@@ -106,7 +112,7 @@ case $2 in
 	else
 	 	# stop
 		killall aria2c >/dev/null 2>&1
-		killall cpulimit
+		killall cpulimit >/dev/null 2>&1
 		close_port
 	fi
 	http_response "$1"
@@ -114,7 +120,7 @@ case $2 in
 2)
 	# clean configure
 	killall aria2c >/dev/null 2>&1
-	killall cpulimit
+	killall cpulimit >/dev/null 2>&1
 	rm -rf /koolshare/aria2/aria2.session
 	close_port
 	sleep 1
