@@ -30,7 +30,7 @@ if [ "$aria2_version" == "1.5" ] || [ "$aria2_version" == "1.4" ] || [ "$aria2_v
 	dbus set aria2_custom=Y2EtY2VydGlmaWNhdGU9L2V0Yy9zc2wvY2VydHMvY2EtY2VydGlmaWNhdGVzLmNydA==
 fi
 
-dbus set aria2_version="1.7"
+dbus set aria2_version="1.8"
 dbus set softcenter_module_aria2_install=1
 dbus set softcenter_module_aria2_name="aria2"
 dbus set softcenter_module_aria2_title="aria2"

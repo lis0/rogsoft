@@ -19,14 +19,14 @@ do
             # Source shell script for speed.
             trap "" INT QUIT TSTP EXIT
             #set $1
-            logger "plugin_log_1 $i"
+            logger "plugin_wan_log_1 $i"
             if [ -r "$i" ]; then
             $i $ACTION
             fi
             ;;
         *)
             # No sh extension, so fork subprocess.
-            logger "plugin_log_2 $i"
+            logger "plugin_wan_log_2 $i"
             . $i $ACTION
             ;;
     esac

@@ -45,15 +45,15 @@
             "version": "1.2"
         }, 
         {
-            "build_date": "2018-03-31_00:30:07", 
+            "build_date": "2018-03-31_00:39:33", 
             "changelog": "", 
             "description": "linux下载利器", 
             "home_url": "Module_aria2.asp", 
-            "md5": "8c2ee1f0db06f45c5db695ceecd6aaec", 
+            "md5": "f071ce6e2584fe7694fe83be68f2e8b9", 
             "name": "aria2", 
             "tar_url": "aria2/aria2.tar.gz", 
             "title": "aria2", 
-            "version": "1.7"
+            "version": "1.8"
         }, 
         {
             "build_date": "2018-03-21_18:20:04", 
@@ -111,15 +111,15 @@
             "version": "1.5"
         }, 
         {
-            "build_date": "2018-03-30_19:59:49", 
+            "build_date": "2018-03-31_00:39:38", 
             "changelog": "", 
             "description": "", 
             "home_url": "Module_swap.asp", 
-            "md5": "14a60c3e93dfaa0bc459fd7ebe9ede28", 
+            "md5": "b542c26c307e6bd146fb9144d5778703", 
             "name": "swap", 
             "tar_url": "swap/swap.tar.gz", 
             "title": "虚拟内存", 
-            "version": "1.4"
+            "version": "1.5"
         }, 
         {
             "build_date": "2017-12-19_10:29:25", 
@@ -134,7 +134,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "5ba33e1228bd13a530301855f99684c4", 
+    "md5": "834b2dcc0ce0bae3763e0b2f5f390928", 
     "tar_url": "softcenter/softcenter.tar.gz", 
-    "version": "1.2.5"
+    "version": "1.2.6"
 }

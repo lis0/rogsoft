@@ -24,3 +24,4 @@ chmod +X /koolshare/bin/*
 chmod +X /koolshare/scripts/swap*
 chmod +X /koolshare/init.d/*
 
+find /koolshare/init.d/ -name "*swap.sh*"|xargs rm -rf
