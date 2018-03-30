@@ -200,7 +200,6 @@ function menu_hook(title, tab) {
 	tablink[tablink.length -1] = new Array("", "Module_aria2.asp");
 }
 
-
 function randomString(len) {
 	len = len || 32;
 	var $chars = 'abcdefghijklmnopqrstuvwxyz1234567890';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
@@ -442,11 +441,7 @@ function save() {
 		if (!E(params_base64[i]).value) {
 			db_aria2_[params_base64[i]] = "";
 		} else {
-			if (E(params_base64[i]).value.indexOf("=") != -1) {
-				db_aria2_[params_base64[i]] = Base64.encode(E(params_base64[i]).value);
-			} else {
-				db_aria2_[params_base64[i]] = "";
-			}
+			db_aria2_[params_base64[i]] = Base64.encode(E(params_base64[i]).value);
 		}
 	}
 	//console.log(db_aria2_);
@@ -1342,8 +1337,7 @@ function generate_glutton_link() {
                               <label>Aria2 配置自定义</label>
                             </td>
                             <td>
-                              <textarea rows=6 style="width:99%; font-family:'Lucida Console'; font-size:12px;background:#475A5F;color:#FFFFFF;" name="aria2_custom" id="aria2_custom" title="">ca-certificate=false
-check-certificate=false</textarea>
+                              <textarea rows=6 style="width:99%; font-family:'Lucida Console'; font-size:12px;background:#475A5F;color:#FFFFFF;" name="aria2_custom" id="aria2_custom" title="">ca-certificate=/etc/ssl/certs/ca-certificates.crt</textarea>
                             </td>
                           </tr>
                         </table>

@@ -3,6 +3,7 @@ export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 MODEL=`nvram get model`
 aria2_enable=`dbus get aria2_enable`
+aria2_version=`dbus get aria2_version`
 
 if [ "$aria2_enable" == "1" ];then
 	[ -f "/koolshare/scripts/aria2_config.sh" ] && sh /koolshare/scripts/aria2_config.sh stop
@@ -23,7 +24,12 @@ chmod +x /koolshare/scripts/uninstall_aria2.sh
 [ ! -L "/koolshare/init.d/M99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/M99Aria2.sh
 [ ! -L "/koolshare/init.d/N99Aria2.sh" ] && ln -sf /koolshare/scripts/aria2_config.sh /koolshare/init.d/N99Aria2.sh
 
-dbus set aria2_version="1.5"
+#some modify
+if [ "$aria2_version" == "1.5" ] || [ "$aria2_version" == "1.4" ] || [ "$aria2_version" == "1.3" ];then
+	dbus set aria2_custom=Y2EtY2VydGlmaWNhdGU9L2V0Yy9zc2wvY2VydHMvY2EtY2VydGlmaWNhdGVzLmNydA==
+fi
+
+dbus set aria2_version="1.6"
 dbus set softcenter_module_aria2_install=1
 dbus set softcenter_module_aria2_name="aria2"
 dbus set softcenter_module_aria2_title="aria2"

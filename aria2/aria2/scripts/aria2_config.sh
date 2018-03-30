@@ -18,14 +18,17 @@ perpare(){
 	
 	sleep 1
 
-	cat > /koolshare/aria2/aria2.conf <<-EOF
-	`dbus list aria2 | grep -vw aria2_enable | grep -vw aria2_version | grep -vw aria2_cpulimit_enable | grep -vw aria2_cpulimit_value | grep -vw aria2_custom | grep -vw aria2_dir| sed 's/aria2_//g' | sed 's/_/-/g'`
+	cat > /tmp/aria2.conf <<-EOF
+	`dbus list aria2 | grep -vw aria2_enable | grep -vw aria2_version | grep -vw aria2_title | grep -vw aria2_cpulimit_enable | grep -vw aria2_cpulimit_value | grep -vw aria2_custom | grep -vw aria2_bt_tracker | grep -vw aria2_dir| sed 's/aria2_//g' | sed 's/_/-/g'`
 	`dbus list aria2|grep -w aria2_dir|sed 's/aria2_//g'`
-	EOF
-	
-	cat >> /koolshare/aria2/aria2.conf <<-EOF
 	`dbus get aria2_custom|base64_decode`
 	EOF
+	if [ -n "`dbus get aria2_bt_tracker`" ];then
+		cat >> /tmp/aria2.conf <<-EOF
+			bt-tracker=`dbus get aria2_bt_tracker|base64_decode`
+		EOF
+	fi
+	cat /tmp/aria2.conf|sort > /koolshare/aria2/aria2.conf
 }
 
 start_aria2(){
