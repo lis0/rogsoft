@@ -13,6 +13,7 @@ cp -rf /tmp/aria2/bin/* /koolshare/bin/
 cp -rf /tmp/aria2/scripts/* /koolshare/scripts/
 cp -rf /tmp/aria2/webs/* /koolshare/webs/
 cp -rf /tmp/aria2/res/* /koolshare/res/
+cp -rf /tmp/aria2/aria2 /koolshare
 cp -rf /tmp/aria2/uninstall.sh /koolshare/scripts/uninstall_aria2.sh
 if [ "$MODEL" == "GT-AC5300" ];then
 	cp -rf /tmp/aria2/GT-AC5300/webs/* /koolshare/webs/
@@ -29,7 +30,7 @@ if [ "$aria2_version" == "1.5" ] || [ "$aria2_version" == "1.4" ] || [ "$aria2_v
 	dbus set aria2_custom=Y2EtY2VydGlmaWNhdGU9L2V0Yy9zc2wvY2VydHMvY2EtY2VydGlmaWNhdGVzLmNydA==
 fi
 
-dbus set aria2_version="1.6"
+dbus set aria2_version="1.7"
 dbus set softcenter_module_aria2_install=1
 dbus set softcenter_module_aria2_name="aria2"
 dbus set softcenter_module_aria2_title="aria2"
