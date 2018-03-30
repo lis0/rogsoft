@@ -68,34 +68,37 @@ add_cpulimit(){
 case $1 in
 start)
 	# startup by post-mount
-    if [ "$aria2_enable" == "1" ];then
+	if [ "$aria2_enable" == "1" ];then
+		logger "[软件中心]: 启动aria2！"
 		# incase disk re-plug
 		killall aria2c >/dev/null 2>&1
 		killall cpulimit >/dev/null 2>&1
 		close_port
 		sleep 1
 		# start
-        perpare
+		perpare
 		start_aria2
 		open_port
 		add_cpulimit
-    fi
-    ;;
+	else
+		logger "[软件中心]: aria2插件未开启！"
+	fi
+	;;
 stop)
 	# startup by post-mount
-    if [ "$aria2_enable" == "1" ];then
+	if [ "$aria2_enable" == "1" ];then
 		killall aria2c >/dev/null 2>&1
 		killall cpulimit >/dev/null 2>&1
 		close_port
-    fi
-    ;;
+	fi
+	;;
 start_nat)
 	# nat restart by nat-start
-    if [ "$aria2_enable" == "1" ];then
-    	close_port
+	if [ "$aria2_enable" == "1" ];then
+		close_port
 		open_port
-    fi
-    ;;
+	fi
+	;;
 esac
 
 # for web submit
@@ -108,7 +111,7 @@ case $2 in
 		close_port
 		sleep 1
 		# start
-        perpare
+		perpare
 		start_aria2
 		open_port
 		add_cpulimit
@@ -119,7 +122,7 @@ case $2 in
 		close_port
 	fi
 	http_response "$1"
-    ;;
+	;;
 2)
 	# clean configure
 	killall aria2c >/dev/null 2>&1
@@ -128,5 +131,5 @@ case $2 in
 	close_port
 	sleep 1
 	http_response "$1"
-    ;;
+	;;
 esac

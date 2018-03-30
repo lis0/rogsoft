@@ -45,11 +45,11 @@
             "version": "1.2"
         }, 
         {
-            "build_date": "2018-03-30_19:47:21", 
+            "build_date": "2018-03-30_19:59:44", 
             "changelog": "", 
             "description": "linux下载利器", 
             "home_url": "Module_aria2.asp", 
-            "md5": "666a373ab77b3293ee426320c884cd94", 
+            "md5": "e9fed5787332f27bf5bd81c21622cd55", 
             "name": "aria2", 
             "tar_url": "aria2/aria2.tar.gz", 
             "title": "aria2", 
@@ -111,15 +111,15 @@
             "version": "1.5"
         }, 
         {
-            "build_date": "2017-12-11_19:07:02", 
+            "build_date": "2018-03-30_19:59:49", 
             "changelog": "", 
             "description": "", 
             "home_url": "Module_swap.asp", 
-            "md5": "666a439659ca69817ed1812e6ab4530e", 
+            "md5": "14a60c3e93dfaa0bc459fd7ebe9ede28", 
             "name": "swap", 
             "tar_url": "swap/swap.tar.gz", 
             "title": "虚拟内存", 
-            "version": "1.3"
+            "version": "1.4"
         }, 
         {
             "build_date": "2017-12-19_10:29:25", 
