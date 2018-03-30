@@ -64,7 +64,7 @@ def check_and_cp():
         #check_subdir(module, path, "scripts", ".sh", os.path.join(curr_path, "softcenter", "scripts"))
         #check_subdir(module, path, "webs", ".asp", os.path.join(curr_path, "softcenter", "webs"))
         #check_subdir(module, path, "scripts", ".sh", os.path.join(curr_path, "softcenter", "scripts"))
-        check_subdir(module, path, "res", "*", os.path.join(curr_path, "softcenter", "res"))
+        check_subdir(module, path, "res/icon*.png", "*", os.path.join(curr_path, "softcenter", "res"))
 
 def gen_modules(modules):
     for module, path in work_parent():
