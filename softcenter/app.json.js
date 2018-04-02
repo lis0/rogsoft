@@ -34,15 +34,15 @@
             "version": "1.4"
         }, 
         {
-            "build_date": "2018-03-30_15:30:39", 
+            "build_date": "2018-04-02_14:05:40", 
             "changelog": "", 
             "description": "支持多种协议的内网穿透软件", 
             "home_url": "Module_frpc.asp", 
-            "md5": "f1febd75548bd70eb33cd8adb217053d", 
+            "md5": "810f9bd406108d776c94b2b7a7f58b03", 
             "name": "frpc", 
             "tar_url": "frpc/frpc.tar.gz", 
             "title": "frpc内网穿透", 
-            "version": "1.2"
+            "version": "1.3"
         }, 
         {
             "build_date": "2018-03-31_00:39:33", 
