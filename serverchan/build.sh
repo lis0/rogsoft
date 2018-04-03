@@ -2,7 +2,7 @@
 
 
 MODULE=serverchan
-VERSION="0.1.15"
+VERSION="0.1.16"
 TITLE="serverChan微信推送"
 DESCRIPTION="从路由器推送状态及通知的工具"
 HOME_URL="Module_serverchan.asp"

@@ -16,6 +16,7 @@ detect_skipd(){
             #echo $i
         done
         logger "[软件中心]: skipd进程准备就绪！"
+        dbus set softcenter_installing_status="1"
 }
 
 detect_httpdb(){

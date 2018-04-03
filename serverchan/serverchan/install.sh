@@ -13,11 +13,12 @@ if [[ ! -x /koolshare/bin/jq ]]; then
     cp -f /tmp/serverchan/bin/jq /koolshare/bin/jq
     chmod +x /koolshare/bin/jq
 fi
-rm -f /koolshare/init.d/*serverchan.sh
-rm -f /koolshare/scripts/serverchan_*
+rm -rf /koolshare/init.d/*serverchan.sh
+rm -rf /koolshare/scripts/serverchan_*
 rm -rf /koolshare/serverchan/
-cp -f /tmp/serverchan/res/icon-serverchan.png /koolshare/res/
-cp -f /tmp/serverchan/scripts/* /koolshare/scripts/
+cp -rf /tmp/serverchan/res/icon-serverchan.png /koolshare/res/
+cp -rf /tmp/serverchan/scripts/* /koolshare/scripts/
+cp -rf /tmp/serverchan/serverchan /koolshare/
 if [ "$MODEL" == "GT-AC5300" ];then
 	cp -rf /tmp/serverchan/GT-AC5300/webs/Module_serverchan.asp /koolshare/webs/
 else
@@ -50,7 +51,7 @@ dbus set softcenter_module_serverchan_install=1
 dbus set softcenter_module_serverchan_name=${MODULE}
 dbus set softcenter_module_serverchan_title="ServerChan(微信推送)"
 dbus set softcenter_module_serverchan_description="从路由器推送状态及通知的工具。"
-dbus set softcenter_module_serverchan_version="0.1.15"
+dbus set softcenter_module_serverchan_version="0.1.16"
 sh /koolshare/scripts/serverchan_config.sh
 rm -fr /tmp/serverchan* >/dev/null 2>&1
 logger "[软件中心]: 完成serverChan安装"
