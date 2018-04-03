@@ -268,7 +268,7 @@ function onSubmitCtrl(){
 	showLoading(5);
 	refreshpage(5);
 	var params_input = ["serverchan_silent_time_start_hour", "serverchan_silent_time_end_hour", "serverchan_config_ntp", "serverchan_config_name", "serverchan_status_check", "serverchan_check_week", "serverchan_check_day", "serverchan_check_inter_min", "serverchan_check_inter_hour", "serverchan_check_inter_day", "serverchan_check_inter_pre", "serverchan_check_custom", "serverchan_check_time_hour", "serverchan_check_time_min", "serverchan_trigger_dhcp_white"];
-	var params_check = ["serverchan_enable", "serverchan_silent_time", "serverchan_info_logger", "serverchan_info_silent_send", "serverchan_info_system", "serverchan_info_wan", "serverchan_info_usb", "serverchan_info_lan", "serverchan_info_dhcp", "serverchan_info_softcenter", "serverchan_trigger_ifup", "serverchan_trigger_dhcp", "serverchan_dhcp_bwlist_en", "serverchan_dhcp_white_en", "serverchan_dhcp_black_en" ];
+	var params_check = ["serverchan_enable", "serverchan_silent_time", "serverchan_info_logger", "serverchan_info_silent_send", "serverchan_info_system", "serverchan_info_temp", "serverchan_info_wan", "serverchan_info_usb", "serverchan_info_lan", "serverchan_info_dhcp", "serverchan_info_softcenter", "serverchan_trigger_ifup", "serverchan_trigger_dhcp", "serverchan_dhcp_bwlist_en", "serverchan_dhcp_white_en", "serverchan_dhcp_black_en" ];
 	var params_base64 = ["serverchan_config_name", "serverchan_check_custom", "serverchan_trigger_dhcp_white"];
 	// collect data from input
 	for (var i = 0; i < params_input.length; i++) {
@@ -893,6 +893,12 @@ function version_show() {
                                             <th width="20%">系统运行情况</th>
                                             <td>
                                                 <input type="checkbox" id="serverchan_info_system" checked="checked" onclick="oncheckclick(this);">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">设备温度（GT-AC5300不支持CPU温度）</th>
+                                            <td>
+                                                <input type="checkbox" id="serverchan_info_temp" checked="checked" onclick="oncheckclick(this);">
                                             </td>
                                         </tr>
                                         <tr>
