@@ -1,0 +1,4 @@
+Koolshare serverChan for hnd router Changelog
+===========================================
+0.1.13
+  - fix       修复插件在GT-AC5300上不能使用的问题

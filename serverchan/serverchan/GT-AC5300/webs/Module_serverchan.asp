@@ -114,6 +114,7 @@
 .serverchan_btn {
     border: 1px solid #222;
     background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
+	background: linear-gradient(to bottom, #91071f  0%, #700618 100%); /* W3C */
     font-size:10pt;
     color: #fff;
     padding: 5px 5px;
@@ -123,6 +124,7 @@
 .serverchan_btn:hover {
     border: 1px solid #222;
     background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
+	background: linear-gradient(to bottom, #cf0a2c  0%, #91071f 100%); /* W3C */
     font-size:10pt;
     color: #fff;
     padding: 5px 5px;
@@ -266,7 +268,7 @@ function onSubmitCtrl(){
 	showLoading(5);
 	refreshpage(5);
 	var params_input = ["serverchan_silent_time_start_hour", "serverchan_silent_time_end_hour", "serverchan_config_ntp", "serverchan_config_name", "serverchan_status_check", "serverchan_check_week", "serverchan_check_day", "serverchan_check_inter_min", "serverchan_check_inter_hour", "serverchan_check_inter_day", "serverchan_check_inter_pre", "serverchan_check_custom", "serverchan_check_time_hour", "serverchan_check_time_min", "serverchan_trigger_dhcp_white"];
-	var params_check = ["serverchan_enable", "serverchan_silent_time", "serverchan_info_logger", "serverchan_info_silent_send", "serverchan_info_system", "serverchan_info_temp", "serverchan_info_wan", "serverchan_info_usb", "serverchan_info_lan", "serverchan_info_dhcp", "serverchan_info_softcenter", "serverchan_trigger_ifup", "serverchan_trigger_dhcp", "serverchan_dhcp_bwlist_en", "serverchan_dhcp_white_en", "serverchan_dhcp_black_en" ];
+	var params_check = ["serverchan_enable", "serverchan_silent_time", "serverchan_info_logger", "serverchan_info_silent_send", "serverchan_info_system", "serverchan_info_wan", "serverchan_info_usb", "serverchan_info_lan", "serverchan_info_dhcp", "serverchan_info_softcenter", "serverchan_trigger_ifup", "serverchan_trigger_dhcp", "serverchan_dhcp_bwlist_en", "serverchan_dhcp_white_en", "serverchan_dhcp_black_en" ];
 	var params_base64 = ["serverchan_config_name", "serverchan_check_custom", "serverchan_trigger_dhcp_white"];
 	// collect data from input
 	for (var i = 0; i < params_input.length; i++) {
@@ -894,12 +896,6 @@ function version_show() {
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th width="20%">设备温度</th>
-                                            <td>
-                                                <input type="checkbox" id="serverchan_info_temp" checked="checked" onclick="oncheckclick(this);">
-                                            </td>
-                                        </tr>
-                                        <tr>
                                             <th width="20%">网络信息</th>
                                             <td>
                                                 <input type="checkbox" id="serverchan_info_wan" checked="checked" onclick="oncheckclick(this);">
@@ -962,7 +958,7 @@ function version_show() {
                                                 <textarea placeholder="# 填入设备MAC地址，一行一个，格式如下：
                                                 aa:bb:cc:dd:ee:ff
                                                 aa:bb:cc:dd:ee:ff #我的电脑
-                                                a1:b2:c3:d4:e5:f6 #我的手机" cols="50" rows="7" id="serverchan_trigger_dhcp_white" name="serverchan_trigger_dhcp_white" style="width:99%; font-family:'Lucida Console'; font-size:12px;background:#475A5F;color:#FFFFFF;text-transform:none;margin-top:5px;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                                                a1:b2:c3:d4:e5:f6 #我的手机" cols="50" rows="7" id="serverchan_trigger_dhcp_white" name="serverchan_trigger_dhcp_white" style="width:99%; font-family:'Lucida Console'; font-size:12px;background:transparent;border:1px solid #91071f;color:#FFFFFF;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
                                             </td>
                                         </tr>
 
