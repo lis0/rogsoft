@@ -24,7 +24,10 @@ stop_aliddns(){
 case $ACTION in
 start)
 	if [ "$aliddns_enable" == "1" ];then
+		logger "[软件中心]: 启动阿里DDNS！"
 		start_aliddns
+	else
+		logger "[软件中心]: 阿里DDNS未设置开机启动，跳过！"
 	fi
 	;;
 stop)
