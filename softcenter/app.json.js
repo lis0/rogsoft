@@ -78,6 +78,17 @@
             "version": "1.2"
         }, 
         {
+            "build_date": "2018-04-06_22:56:49", 
+            "changelog": "", 
+            "description": "自动部署SSL证书", 
+            "home_url": "Module_acme.asp", 
+            "md5": "10974ea425e109eb085e4b4117006fc3", 
+            "name": "acme", 
+            "tar_url": "acme/acme.tar.gz", 
+            "title": "Let's Encrypt", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2017-12-19_10:24:21", 
             "changelog": "", 
             "description": "去广告，没烦恼", 
@@ -134,7 +145,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "021882d78d1714ed5e52c7d32fcd2a5f", 
+    "md5": "5872309a1e4926f392d0314948ef42f4", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.2.9"
 }
