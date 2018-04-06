@@ -177,9 +177,11 @@ case $2 in
 				echo_date 关闭插件状态下仍然可以使用手动更新对证书进行更新，请注意你的证书的过期时间！>> $LOGFILE
 			else
 				echo_date 关闭插件 >> $LOGFILE
+				del_cron
 			fi
 		else
 			echo_date 关闭插件 >> $LOGFILE
+			del_cron
 		fi
 	fi
 	echo "" >> $LOGFILE
