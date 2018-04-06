@@ -7,21 +7,24 @@ LOGFILE=/tmp/upload/acme_log.txt
 mkdir -p /tmp/etc
 mkdir -p /tmp/upload
 start_issue(){
-	case $acme_provider in
+	case "$acme_provider" in
 	1)
 		# ali_dns
+		echo_date 使用阿里dns接口申请证书... >> $LOGFILE
 		export Ali_Key="$acme_ali_arg1"
 		export Ali_Secret="$acme_ali_arg2"
 		dnsapi=dns_ali
 		;;
 	2)
 		# dnspod
+		echo_date 使用dnspod接口申请证书... >> $LOGFILE
 		export DP_Id="$acme_dp_arg1"
 		export DP_key="$acme_dp_arg2"
 		dnsapi=dns_dp
 		;;
 	3)
 		# cloudxns
+		echo_date 使用cloudxns接口申请证书... >> $LOGFILE
 		export Ali_Key="$acme_xns_arg1"
 		export Ali_Secret="$acme_xns_arg2"
 		dnsapi=dns_cx
@@ -73,7 +76,7 @@ apply_now(){
 	echo_date 证书申请过程可能会持续3分钟，请不要关闭或刷新本网页！ >> $LOGFILE
 	sleep 2
 	start_issue >> $LOGFILE
-	if [ "$?" != "0" ];then
+	if [ "$?" == "1" ];then
 		cd $acme_root
 		echo_date 证书申请失败，请检查插件配置、域名等是否正确！！ >> $LOGFILE
 		echo_date 清理相关残留并关闭插件！！ >> $LOGFILE
