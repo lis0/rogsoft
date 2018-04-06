@@ -83,7 +83,7 @@ apply_now(){
 	else
 		echo_date 证书申请成功！>> $LOGFILE
 		echo_date 添加证书更新定时任务！
-		add_cron >> $LOGFILE
+		add_cron
 		echo_date 安装证书！ >> $LOGFILE
 		echo_date 安装证书会重启路由器web服务，安装完成后需要重新登录路由器 >> $LOGFILE
 		echo_date 安装中，，，请等待页面自动刷新！ >> $LOGFILE
@@ -141,14 +141,14 @@ case $2 in
 					else
 						#无定时任务
 						echo_date 检测到【$acme_subdomain.$acme_domain，$acme_domain】证书自动更新定时任务未添加！>> $LOGFILE
-						echo_date 添加证书更新定时任务！
+						echo_date 添加证书更新定时任务！>> $LOGFILE
 						add_cron >> $LOGFILE
 					fi
 				else
 					#申请过了，但是没有安装
 					echo_date 检测到你之前生成【$acme_subdomain.$acme_domain，$acme_domain】的证书，本次跳过申请，直接安装！ >> $LOGFILE
 					echo_date 如果该证书已经过期，请本次提交完成后手动更新证书。 >> $LOGFILE
-					echo_date 添加证书更新定时任务！
+					echo_date 添加证书更新定时任务！>> $LOGFILE
 					add_cron >> $LOGFILE
 					echo_date 安装证书！ >> $LOGFILE
 					echo_date 安装证书会重启路由器web服务，安装完成后需要重新登录路由器 >> $LOGFILE
