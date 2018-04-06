@@ -30,9 +30,8 @@ start_issue(){
 		dnsapi=dns_cx
 		;;
 	esac
-	
-	cd $acme_root
-	./acme.sh --home "$acme_root" --issue --dns $dnsapi -d $acme_domain -d $acme_subdomain.$acme_domain
+	sleep 1
+	$acme_root/acme.sh --home "$acme_root" --issue --dns $dnsapi -d $acme_domain -d $acme_subdomain.$acme_domain
 }
 
 install_cert(){
@@ -75,7 +74,7 @@ apply_now(){
 	echo_date 开始为$acme_domain申请证书！ >> $LOGFILE
 	echo_date 证书申请过程可能会持续3分钟，请不要关闭或刷新本网页！ >> $LOGFILE
 	sleep 2
-	start_issue >> $LOGFILE
+	start_issue >> $LOGFILE 2>&1
 	if [ "$?" == "1" ];then
 		cd $acme_root
 		echo_date 证书申请失败，请检查插件配置、域名等是否正确！！ >> $LOGFILE

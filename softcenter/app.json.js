@@ -78,15 +78,15 @@
             "version": "1.2"
         }, 
         {
-            "build_date": "2018-04-07_00:31:45", 
+            "build_date": "2018-04-07_01:21:34", 
             "changelog": "", 
             "description": "自动部署SSL证书", 
             "home_url": "Module_acme.asp", 
-            "md5": "592ddee7f4d9ac582fd76306b594ed70", 
+            "md5": "22d0e5b67013609981828c1e6dd4fcdd", 
             "name": "acme", 
             "tar_url": "acme/acme.tar.gz", 
             "title": "Let's Encrypt", 
-            "version": "1.5"
+            "version": "1.6"
         }, 
         {
             "build_date": "2017-12-19_10:24:21", 
