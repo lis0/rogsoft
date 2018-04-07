@@ -1,7 +1,7 @@
 #!/bin/sh
 
 MODULE="ddnspod"
-VERSION="1.0"
+VERSION="1.1"
 TITLE="ddnspod"
 DESCRIPTION="ddnspod"
 HOME_URL="Module_ddnspod.asp"

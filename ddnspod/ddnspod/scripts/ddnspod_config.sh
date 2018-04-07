@@ -120,6 +120,9 @@ case $2 in
 		add_ddnspod_cru
 		arDdnsCheck $mainDomain $subDomain
 		http_response "$1"
+	else
+		stop_ddnspod
+		http_response "$1"
 	fi
 	;;
 esac
