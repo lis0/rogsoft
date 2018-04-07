@@ -77,6 +77,8 @@ var _responseLen;
 var noChange = 0;
 var httpd_cert_info = [ <% httpd_cert_info(); %> ][0];
 var db_acme = {}
+var params_input = ["acme_subdomain", "acme_domain", "acme_provider", "acme_ali_arg1", "acme_ali_arg2", "acme_dp_arg1", "acme_dp_arg2", "acme_xns_arg1", "acme_xns_arg2", "acme_cf_arg1", "acme_cf_arg2", "acme_gd_arg1", "acme_gd_arg2"];
+var params_check = ["acme_enable"];
 
 function init() {
 	show_menu(menu_hook);
@@ -130,40 +132,27 @@ function show_cert_details() {
 }
 
 function update_visibility(r) {
-	if(E("acme_provider").value == "1"){
-		E("acme_ali_arg1_tr").style.display = "";
-		E("acme_ali_arg2_tr").style.display = "";
-		E("acme_dp_arg1_tr").style.display = "none";
-		E("acme_dp_arg2_tr").style.display = "none";
-		E("acme_xns_arg1_tr").style.display = "none";
-		E("acme_xns_arg2_tr").style.display = "none";
-	} else if (E("acme_provider").value == "2"){
-		E("acme_ali_arg1_tr").style.display = "none";
-		E("acme_ali_arg2_tr").style.display = "none";
-		E("acme_dp_arg1_tr").style.display = "";
-		E("acme_dp_arg2_tr").style.display = "";
-		E("acme_xns_arg1_tr").style.display = "none";
-		E("acme_xns_arg2_tr").style.display = "none";
-	} else if (E("acme_provider").value == "3"){
-		E("acme_ali_arg1_tr").style.display = "none";
-		E("acme_ali_arg2_tr").style.display = "none";
-		E("acme_dp_arg1_tr").style.display = "none";
-		E("acme_dp_arg2_tr").style.display = "none";
-		E("acme_xns_arg1_tr").style.display = "";
-		E("acme_xns_arg2_tr").style.display = "";		
+	trs= ["", "ali", "dp", "xns", "cf", "gd"];
+	pvd= E("acme_provider").value;
+	for (var i = 1; i < trs.length; i++) {
+		if(pvd == i){
+			E("acme_" + trs[i] + "_arg1_tr").style.display = "";
+			E("acme_" + trs[i] + "_arg2_tr").style.display = "";
+		}else{
+			E("acme_" + trs[i] + "_arg1_tr").style.display = "none";
+			E("acme_" + trs[i] + "_arg2_tr").style.display = "none";
+		}
 	}
 }
 
 function conf_to_obj() {
 	// data from input
-	var params_input = ["acme_subdomain", "acme_domain", "acme_provider", "acme_ali_arg1", "acme_ali_arg2", "acme_dp_arg1", "acme_dp_arg2", "acme_xns_arg1", "acme_xns_arg2"];
 	for (var i = 0; i < params_input.length; i++) {
 		if(db_acme[params_input[i]]){
 			E(params_input[i]).value = db_acme[params_input[i]];
 		}
 	}
 	// data from checkbox
-	var params_check = ["acme_enable"];
 	for (var i = 0; i < params_check.length; i++) {
 		if(db_acme[params_check[i]]){
 			E(params_check[i]).checked = db_acme[params_check[i]] == "1";
@@ -195,16 +184,24 @@ function save(){
 			alert("输入框不能为空！");
 			return false;
 		}	
+	} else if (E("acme_provider").value == "4"){
+		if(!E("acme_cf_arg1").value || !E("acme_cf_arg1").value){
+			alert("输入框不能为空！");
+			return false;
+		}	
+	} else if (E("acme_provider").value == "5"){
+		if(!E("acme_gd_arg1").value || !E("acme_gd_arg1").value){
+			alert("输入框不能为空！");
+			return false;
+		}	
 	}
 	// data from input
-	var params_input = ["acme_subdomain", "acme_domain", "acme_provider", "acme_ali_arg1", "acme_ali_arg2", "acme_dp_arg1", "acme_dp_arg2", "acme_xns_arg1", "acme_xns_arg2"];
 	for (var i = 0; i < params_input.length; i++) {
 		if(E(params_input[i])){
 			db_acme[params_input[i]] = E(params_input[i]).value
 		}
 	}
 	// data from checkbox
-	var params_check = ["acme_enable"];
 	for (var i = 0; i < params_check.length; i++) {
 		db_acme[params_check[i]] = E(params_check[i]).checked ? '1' : '0';
 	}
@@ -352,7 +349,6 @@ function hideKPLoadingBar() {
 
 function count_down_close() {
 	if (x == "0") {
-		//hideKPLoadingBar();
 		refreshpage();
 	}
 	if (x < 0) {
@@ -416,7 +412,7 @@ function menu_hook(title, tab) {
 											</div>
 											<div class="SimpleNote">
 												<li>Let's Encrypt是2015年三季度成立的数字证书认证机构，旨在推广互联网无所不在的加密连接，为安全网站提供免费的SSL/TLS证书。
-													<li>本插件使用acme.sh，通过dns_api方式申请ssl证书，目前支持阿里DNS(万网)、Ddnspod、CloudXNS <a type="button" style="cursor:pointer" href="https://github.com/koolshare/rogsoft/blob/master/acme/Changelog.txt" target="_blank"><em>【<u>插件更新日志</u>】</em></a></li>
+												<li>本插件使用acme.sh，通过dns_api申请ssl证书，目前支持aliyun、Dnspod、CloudXNS、CloudFlare、Godaddy。 <a type="button" style="cursor:pointer" href="https://github.com/sadoneli/merlin380-acme/blob/master/Changelog.txt" target="_blank"><em>【<u>插件更新日志</u>】</em></a></li>
 											</div>
 											<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 												<thead>
@@ -477,6 +473,8 @@ function menu_hook(title, tab) {
 															<option value="1">阿里DNS(万网)</option>
 															<option value="2">Dnspod</option>
 															<option value="3">CloudXNS</option>
+															<option value="4">CloudFlare</option>
+															<option value="5">GoDaddy</option>
 														</select>
 													</td>
 												</tr>
@@ -518,7 +516,35 @@ function menu_hook(title, tab) {
 												<tr id="acme_xns_arg2_tr" style="display: none;">
 													<th>CloudXNS Access Key Secret</th>
 													<td>
-														<input style="width:300px;" type="password" class="input_ss_table" id="acme_xns_arg2" name="acme_arg6" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="100"
+														<input  type="password" class="input_ss_table" id="acme_xns_arg2" name="acme_arg2" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="100"
+														value="" onBlur="switchType(this, false);" onFocus="switchType(this, true);">
+													</td>
+												</tr>
+												<tr id="acme_cf_arg1_tr" style="display: none;">
+													<th>CloudFlare Key</th>
+													<td>
+														<input  type="password" class="input_ss_table" id="acme_cf_arg1" name="acme_cf_arg1" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="100"
+														value="" onBlur="switchType(this, false);" onFocus="switchType(this, true);">
+													</td>
+												</tr>
+												<tr id="acme_cf_arg2_tr" style="display: none;">
+													<th>CloudFlare Email</th>
+													<td>
+														<input  type="password" class="input_ss_table" id="acme_cf_arg2" name="acme_cf_arg2" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="100"
+														value="" onBlur="switchType(this, false);" onFocus="switchType(this, true);">
+													</td>
+												</tr>
+												<tr id="acme_gd_arg1_tr" style="display: none;">
+													<th>GoDaddy Key</th>
+													<td>
+														<input  type="password" class="input_ss_table" id="acme_gd_arg1" name="acme_gd_arg1" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="100"
+														value="" onBlur="switchType(this, false);" onFocus="switchType(this, true);">
+													</td>
+												</tr>
+												<tr id="acme_gd_arg2_tr" style="display: none;">
+													<th>GoDaddy Secret</th>
+													<td>
+														<input  type="password" class="input_ss_table" id="acme_gd_arg2" name="acme_gd_arg2" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="100"
 														value="" onBlur="switchType(this, false);" onFocus="switchType(this, true);">
 													</td>
 												</tr>
@@ -539,7 +565,7 @@ function menu_hook(title, tab) {
 											</div>
 											<div class="SimpleNote">
 												<li>本插件仅支持koolshare RT-AC86U梅林改版固件、GT-AC5300官改固件。</li>
-												<li>Let's Encrypt的免费证书在2018年1月已经支持泛域名*解析，要使用泛解析请在子域名处填写 *。</li>
+												<li>Let's Encrypt的免费证书在2018年3月已经支持泛域名*解析，要使用泛解析请在子域名处填写 *。</li>
 												<li>Let's Encrypt的免费证书只有90天有效期，到期可以自动续期，或者使用手动更新来续期。</li>
 												<li>目前大部分的运营商已经关闭家用宽带80，443端口，如果需要在外网访问请设置端口转发。</li>
 												<li>申请到的证书储存在/koolshare/acme/，且安装在/tmp/etc目录，可自行备份。</li>
