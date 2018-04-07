@@ -1,7 +1,9 @@
 #!/bin/sh
 
 sh /koolshare/scripts/aliddns_config.sh stop
-rm /koolshare/scripts/uninstall_aliddns.sh
-rm /koolshare/res/icon-aliddns.png
-rm /koolshare/scripts/aliddns*
-rm /koolshare/webs/Module_aliddns.asp
+
+rm -rf /koolshare/scripts/uninstall_aliddns.sh
+rm -rf /koolshare/res/icon-aliddns.png
+rm -rf /koolshare/scripts/aliddns*
+rm -rf /koolshare/webs/Module_aliddns.asp
+rm -rf /koolshare/init.d/*aliddns.sh
