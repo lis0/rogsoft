@@ -122,6 +122,17 @@
             "version": "1.5"
         }, 
         {
+            "build_date": "2018-04-08_00:16:33", 
+            "changelog": "", 
+            "description": "ddnspod", 
+            "home_url": "Module_ddnspod.asp", 
+            "md5": "67321ff0c76a6638fa5090de8ff3bb3b", 
+            "name": "ddnspod", 
+            "tar_url": "ddnspod/ddnspod.tar.gz", 
+            "title": "ddnspod", 
+            "version": "1.1"
+        }, 
+        {
             "build_date": "2018-03-31_01:07:35", 
             "changelog": "", 
             "description": "", 
@@ -145,7 +156,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "93dd9a5e3c90d40fd97c7e5a09d2efe8", 
+    "md5": "09e23dabec1b35daac9a5dad230b5037", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.2.9"
 }
