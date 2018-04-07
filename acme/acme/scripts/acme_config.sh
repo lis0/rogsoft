@@ -56,11 +56,27 @@ start_issue(){
 
 install_cert(){
 	cd $acme_root
+	# install to /tmp/etc for httpd
 	./acme.sh --home "$acme_root" --installcert -d $acme_domain --keypath /tmp/etc/key.pem --fullchainpath /tmp/etc/cert.pem --reloadcmd "service restart_httpd"
+
+	# install to /tmp/etc for aicloud
+	aicloud_enable=`mvram get aicloud_enable`
+	cat /tmp/etc/key.pem > /tmp/etc/server.pem
+	echo "" \ >> /etc/server.pem
+	cat /tmp/etc/cert.pem >> /tmp/etc/server.pem
+	if [ "$aicloud_enable" == "1" ];then
+		service restart_webdav
+	fi	
 }
 
 force_renew(){
 	$acme_root/acme.sh --cron --force --home $acme_root
+	if [ "$?" == "1" ];then
+		echo_date 强制更新失败！！ >> $LOGFILE
+	else
+		echo_date 强制更新成功！！ >> $LOGFILE
+		install_cert
+	fi
 }
 
 del_all_cert(){
@@ -123,8 +139,8 @@ start)
 		cd $acme_root
 		if [ -d "$acme_domain" ] && [ -f "$acme_domain/$acme_domain.key" ] && [ -f "$acme_domain/fullchain.cer" ];then
 			logger "安装Let's Encrypt证书并添加证书更新定时任务！"
-			install_cert
 			add_cron
+			install_cert
 		else
 			logger "$acme_domain证书未生成或者生成的证书有问题，清理相关残留并关闭插件！"
 			rm -rf "$acme_domain" > /dev/null 2>&1
@@ -158,7 +174,7 @@ case $2 in
 					#安装了，检测定时任务
 					echo_date 检测到已经为【$acme_subdomain.$acme_domain，$acme_domain】申请了证书并且正确安装，跳过！>> $LOGFILE
 					cronjob=`cru l | grep acme_renew`
-					if [ "$cronjob" ];then
+					if [ -n "$cronjob" ];then
 						#有定时任务
 						echo_date 检测到【$acme_subdomain.$acme_domain，$acme_domain】证书自动更新定时任务正常，跳过！>> $LOGFILE
 					else

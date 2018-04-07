@@ -1,5 +1,8 @@
 Koolshare Hnd router software center Let's Encrypt Changelog
 ===========================================
+2.3
+   - add	增加为Aicloud安装证书
+
 2.2
    - add	增加CloudFlare和GoDaddy支持；
    - update	优化web；
