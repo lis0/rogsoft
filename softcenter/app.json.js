@@ -45,6 +45,17 @@
             "version": "1.4"
         }, 
         {
+            "build_date": "2018-04-08_16:36:45", 
+            "changelog": "", 
+            "description": "EasyExplorer 跨设备文件同步+DLNA流媒体", 
+            "home_url": "Module_easyexplorer.asp", 
+            "md5": "011d024f92d70ca5a928d2d26137371d", 
+            "name": "easyexplorer", 
+            "tar_url": "easyexplorer/easyexplorer.tar.gz", 
+            "title": "easyexplorer", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2018-04-02_14:05:40", 
             "changelog": "", 
             "description": "支持多种协议的内网穿透软件", 
@@ -167,7 +178,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "6cf6d1f28df1ba79deef1cad5d82da0e", 
+    "md5": "11500064686e3a2ac3ee08e41a4c2f93", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.3.0"
 }
