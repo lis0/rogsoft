@@ -6,6 +6,7 @@ alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 LOGFILE=/tmp/upload/acme_log.txt
 mkdir -p /tmp/etc
 mkdir -p /tmp/upload
+mkdir -p /jffs/ssl
 start_issue(){
 	case "$acme_provider" in
 	1)
@@ -56,11 +57,10 @@ start_issue(){
 
 install_cert(){
 	cd $acme_root
-	# install to /tmp/etc for httpd
 	./acme.sh --home "$acme_root" --installcert -d $acme_domain --keypath /tmp/etc/key.pem --fullchainpath /tmp/etc/cert.pem --reloadcmd "service restart_httpd"
-
+	./acme.sh --home "$acme_root" --installcert -d $acme_domain --keypath /jffs/ssl/key.pem --fullchainpath /jffs/ssl/cert.pem --reloadcmd "service restart_httpd"
 	# install to /tmp/etc for aicloud
-	aicloud_enable=`mvram get aicloud_enable`
+	aicloud_enable=`nvram get aicloud_enable`
 	cat /tmp/etc/key.pem > /tmp/etc/server.pem
 	echo "" \ >> /etc/server.pem
 	cat /tmp/etc/cert.pem >> /tmp/etc/server.pem
