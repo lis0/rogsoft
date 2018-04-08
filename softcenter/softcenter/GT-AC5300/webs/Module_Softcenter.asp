@@ -419,7 +419,7 @@ function renderView(apps) {
 		'</dd>',
 		'<dt class="icon-title">#{title}</dt>',
 		'<dd class="icon-desc">',
-		'<a class="text" href="/#{home_url}">',
+		'<a class="text" href="/#{home_url}" #{target}>',
 		'#{description}',
 		'</a>',
 		'<div class="opt">',

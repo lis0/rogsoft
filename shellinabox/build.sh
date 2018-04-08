@@ -1,11 +1,11 @@
 #!/bin/sh
 
 
-MODULE=shellinabox
-VERSION=1.4
-TITLE=shellinabox
-DESCRIPTION=超强的SSH网页客户端，webshell替代品~
-HOME_URL=Module_shellinabox.asp
+MODULE="shellinabox"
+VERSION="1.0"
+TITLE="shellinabox"
+DESCRIPTION="超强的SSH网页客户端，webshell替代品~"
+HOME_URL="Module_shellinabox.asp"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

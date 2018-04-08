@@ -23,6 +23,17 @@
             "version": "1.3"
         }, 
         {
+            "build_date": "2018-04-08_14:13:50", 
+            "changelog": "", 
+            "description": "超强的SSH网页客户端，webshell替代品~", 
+            "home_url": "Module_shellinabox.asp", 
+            "md5": "a4fb78fbbefa2de95ed4a7c8bb148f39", 
+            "name": "shellinabox", 
+            "tar_url": "shellinabox/shellinabox.tar.gz", 
+            "title": "shellinabox", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2018-03-23_11:57:08", 
             "changelog": "", 
             "description": "VPN全家桶, ver 4.25 build 9656", 
@@ -156,7 +167,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "09e23dabec1b35daac9a5dad230b5037", 
+    "md5": "6cf6d1f28df1ba79deef1cad5d82da0e", 
     "tar_url": "softcenter/softcenter.tar.gz", 
-    "version": "1.2.9"
+    "version": "1.3.0"
 }
