@@ -67,6 +67,17 @@
             "version": "1.3"
         }, 
         {
+            "build_date": "2018-04-09_15:26:13", 
+            "changelog": "", 
+            "description": "自动签到", 
+            "home_url": "Module_qiandao.asp", 
+            "md5": "23fef9018507c96b96743630952dec36", 
+            "name": "qiandao", 
+            "tar_url": "qiandao/qiandao.tar.gz", 
+            "title": "自动签到", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2018-03-31_00:39:33", 
             "changelog": "", 
             "description": "linux下载利器", 
@@ -178,7 +189,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "11500064686e3a2ac3ee08e41a4c2f93", 
+    "md5": "1d64a75c998f87e582a03cca32de8de5", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.3.0"
 }
