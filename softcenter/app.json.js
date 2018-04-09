@@ -67,15 +67,15 @@
             "version": "1.3"
         }, 
         {
-            "build_date": "2018-04-09_15:31:21", 
+            "build_date": "2018-04-09_15:37:58", 
             "changelog": "", 
             "description": "自动签到", 
             "home_url": "Module_qiandao.asp", 
-            "md5": "8f988837eef2618db90c956d996b3aaf", 
+            "md5": "63a17d5319d2401eee304dc3b6d618e7", 
             "name": "qiandao", 
             "tar_url": "qiandao/qiandao.tar.gz", 
             "title": "自动签到", 
-            "version": "1.1"
+            "version": "1.2"
         }, 
         {
             "build_date": "2018-03-31_00:39:33", 
