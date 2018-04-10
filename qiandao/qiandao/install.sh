@@ -1,4 +1,5 @@
 #! /bin/sh
+source /koolshare/scripts/base.sh
 MODEL=`nvram get model`
 
 cd /tmp
@@ -17,4 +18,5 @@ sleep 1
 chmod 755 /koolshare/qiandao/*
 chmod 755 /koolshare/init.d/*
 chmod 755 /koolshare/scripts/qiandao*
+dbus set qiandao_action="2"
 
