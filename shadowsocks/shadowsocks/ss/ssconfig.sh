@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# shadowsocks script for AM382 kernel 4.1.27 merlin firmware
+# shadowsocks script for HND router with kernel 4.1.27 merlin firmware
 # by sadog (sadoneli@gmail.com) from koolshare.cn
 
 eval `dbus export ss`
@@ -1249,9 +1249,9 @@ set_ulimit(){
 }
 
 disable_ss(){
-	echo_date =============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ===============
+	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
 	echo_date
-	echo_date -------------------------- 关闭Shadowsocks ------------------------------
+	echo_date ------------------------- 关闭Shadowsocks -----------------------------
 	nvram set ss_mode=0
 	dbus set dns2socks=0
 	nvram commit
@@ -1260,7 +1260,7 @@ disable_ss(){
 	flush_nat
 	kill_process
 	kill_cron_job
-	echo_date -------------------------- Shadowsocks已关闭 -----------------------------
+	echo_date ------------------------- Shadowsocks已关闭 ----------------------------
 }
 
 load_nat(){
@@ -1283,13 +1283,42 @@ load_nat(){
 	chromecast
 }
 
+ss_post_start(){
+	# 在SS插件启动成功后触发脚本
+	mkdir -p /koolshare/ss/postscripts && cd /koolshare/ss/postscripts
+	for i in $(find ./ -name 'P*' | sort) ;
+	do
+		trap "" INT QUIT TSTP EXIT
+		echo_date ------------- shadowsocks 启动后触发脚本: $i -------------
+		if [ -r "$i" ]; then
+			$i start
+		fi
+		echo_date ----------------- 触发脚本: $i 运行完毕 -----------------
+	done
+}
+
+ss_pre_stop(){
+	# 在SS插件关闭前触发脚本
+	mkdir -p /koolshare/ss/postscripts && cd /koolshare/ss/postscripts
+	for i in $(find ./ -name 'P*' | sort -r) ;
+	do
+		trap "" INT QUIT TSTP EXIT
+		echo_date ------------- shadowsocks 关闭前触发脚本: $i ------------
+		if [ -r "$i" ]; then
+			$i stop
+		fi
+		echo_date ----------------- 触发脚本: $i 运行完毕 -----------------
+	done
+}
+
 apply_ss(){
 	# router is on boot
 	WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
 	# now stop first
-	echo_date =============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ===============
+	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
 	echo_date
-	echo_date -------------------------- 关闭Shadowsocks ------------------------------
+	echo_date ------------------------- 关闭Shadowsocks -----------------------------
+	ss_pre_stop
 	nvram set ss_mode=0
 	dbus set dns2socks=0
 	nvram commit
@@ -1299,12 +1328,12 @@ apply_ss(){
 	flush_nat
 	kill_process
 	kill_cron_job
-	echo_date -------------------------- Shadowsocks已关闭 -----------------------------
+	echo_date ------------------------- Shadowsocks已关闭 ----------------------------
 	# pre-start
-	echo_date ----------------------- shadowsocks 启动前触发脚本 -----------------------
+	echo_date ---------------------- shadowsocks 启动前触发脚本 ----------------------
 	ss_pre_start
 	# start
-	echo_date ------------------------- 梅林固件 shadowsocks --------------------------
+	echo_date ------------------------ 梅林固件 shadowsocks -------------------------
 	resolv_server_ip
 	# do not re generate json on router start, use old one
 	[ -z "$WAN_ACTION" ] && creat_ss_json
@@ -1321,7 +1350,9 @@ apply_ss(){
 	load_nat
 	#===load nat end===
 	restart_dnsmasq
-	echo_date ------------------------- shadowsocks 启动完毕 -------------------------
+	echo_date ------------------------ shadowsocks 启动完毕 ------------------------
+	# post-start
+	ss_post_start
 }
 # =========================================================================
 
@@ -1338,12 +1369,13 @@ start)
 	fi
 	;;
 stop)
+	ss_pre_stop
 	disable_ss
 	echo_date
 	echo_date 你已经成功关闭shadowsocks服务~
 	echo_date See you again!
 	echo_date
-	echo_date =============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ===============
+	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
 	;;
 restart)
 	set_ulimit
@@ -1352,7 +1384,7 @@ restart)
 	echo_date
 	echo_date "Across the Great Wall we can reach every corner in the world!"
 	echo_date
-	echo_date =============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ===============
+	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
 	dbus fire onssstart
 	# creat nat locker
 	[ ! -f "/tmp/shadowsocks.nat_lock" ] && touch /tmp/shadowsocks.nat_lock
