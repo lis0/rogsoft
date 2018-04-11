@@ -1,5 +1,8 @@
 Koolshare Hnd router software center Let's Encrypt Changelog
 ===========================================
+2.5
+   - add	修复GoDaddy接口申请证书失败
+
 2.4
    - add	修复Aicloud重启问题
 
