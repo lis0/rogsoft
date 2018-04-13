@@ -1,6 +1,7 @@
 #! /bin/sh
 
 killall shellinaboxd
+rm -rf /koolshare/init.d/*shellinabox*
 rm -rf /koolshare/shellinabox
 rm -rf /koolshare/res/
 rm -rf /koolsahre/scripts/shellinabox_config.sh

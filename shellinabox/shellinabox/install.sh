@@ -1,6 +1,7 @@
 #! /bin/sh
 
 killall shellinaboxd
+rm -rf /koolshare/init.d/*shellinabox*
 cp -rf /tmp/shellinabox/shellinabox /koolshare/
 cp -rf /tmp/shellinabox/res/* /koolshare/res/
 cp -rf /tmp/shellinabox/scripts/* /koolshare/scripts/

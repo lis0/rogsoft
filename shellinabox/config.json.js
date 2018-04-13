@@ -1,9 +1,9 @@
 {
-"version":"1.0",
-"md5":"a4fb78fbbefa2de95ed4a7c8bb148f39",
+"version":"1.1",
+"md5":"38f8b69198d4eabe989a73f7fe6dffe9",
 "home_url":"Module_shellinabox.asp",
 "title":"shellinabox",
 "description":"超强的SSH网页客户端，webshell替代品~",
 "changelog":"",
-"build_date":"2018-04-08_14:13:50"
+"build_date":"2018-04-13_21:41:58"
 }
