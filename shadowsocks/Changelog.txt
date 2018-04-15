@@ -1,5 +1,8 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+1.1.8
+   - fix	脚本：修复使用ss混淆节点，重启路由后不会启用混淆的问题。
+
 1.1.7
    - add	加入ss_post_start功能，可以在SS服务运行完毕后触发用户自己的脚本；
     		加入ss_pre_stop功能，可以在SS服务开始关闭前触发用户自己的脚本；
