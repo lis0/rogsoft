@@ -1,5 +1,9 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+1.1.9
+   - update	更新shadowsocks-libev到最新3.1.3，simple-obfs更新到最新 （2018年04月15日 编译）；
+   - update 更新kcptun到20180316
+
 1.1.8
    - fix	脚本：修复使用ss混淆节点，重启路由后不会启用混淆的问题。
 
