@@ -39,7 +39,6 @@ install_ss(){
 	chmod a+x /tmp/shadowsocks/install.sh
 	echo_date 开始安装更新文件...
 	sh /tmp/shadowsocks/install.sh
-
 	rm -rf /tmp/shadowsocks*
 }
 
@@ -234,40 +233,6 @@ ss_pre_start(){
 		echo_date ss启动前触发:触发启动负载均衡功能！
 			#start haproxy
 			sh /koolshare/scripts/ss_lb_config.sh
-			#start kcptun
-			lb_node=`dbus list ssconf_basic_use_lb_|sed 's/ssconf_basic_use_lb_//g' |cut -d "=" -f 1 | sort -n`
-			for node in $lb_node
-			do	
-				name=`dbus get ssconf_basic_name_$node`
-				kcp=`dbus get ssconf_basic_use_kcp_$node`
-				kcp_server=`dbus get ssconf_basic_server_$node`
-				# marked for change in future 
-				server_ip=`nslookup "$kcp_server" 119.29.29.29 | sed '1,4d' | awk '{print $3}' | grep -v :|awk 'NR==1{print}'`
-				kcp_port=`dbus get ss_basic_kcp_port`
-				kcp_para=`dbus get ss_basic_kcp_parameter`
-				if [ "$kcp" == "1" ];then
-					export GOGC=40
-					if [ "$ss_basic_kcp_method" == "1" ];then
-						[ -n "$ss_basic_kcp_encrypt" ] && KCP_CRYPT="--crypt $ss_basic_kcp_encrypt"
-						[ -n "$ss_basic_kcp_password" ] && KCP_KEY="--key $ss_basic_kcp_password" || KCP_KEY=""
-						[ -n "$ss_basic_kcp_sndwnd" ] && KCP_SNDWND="--sndwnd $ss_basic_kcp_sndwnd" || KCP_SNDWND=""
-						[ -n "$ss_basic_kcp_rcvwnd" ] && KCP_RNDWND="--rcvwnd $ss_basic_kcp_rcvwnd" || KCP_RNDWND=""
-						[ -n "$ss_basic_kcp_mtu" ] && KCP_MTU="--mtu $ss_basic_kcp_mtu" || KCP_MTU=""
-						[ -n "$ss_basic_kcp_conn" ] && KCP_CONN="--conn $ss_basic_kcp_conn" || KCP_CONN=""
-						[ "$ss_basic_kcp_nocomp" == "1" ] && COMP="--nocomp" || COMP=""
-						[ -n "$ss_basic_kcp_mode" ] && KCP_MODE="--mode $ss_basic_kcp_mode" || KCP_MODE=""
-
-						start-stop-daemon -S -q -b -m \
-						-p /tmp/var/kcp.pid \
-						-x /koolshare/bin/client_linux_arm7 \
-						-- -l 127.0.0.1:1091 \
-						-r $server_ip:$kcp_port \
-						$KCP_CRYPT $KCP_KEY $KCP_SNDWND $KCP_RNDWND $KCP_MTU $KCP_CONN $COMP $KCP_MODE $ss_basic_kcp_extra
-					else
-						start-stop-daemon -S -q -b -m -p /tmp/var/kcp.pid -x /koolshare/bin/client_linux_arm7 -- -l 127.0.0.1:1091 -r $server_ip:$kcp_port $kcp_para
-					fi
-				fi
-			done
 		else
 			echo_date ss启动前触发:未选择负载均衡节点，不触发负载均衡启动！
 		fi
@@ -275,7 +240,7 @@ ss_pre_start(){
 		if [ `dbus get ss_basic_server | grep -o "127.0.0.1"` ] && [ `dbus get ss_basic_port` == `dbus get ss_lb_port` ];then
 			echo_date ss启动前触发【警告】：你选择了负载均衡节点，但是负载均衡开关未启用！！
 		else
-			echo_date ss启动前触发：你选择了普通节点，不触发负载均衡启动！.
+			echo_date ss启动前触发：你选择了普通节点，不触发负载均衡启动！
 		fi
 	fi
 }
