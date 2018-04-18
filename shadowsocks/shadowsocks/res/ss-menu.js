@@ -100,7 +100,7 @@ function browser_compatibility1(){
 
 function menu_hook() {
 	browser_compatibility1();
-	tabtitle[tabtitle.length - 1] = new Array("", "shadowsocks设置", "负载均衡设置", "Socks5设置", "__INHERIT__");
+	tabtitle[tabtitle.length - 1] = new Array("", "科学上网设置", "负载均衡设置", "Socks5设置", "__INHERIT__");
 	tablink[tablink.length - 1] = new Array("", "Module_shadowsocks.asp", "Module_shadowsocks_lb.asp", "Module_shadowsocks_local.asp", "NULL");
 }
 

@@ -13,6 +13,8 @@ dbus set ss_basic_version_local=$ss_basic_version_local
 main_url="https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks"
 backup_url="https://rogsoft.ngrok.wang/shadowsocks"
 CONFIG_FILE=/koolshare/ss/ss.json
+V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
+V2RAY_CONFIG_FILE="/koolshare/ss/v2ray.json"
 DNS_PORT=7913
 ISP_DNS=$(nvram get wan0_dns|sed 's/ /\n/g'|grep -v 0.0.0.0|grep -v 127.0.0.1|sed -n 1p)
 lan_ipaddr=$(nvram get lan_ipaddr)
@@ -23,15 +25,23 @@ ip_prefix_hex=`nvram get lan_ipaddr | awk -F "." '{printf ("0x%02x", $1)} {print
 ss_basic_password=`echo $ss_basic_password|base64_decode`
 IFIP=`echo $ss_basic_server|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
 ARG_OBFS=""
-if [ -n "$ss_basic_rss_protocol" ];then
-	ss_basic_type=1
-else
-	if [ -n "$ss_basic_koolgame_udp" ];then
-		ss_basic_type=2
+
+# 兼容1.2.0及其以下
+[ -z "$ss_basic_type" ] && {
+	if [ -n "$ss_basic_rss_protocol" ];then
+		ss_basic_type="1"
 	else
-		ss_basic_type=0
+		if [ -n "$ss_basic_koolgame_udp" ];then
+			ss_basic_type="2"
+		else
+			if [ -n "$ss_basic_v2ray_use_json" ];then
+				ss_basic_type="3"
+			else
+				ss_basic_type="0"
+			fi
+		fi
 	fi
-fi
+}
 
 install_ss(){
 	echo_date 开始解压压缩包...
@@ -223,14 +233,20 @@ kill_process(){
 		echo_date 关闭ud2raw进程...
 		killall udp2raw >/dev/null 2>&1
 	fi
+	v2ray_process=`pidof v2ray`
+	if [ -n "$v2ray_process" ];then 
+		echo_date 关闭V2Ray进程...
+		killall v2ray >/dev/null 2>&1
+	fi
 }
 
 # ================================= ss prestart ===========================
 ss_pre_start(){
 	lb_enable=`dbus get ss_lb_enable`
 	if [ "$lb_enable" == "1" ];then
+		echo_date ---------------------- 【科学上网】 启动前触发脚本 ----------------------
 		if [ `dbus get ss_basic_server | grep -o "127.0.0.1"` ] && [ `dbus get ss_basic_port` == `dbus get ss_lb_port` ];then
-		echo_date ss启动前触发:触发启动负载均衡功能！
+			echo_date ss启动前触发:触发启动负载均衡功能！
 			#start haproxy
 			sh /koolshare/scripts/ss_lb_config.sh
 		else
@@ -239,8 +255,8 @@ ss_pre_start(){
 	else
 		if [ `dbus get ss_basic_server | grep -o "127.0.0.1"` ] && [ `dbus get ss_basic_port` == `dbus get ss_lb_port` ];then
 			echo_date ss启动前触发【警告】：你选择了负载均衡节点，但是负载均衡开关未启用！！
-		else
-			echo_date ss启动前触发：你选择了普通节点，不触发负载均衡启动！
+		#else
+			#echo_date ss启动前触发：你选择了普通节点，不触发负载均衡启动！
 		fi
 	fi
 }
@@ -389,7 +405,7 @@ start_sslocal(){
 start_dns(){
 	# start ss-local on port 23456
 	echo_date 开启ss-local，提供socks5代理端口：23456
-	start_sslocal
+	[ "$ss_basic_type" != "3" ] && start_sslocal
 	# Start cdns
 	if [ "$ss_foreign_dns" == "1" ] || [ -z "$ss_foreign_dns" ]; then
 		echo_date 开启cdns，用于dns解析...
@@ -450,6 +466,10 @@ start_dns(){
 			else
 				ss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user $ARG_OBFS -u -f /var/run/sstunnel.pid
 			fi
+		elif [ "$ss_basic_type" == "3" ];then
+			echo_date V2Ray下不支持ss-tunnel，改用dns2socks！
+			dbus set ss_foreign_dns=3
+			dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNS_PORT > /dev/null 2>&1 &
 		fi
 	fi
 	
@@ -816,6 +836,195 @@ start_koolgame(){
 			dbus set ss_basic_udp2raw_boost_enable=0
 		fi
 	fi
+}
+
+get_function_switch() {
+	case "$1" in
+		0)
+			echo "false"
+		;;
+		1)
+			echo "true"
+		;;
+	esac
+}
+
+creat_v2ray_json(){
+
+	rm -rf "$V2RAY_CONFIG_FILE_TMP"
+	rm -rf "$V2RAY_CONFIG_FILE"
+	if [ "$ss_basic_v2ray_use_json" == "0" ];then
+		echo_date 生成V2Ray配置文件...
+		local kcp="null"
+		local tcp="null"
+		local ws="null"
+		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency="null"
+		case "$ss_basic_v2ray_network" in
+			tcp)
+				if [ "$ss_basic_v2ray_headtype_tcp" == "http" ];then
+					tcp="{
+					\"connectionReuse\": true,
+					\"header\": {
+					\"type\": \"http\",
+					\"request\": {
+					\"version\": \"1.1\",
+					\"method\": \"GET\",
+					\"path\": [\"/\"],
+					\"headers\": {
+					\"Host\": [\"\"],
+					\"User-Agent\": [\"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36\",\"Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46\"],
+					\"Accept-Encoding\": [\"gzip, deflate\"],
+					\"Connection\": [\"keep-alive\"],
+					\"Pragma\": \"no-cache\"
+					}
+					},
+					\"response\": {
+					\"version\": \"1.1\",
+					\"status\": \"200\",
+					\"reason\": \"OK\",
+					\"headers\": {
+					\"Content-Type\": [\"application/octet-stream\",\"video/mpeg\"],
+					\"Transfer-Encoding\": [\"chunked\"],
+					\"Connection\": [\"keep-alive\"],
+					\"Pragma\": \"no-cache\"
+					}
+					}
+					}
+					}"
+				else
+					tcp="null"
+				fi        
+			;;
+			kcp)
+				kcp="{
+				\"mtu\": 1350,
+				\"tti\": 50,
+				\"uplinkCapacity\": 12,
+				\"downlinkCapacity\": 100,
+				\"congestion\": false,
+				\"readBufferSize\": 2,
+				\"writeBufferSize\": 2,
+				\"header\": {
+				\"type\": \"$ss_basic_v2ray_headtype_kcp\",
+				\"request\": null,
+				\"response\": null
+				}
+				}"
+			;;
+			ws)
+				ws="{
+				\"connectionReuse\": true,
+				\"path\": \"$ss_basic_v2ray_network_path\",
+				\"headers\": null
+				}"
+			;;
+			ws_hd)
+				ws="{
+				\"connectionReuse\": true,
+				\"path\": \"$ss_basic_v2ray_network_path\",
+				\"headers\": {
+				\"Host\": \"$ss_basic_v2ray_network_host\"
+				}     
+				}"
+			;;
+		esac
+		
+		cat > "$V2RAY_CONFIG_FILE_TMP" <<-EOF
+			{
+				"log": {
+					"access": "/dev/null",
+					"error": "/tmp/v2ray_log.log",
+					"loglevel": "error"
+				},
+				"inbound": {
+					"port": 23456,
+					"listen": "0.0.0.0",
+					"protocol": "socks",
+					"settings": {
+						"auth": "noauth",
+						"udp": true,
+						"ip": "127.0.0.1",
+						"clients": null
+					},
+					"streamSettings": null
+				},
+				"outbound": {
+					"tag": "agentout",
+					"protocol": "vmess",
+					"settings": {
+						"vnext": [
+							{
+								"address": "$ss_basic_server",
+								"port": $ss_basic_port,
+								"users": [
+									{
+										"id": "$ss_basic_v2ray_uuid",
+										"alterId": $ss_basic_v2ray_alterid,
+										"security": "$ss_basic_v2ray_security"
+									}
+								]
+							}
+						]
+					},
+					"streamSettings": {
+						"network": "tcp",
+						"security": "none",
+						"tcpSettings": $tcp,
+						"kcpSettings": $kcp,
+						"wsSettings": $ws
+					},
+					"mux": {
+						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
+						"concurrency": $ss_basic_v2ray_mux_concurrency
+					}
+				},
+				"inboundDetour": [
+					{
+						"listen": "0.0.0.0",
+						"port": 3333,
+						"protocol": "dokodemo-door",
+						"settings": {
+							"network": "tcp,udp",
+							"followRedirect": true
+						}
+					}
+				]
+			}
+		EOF
+	elif [ "$ss_basic_v2ray_use_json" == "1" ];then
+		echo_date 使用自定义的v2ray json配置文件...
+		echo "$ss_basic_v2ray_json" | base64_decode > "$V2RAY_CONFIG_FILE_TMP"
+	fi
+	
+	echo_date 解析V2Ray配置文件...
+	cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . > "$V2RAY_CONFIG_FILE"
+	echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
+	echo_date 测试V2Ray配置文件.....
+	result=$(v2ray -test -config="$V2RAY_CONFIG_FILE" | grep "Configuration OK.")
+	if [ -n "$result" ];then
+		echo_date $result
+		echo_date V2Ray配置文件通过测试!!!
+	else
+		rm -rf "$V2RAY_CONFIG_FILE_TMP"
+		rm -rf "$V2RAY_CONFIG_FILE"
+		echo_date V2Ray配置文件没有通过测试，请检查设置!!!插件将在5秒后自动关闭！
+		echo_date
+		echo_date
+		echo_date
+		sleep 5
+		dbus set ss_basic_enable="0"
+		disable_ss
+		exit 
+	fi
+}
+
+start_v2ray(){
+	echo_date 开启v2ray主进程... 为了运行的稳定性，建议使用虚拟内存...
+	start-stop-daemon -S -q -b -m \
+	-p /tmp/var/v2ray.pid \
+	-x /koolshare/bin/v2ray \
+	-- --config="$V2RAY_CONFIG_FILE"
+	echo_date v2ray启动成功。
 }
 
 write_cron_job(){
@@ -1215,7 +1424,7 @@ set_ulimit(){
 }
 
 disable_ss(){
-	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
+	echo_date ============ 梅林固件 - shadowsocks by sadoneli\&Xiaobao =============
 	echo_date
 	echo_date ------------------------- 关闭Shadowsocks -----------------------------
 	nvram set ss_mode=0
@@ -1226,7 +1435,7 @@ disable_ss(){
 	flush_nat
 	kill_process
 	kill_cron_job
-	echo_date ------------------------- Shadowsocks已关闭 ----------------------------
+	echo_date ------------------------ Shadowsocks已关闭 ----------------------------
 }
 
 load_nat(){
@@ -1255,7 +1464,7 @@ ss_post_start(){
 	for i in $(find ./ -name 'P*' | sort) ;
 	do
 		trap "" INT QUIT TSTP EXIT
-		echo_date ------------- shadowsocks 启动后触发脚本: $i -------------
+		echo_date ------------- 【科学上网】 启动后触发脚本: $i -------------
 		if [ -r "$i" ]; then
 			$i start
 		fi
@@ -1269,7 +1478,7 @@ ss_pre_stop(){
 	for i in $(find ./ -name 'P*' | sort -r) ;
 	do
 		trap "" INT QUIT TSTP EXIT
-		echo_date ------------- shadowsocks 关闭前触发脚本: $i ------------
+		echo_date ------------- 【科学上网】 关闭前触发脚本: $i ------------
 		if [ -r "$i" ]; then
 			$i stop
 		fi
@@ -1281,9 +1490,9 @@ apply_ss(){
 	# router is on boot
 	WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
 	# now stop first
-	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
+	echo_date ============== 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao ==============
 	echo_date
-	echo_date ------------------------- 关闭Shadowsocks -----------------------------
+	echo_date ------------------------- 关闭【科学上网】 -----------------------------
 	ss_pre_stop
 	nvram set ss_mode=0
 	dbus set dns2socks=0
@@ -1294,30 +1503,31 @@ apply_ss(){
 	flush_nat
 	kill_process
 	kill_cron_job
-	echo_date ------------------------- Shadowsocks已关闭 ----------------------------
+	echo_date ------------------------ 【科学上网】已关闭 ----------------------------
 	# pre-start
-	echo_date ---------------------- shadowsocks 启动前触发脚本 ----------------------
 	ss_pre_start
 	# start
-	echo_date ------------------------ 梅林固件 shadowsocks -------------------------
+	echo_date ------------------------- 启动 【科学上网】 ----------------------------
 	resolv_server_ip
 	ss_arg
 	# do not re generate json on router start, use old one
-	[ -z "$WAN_ACTION" ] && creat_ss_json
-	#creat_dnsmasq_basic_conf
+	[ -z "$WAN_ACTION" ] && [ "$ss_basic_type" != "3" ] && creat_ss_json
+	[ -z "$WAN_ACTION" ] && [ "$ss_basic_type" = "3" ] && creat_v2ray_json
 	load_cdn_site
 	custom_dnsmasq
 	append_white_black_conf && ln_conf
 	write_cron_job
 	[ "$ss_basic_type" != "2" ] && start_dns
-	[ "$ss_basic_type" != "2" ] && start_ss_redir || start_koolgame
+	[ "$ss_basic_type" == "0" ] || [ "$ss_basic_type" == "1" ] && start_ss_redir
+	[ "$ss_basic_type" == "2" ] && start_koolgame
+	[ "$ss_basic_type" == "3" ] && start_v2ray
 	[ "$ss_basic_type" != "2" ] && start_kcp
 	load_module
 	#===load nat start===
 	load_nat
 	#===load nat end===
 	restart_dnsmasq
-	echo_date ------------------------ shadowsocks 启动完毕 ------------------------
+	echo_date ------------------------ 【科学上网】 启动完毕 ------------------------
 	# post-start
 	ss_post_start
 }
@@ -1342,7 +1552,7 @@ stop)
 	echo_date 你已经成功关闭shadowsocks服务~
 	echo_date See you again!
 	echo_date
-	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
+	echo_date ============ 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao =============
 	;;
 restart)
 	set_ulimit
@@ -1351,7 +1561,7 @@ restart)
 	echo_date
 	echo_date "Across the Great Wall we can reach every corner in the world!"
 	echo_date
-	echo_date ============== 梅林固件 - shadowsocks by sadoneli\&Xiaobao ==============
+	echo_date ============ 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao =============
 	dbus fire onssstart
 	# creat nat locker
 	[ ! -f "/tmp/shadowsocks.nat_lock" ] && touch /tmp/shadowsocks.nat_lock

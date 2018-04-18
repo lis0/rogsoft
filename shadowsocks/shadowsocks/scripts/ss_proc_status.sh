@@ -43,6 +43,9 @@ get_dns_name() {
 		5)
 			echo "chinadns1 + dns2socks上游"
 		;;
+		6)
+			echo "koolgame内置"
+		;;
 	esac
 }
 
@@ -65,6 +68,7 @@ echo_version(){
 	echo "chinadns1		1.3.2 		2017年12月09日编译"
 	echo "chinadns2		2.0.0 		2017年12月09日编译"
 	echo "client_linux_arm7	20180316	kcptun"
+	echo "v2ray			v3.18.1		20180415"
 	echo -----------------------------------------------------------
 }
 
@@ -83,32 +87,38 @@ check_status(){
 	CHINADNS=`pidof chinadns`
 	KCPTUN=`pidof client_linux_arm7`
 	HAPROXY=`pidof haproxy`
+	V2RAY=`pidof v2ray`
 	game_on=`dbus list ss_acl_mode|cut -d "=" -f 2 | grep 3`
-	
-	if [ -n "$ss_basic_rss_obfs" ];then
+
+
+	if [ "$ss_basic_type" == "0" ];then
+		echo_version
+		echo
+		echo ② 检测当前相关进程工作状态：（你正在使用SS-libev,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_foreign_dns)）
+		echo -----------------------------------------------------------
+		echo "程序		状态	PID"
+		[ -n "$SS_REDIR" ] && echo "ss-redir	工作中	pid：$SS_REDIR" || echo "ss-redir	未运行"
+	elif [ "$ss_basic_type" == "1" ];then
 		echo_version
 		echo
 		echo ② 检测当前相关进程工作状态：（你正在使用SSR-libev,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_foreign_dns)）
 		echo -----------------------------------------------------------
 		echo "程序		状态	PID"
 		[ -n "$SSR_REDIR" ] && echo "ssr-redir	工作中	pid：$SSR_REDIR" || echo "ssr-redir	未运行"
-	else
-		if [ -n "$ss_basic_koolgame_udp" ];then
-			echo_version
-			echo
-			echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_foreign_dns)）
-			echo -----------------------------------------------------------
-			echo "程序		状态	PID"
-			[ -n "$KOOLGAME" ] && echo "koolgame	工作中	pid：$KOOLGAME" || echo "koolgame	未运行"
-		else
-			echo_version
-			echo
-			echo ② 检测当前相关进程工作状态：（你正在使用SS-libev,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name 7)）
-			echo -----------------------------------------------------------
-			echo "程序		状态	PID"
-			[ -n "$SS_REDIR" ] && echo "ss-redir	工作中	pid：$SS_REDIR" || echo "ss-redir	未运行"
-		fi
-
+	elif [ "$ss_basic_type" == "2" ];then
+		echo_version
+		echo
+		echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name 6)）
+		echo -----------------------------------------------------------
+		echo "程序		状态	PID"
+		[ -n "$KOOLGAME" ] && echo "koolgame	工作中	pid：$KOOLGAME" || echo "koolgame	未运行"
+	elif [ "$ss_basic_type" == "3" ];then
+		echo_version
+		echo
+		echo ② 检测当前相关进程工作状态：（你正在使用V2Ray,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_foreign_dns)）
+		echo -----------------------------------------------------------
+		echo "程序		状态	PID"
+		[ -n "$V2RAY" ] && echo "v2ray		工作中	pid：$V2RAY" || echo "v2ray	未运行"
 	fi
 
 	if [ -z "$ss_basic_koolgame_udp" ];then
@@ -129,7 +139,9 @@ check_status(){
 				[ -n "$SSR_LOCAL" ] && echo "ssr-local	工作中	pid：$SSR_LOCAL" || echo "ssr-local	未运行"
 				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
 			else
-				[ -n "$SS_LOCAL" ] && echo "ss-local	工作中	pid：$SS_LOCAL" || echo "ss-local	未运行"
+				if [ "$ss_basic_type" != "3" ];then
+					[ -n "$SS_LOCAL" ] && echo "ss-local	工作中	pid：$SS_LOCAL" || echo "ss-local	未运行"
+				fi
 				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
 			fi
 		elif [ "$ss_foreign_dns" == "4" ];then
@@ -139,8 +151,11 @@ check_status(){
 				[ -n "$SS_TUNNEL" ] && echo "ss-tunnel	工作中	pid：$SS_TUNNEL" || echo "ss-tunnel	未运行"
 			fi
 		elif [ "$ss_foreign_dns" == "5" ];then
-			[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
-			[ -n "$CHINADNS1" ] && echo "chinadns1	工作中	pid：$CHINADNS1" || echo "chinadns1	未运行"
+			if [ "$ss_basic_type" != "3" ];then
+				[ -n "$SSR_LOCAL" ] && echo "ssr-local	工作中	pid：$SSR_LOCAL" || echo "ssr-local	未运行"
+			fi
+				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
+				[ -n "$CHINADNS1" ] && echo "chinadns1	工作中	pid：$CHINADNS1" || echo "chinadns1	未运行"
 		fi
 	fi
 
@@ -148,7 +163,6 @@ check_status(){
 	echo
 	echo
 	echo ③ 检测iptbales工作状态：
-	#echo ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 	echo ----------------------------------------------------- nat表 PREROUTING 链 --------------------------------------------------------
 	iptables -nvL PREROUTING -t nat
 	echo

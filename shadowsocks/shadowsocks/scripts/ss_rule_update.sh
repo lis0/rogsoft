@@ -1,7 +1,7 @@
 #!/bin/sh
 eval `dbus export ss`
 source /koolshare/scripts/base.sh
-alias echo_date='echo $(date +%Y年%m月%d日\ %X):'
+alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 
 start_update(){
 	url_back="https://koolshare.ngrok.wang/maintain_files"

@@ -59,6 +59,8 @@ rm -rf /koolshare/bin/resolveip
 rm -rf /koolshare/bin/speederv1
 rm -rf /koolshare/bin/speederv2
 rm -rf /koolshare/bin/udp2raw
+rm -rf /koolshare/bin/v2ray
+rm -rf /koolshare/bin/v2ctl
 rm -rf /koolshare/res/icon-shadowsocks.png
 rm -rf /koolshare/res/ss-menu.js
 rm -rf /koolshare/res/all.png
@@ -120,7 +122,7 @@ echo_date 插件安装成功，你为什么这么屌？！
 
 if [ "$ss_basic_enable" == "1" ];then
 	echo_date 重启ss！
-	. /koolshare/ss/ssconfig.sh restart
+	sh /koolshare/ss/ssconfig.sh restart
 fi
 
 echo_date 更新完毕，请等待网页自动刷新！

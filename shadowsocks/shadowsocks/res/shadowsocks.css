@@ -116,15 +116,15 @@ input[type=button]:focus {
 	text-align:left;
 }
 .vpnClientTitle_td_unclick {
-	background-color: #000;
 	height: 30px;
 	cursor: pointer;
+	background-color: #000;
 	border: 1px solid #222;
 }
 .vpnClientTitle_td_click {
-	background-color: #4D595D;
 	height: 30px;
 	cursor: pointer;
+	background-color: #4D595D;
 	border: 1px solid #222;
 }
 
@@ -147,8 +147,8 @@ input[type=button]:focus {
 	height: 30px;
 	font-size:12px;
 	padding-left: 5px;
-	border: 1px solid #222;
 	border-collapse: collapse;
+	border: 1px solid #222;
 	background:#2F3A3E;
 }
 
@@ -159,13 +159,10 @@ input[type=button]:focus {
 	padding-left: 5px;
 	background-color:#475A5F;
 	text-align: center;
-	border: 1px solid #222;
+	
 	border-collapse: collapse;
 	white-space:nowrap;
 	text-overflow:ellipsis;
-	/*
-	word-wrap:break-word;
-	*/
 }
 
 .SimpleNote { padding:5px 10px;}

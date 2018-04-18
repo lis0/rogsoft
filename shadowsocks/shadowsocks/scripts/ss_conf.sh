@@ -48,6 +48,8 @@ backup_tar(){
 	cp /koolshare/bin/speeder* $TARGET_FOLDER/bin/
 	cp /koolshare/bin/udp2raw $TARGET_FOLDER/bin/
 	cp /koolshare/bin/jq $TARGET_FOLDER/bin/
+	cp /koolshare/bin/v2ray $TARGET_FOLDER/bin/
+	cp /koolshare/bin/v2ctl $TARGET_FOLDER/bin/
 	cp /koolshare/webs/Module_shadowsocks*.asp $TARGET_FOLDER/webs/
 	cp /koolshare/res/icon-shadowsocks.png $TARGET_FOLDER/res/
 	cp /koolshare/res/ss-menu.js $TARGET_FOLDER/res/
@@ -104,14 +106,14 @@ restore_sh(){
 
 restore_json(){
 	echo_date 检测到ss json配置文件...
-	ss_formate=`echo $confs|grep "obfs"`
-	if [ -z "$ss_formate" ];then
-
-		servers=$(cat /tmp/ssconf_backup.json |grep -w server|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2)
-		ports=`cat /tmp/ssconf_backup.json |grep -w server_port|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		passwords=`cat /tmp/ssconf_backup.json |grep -w password|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		methods=`cat /tmp/ssconf_backup.json |grep -w method|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		remarks=`cat /tmp/ssconf_backup.json |grep -w remarks|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+	ss_format=`echo $confs|grep "obfs"`
+	cat /tmp/ssconf_backup.json | jq --tab . > /tmp/ssconf_backup_formated.json
+	if [ -z "$ss_format" ];then
+		servers=$(cat /tmp/ssconf_backup_formated.json |grep -w server|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2)
+		ports=`cat /tmp/ssconf_backup_formated.json |grep -w server_port|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		passwords=`cat /tmp/ssconf_backup_formated.json |grep -w password|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		methods=`cat /tmp/ssconf_backup_formated.json |grep -w method|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		remarks=`cat /tmp/ssconf_backup_formated.json |grep -w remarks|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
 		
 		# flush previous test value in the table
 		echo_date 尝试移除旧的webtest结果...
@@ -137,7 +139,7 @@ restore_json(){
 		k=1
 		fi
 		min=1
-		max=`cat /tmp/ssconf_backup.json |grep -wc server`
+		max=`cat /tmp/ssconf_backup_formated.json |grep -wc server`
 		while [ $min -le $max ]
 		do
 		    echo_date "==============="
@@ -169,15 +171,15 @@ restore_json(){
 		echo_date 导入配置成功！
 	else
 		echo_date 检测到ssr json配置文件...
-		servers=$(cat /tmp/ssconf_backup.json |grep -w server|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2)
-		ports=`cat /tmp/ssconf_backup.json |grep -w server_port|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		passwords=`cat /tmp/ssconf_backup.json |grep -w password|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		methods=`cat /tmp/ssconf_backup.json |grep -w method|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		remarks=`cat /tmp/ssconf_backup.json |grep -w remarks|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		obfs=`cat /tmp/ssconf_backup.json |grep -w obfs|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		obfsparam=`cat /tmp/ssconf_backup.json |grep -w obfsparam|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		protocol=`cat /tmp/ssconf_backup.json |grep -w protocol|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
-		protocolparam=`cat /tmp/ssconf_backup.json |grep -w protocolparam|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|sed 's/protocolparam://g'`
+		servers=$(cat /tmp/ssconf_backup_formated.json |grep -w server|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2)
+		ports=`cat /tmp/ssconf_backup_formated.json |grep -w server_port|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		passwords=`cat /tmp/ssconf_backup_formated.json |grep -w password|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		methods=`cat /tmp/ssconf_backup_formated.json |grep -w method|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		remarks=`cat /tmp/ssconf_backup_formated.json |grep -w remarks|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		obfs=`cat /tmp/ssconf_backup_formated.json |grep -w obfs|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		obfsparam=`cat /tmp/ssconf_backup_formated.json |grep -w obfsparam|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		protocol=`cat /tmp/ssconf_backup_formated.json |grep -w protocol|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|cut -d ":" -f 2`
+		protocolparam=`cat /tmp/ssconf_backup_formated.json |grep -w protocolparam|sed 's/"//g'|sed 's/,//g'|sed 's/\s//g'|sed 's/protocolparam://g'`
 		
 		# flush previous test value in the table
 		echo_date 尝试移除旧的webtest结果...
@@ -203,7 +205,7 @@ restore_json(){
 		k=1
 		fi
 		min=1
-		max=`cat /tmp/ssconf_backup.json |grep -wc server`
+		max=`cat /tmp/ssconf_backup_formated.json |grep -wc server`
 		while [ $min -le $max ]
 		do
 		    echo_date "==============="

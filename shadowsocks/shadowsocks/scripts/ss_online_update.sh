@@ -27,12 +27,25 @@ NO_DEL=1
 # ssconf_basic_use_lb_
 # ssconf_basic_lbmode_
 # ssconf_basic_weight_
-# onetime_auth
+# ssconf_basic_v2ray_use_json_
+# ssconf_basic_v2ray_uuid_
+# ssconf_basic_v2ray_alterid_
+# ssconf_basic_v2ray_security_
+# ssconf_basic_v2ray_network_
+# ssconf_basic_v2ray_headtype_tcp_
+# ssconf_basic_v2ray_headtype_kcp_
+# ssconf_basic_v2ray_network_path_
+# ssconf_basic_v2ray_network_host_
+# ssconf_basic_v2ray_network_security_
+# ssconf_basic_v2ray_mux_enable_
+# ssconf_basic_v2ray_mux_concurrency_
+# ssconf_basic_v2ray_json_
+# ssconf_basic_type_
 # ==============================
 prepare(){
 	# 0 检测排序
-	seq_nu=`dbus list ssconf_basic_passwo | cut -d "=" -f1|cut -d "_" -f4|sort -n|wc -l`
-	seq_max_nu=`dbus list ssconf_basic_passwo | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1`
+	seq_nu=`dbus list ssconf_basic_nam | cut -d "=" -f1|cut -d "_" -f4|sort -n|wc -l`
+	seq_max_nu=`dbus list ssconf_basic_nam | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1`
 	[ "$seq_nu" == "$seq_max_nu" ] && return
 	if [ "$seq_nu" == "$seq_max_nu" ];then
 		echo_date "节点顺序正确，无需调整!"
@@ -44,7 +57,7 @@ prepare(){
 	touch /tmp/ss_conf.sh
 	chmod +x /tmp/ss_conf.sh
 	echo "#!/bin/sh" >> /tmp/ss_conf.sh
-	valid_nus=`dbus list ssconf_basic_passwo | cut -d "=" -f1|cut -d "_" -f4|sort -n`
+	valid_nus=`dbus list ssconf_basic_nam | cut -d "=" -f1|cut -d "_" -f4|sort -n`
 	q=1
 	for nu in $valid_nus
 	do
@@ -66,6 +79,21 @@ prepare(){
 		[ -n "$(dbus get ssconf_basic_lbmode_$nu)" ] && echo dbus set ssconf_basic_lbmode_$q=$(dbus get ssconf_basic_lbmode_$nu) >> /tmp/ss_conf.sh
 		[ -n "$(dbus get ssconf_basic_weight_$nu)" ] && echo dbus set ssconf_basic_weight_$q=$(dbus get ssconf_basic_weight_$nu) >> /tmp/ss_conf.sh
 		[ -n "$(dbus get ssconf_basic_group_$nu)" ] && echo dbus set ssconf_basic_group_$q=$(dbus get ssconf_basic_group_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_use_json_$nu)" ] && echo dbus set ssconf_basic_v2ray_use_json_$q=$(dbus get ssconf_basic_v2ray_use_json_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_uuid_$nu)" ] && echo dbus set ssconf_basic_v2ray_uuid_$q=$(dbus get ssconf_basic_v2ray_uuid_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_alterid_$nu)" ] && echo dbus set ssconf_basic_v2ray_alterid_$q=$(dbus get ssconf_basic_v2ray_alterid_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_security_$nu)" ] && echo dbus set ssconf_basic_v2ray_security_$q=$(dbus get ssconf_basic_v2ray_security_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_network_$nu)" ] && echo dbus set ssconf_basic_v2ray_network_$q=$(dbus get ssconf_basic_v2ray_network_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_headtype_tcp_$nu)" ] && echo dbus set ssconf_basic_v2ray_headtype_tcp_$q=$(dbus get ssconf_basic_v2ray_headtype_tcp_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_headtype_kcp_$nu)" ] && echo dbus set ssconf_basic_v2ray_headtype_kcp_$q=$(dbus get ssconf_basic_v2ray_headtype_kcp_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_network_path_$nu)" ] && echo dbus set ssconf_basic_v2ray_network_path_$q=$(dbus get ssconf_basic_v2ray_network_path_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_network_host_$nu)" ] && echo dbus set ssconf_basic_v2ray_network_host_$q=$(dbus get ssconf_basic_v2ray_network_host_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_network_security_$nu)" ] && echo dbus set ssconf_basic_v2ray_network_security_$q=$(dbus get ssconf_basic_v2ray_network_security_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_mux_enable_$nu)" ] && echo dbus set ssconf_basic_v2ray_mux_enable_$q=$(dbus get ssconf_basic_v2ray_mux_enable_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_mux_concurrency_$nu)" ] && echo dbus set ssconf_basic_v2ray_mux_concurrency_$q=$(dbus get ssconf_basic_v2ray_mux_concurrency_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_v2ray_json_$nu)" ] && echo dbus set ssconf_basic_v2ray_json_$q=$(dbus get ssconf_basic_v2ray_json_$nu) >> /tmp/ss_conf.sh
+		[ -n "$(dbus get ssconf_basic_type_$nu)" ] && echo dbus set ssconf_basic_type_$q=$(dbus get ssconf_basic_type_$nu) >> /tmp/ss_conf.sh
+		
 		echo "#------------------------" >> /tmp/ss_conf.sh
 		if [ "$nu" == "$ssconf_basic_node" ];then
 			echo dbus set ssconf_basic_node=$q >> /tmp/ss_conf.sh
@@ -106,7 +134,7 @@ decode_url_link(){
 }
 
 add_ssr_servers(){
-	ssrindex=$(($(dbus list ssconf_basic_passwo | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1)+1))
+	ssrindex=$(($(dbus list ssconf_basic_nam | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1)+1))
 	dbus set ssconf_basic_name_$ssrindex=$remarks
 	[ -z "$1" ] && dbus set ssconf_basic_group_$ssrindex=$group
 	dbus set ssconf_basic_mode_$ssrindex=$ssr_subscribe_mode
@@ -116,20 +144,22 @@ add_ssr_servers(){
 	dbus set ssconf_basic_rss_protocol_param_$ssrindex=$protoparam
 	dbus set ssconf_basic_method_$ssrindex=$encrypt_method
 	dbus set ssconf_basic_rss_obfs_$ssrindex=$obfs
+	dbus set ssconf_basic_type_$ssrindex="1"
 	[ -n "$1" ] && dbus set ssconf_basic_rss_obfs_param_$ssrindex=$obfsparam
 	dbus set ssconf_basic_password_$ssrindex=$password
 	echo_date 成功添加了添加SSR节点：$remarks 到节点列表第 $ssrindex 位。
 }
 
 add_ss_servers(){
-	ssindex=$(($(dbus list ssconf_basic_passwo | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1)+1))
+	ssindex=$(($(dbus list ssconf_basic_nam | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1)+1))
 	echo_date 添加SS节点：$remarks
 	dbus set ssconf_basic_name_$ssindex=$remarks
-	dbus set ssconf_basic_mode_$ssindex="1"
+	dbus set ssconf_basic_mode_$ssindex="2"
 	dbus set ssconf_basic_server_$ssindex=$server
 	dbus set ssconf_basic_port_$ssindex=$server_port
 	dbus set ssconf_basic_method_$ssindex=$encrypt_method
 	dbus set ssconf_basic_password_$ssindex=$password
+	dbus set ssconf_basic_type_$ssindex="1"
 	echo_date 成功添加了添加SS节点：$remarks 到节点列表第 $ssindex 位。
 }
 
@@ -239,6 +269,19 @@ del_none_exist(){
 				dbus remove ssconf_basic_lbmode_$localindex
 				dbus remove ssconf_basic_weight_$localindex
 				dbus remove ssconf_basic_koolgame_udp_$localindex
+				dbus remove ssconf_basic_v2ray_use_json_$localindex
+				dbus remove ssconf_basic_v2ray_uuid_$localindex
+				dbus remove ssconf_basic_v2ray_alterid_$localindex
+				dbus remove ssconf_basic_v2ray_security_$localindex
+				dbus remove ssconf_basic_v2ray_network_$localindex
+				dbus remove ssconf_basic_v2ray_headtype_tcp_$localindex
+				dbus remove ssconf_basic_v2ray_headtype_kcp_$localindex
+				dbus remove ssconf_basic_v2ray_network_path_$localindex
+				dbus remove ssconf_basic_v2ray_network_host_$localindex
+				dbus remove ssconf_basic_v2ray_network_security_$localindex
+				dbus remove ssconf_basic_v2ray_mux_enable_$localindex
+				dbus remove ssconf_basic_v2ray_mux_concurrency_$localindex
+				dbus remove ssconf_basic_v2ray_json_$localindex
 				let delnum+=1
 			done
 		fi
@@ -282,6 +325,21 @@ remove_node_gap(){
 				[ -n "$(dbus get ssconf_basic_lbmode_$nu)" ] && dbus set ssconf_basic_lbmode_"$y"="$(dbus get ssconf_basic_lbmode_$nu)" && dbus remove ssconf_basic_lbmode_$nu
 				[ -n "$(dbus get ssconf_basic_weight_$nu)" ] && dbus set ssconf_basic_weight_"$y"="$(dbus get ssconf_basic_weight_$nu)" && dbus remove ssconf_basic_weight_$nu
 				[ -n "$(dbus get ssconf_basic_koolgame_udp_$nu)" ] && dbus set ssconf_basic_koolgame_udp_"$y"="$(dbus get ssconf_basic_koolgame_udp_$nu)" && dbus remove ssconf_basic_koolgame_udp_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_use_json_$nu)" ] && dbus set ssconf_basic_v2ray_use_json_"$y"="$(dbus get ssconf_basic_v2ray_use_json_$nu)" && dbus remove ssconf_basic_v2ray_use_json_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_uuid_$nu)" ] && dbus set ssconf_basic_v2ray_uuid_"$y"="$(dbus get ssconf_basic_v2ray_uuid_$nu)" && dbus remove ssconf_basic_v2ray_uuid_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_alterid_$nu)" ] && dbus set ssconf_basic_v2ray_alterid_"$y"="$(dbus get ssconf_basic_v2ray_alterid_$nu)" && dbus remove ssconf_basic_v2ray_alterid_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_security_$nu)" ] && dbus set ssconf_basic_v2ray_security_"$y"="$(dbus get ssconf_basic_v2ray_security_$nu)" && dbus remove ssconf_basic_v2ray_security_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_network_$nu)" ] && dbus set ssconf_basic_v2ray_network_"$y"="$(dbus get ssconf_basic_v2ray_network_$nu)" && dbus remove ssconf_basic_v2ray_network_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_headtype_tcp_$nu)" ] && dbus set ssconf_basic_v2ray_headtype_tcp_"$y"="$(dbus get ssconf_basic_v2ray_headtype_tcp_$nu)" && dbus remove ssconf_basic_v2ray_headtype_tcp_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_headtype_kcp_$nu)" ] && dbus set ssconf_basic_v2ray_headtype_kcp_"$y"="$(dbus get ssconf_basic_v2ray_headtype_kcp_$nu)" && dbus remove ssconf_basic_v2ray_headtype_kcp_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_network_path_$nu)" ] && dbus set ssconf_basic_v2ray_network_path_"$y"="$(dbus get ssconf_basic_v2ray_network_path_$nu)" && dbus remove ssconf_basic_v2ray_network_path_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_network_host_$nu)" ] && dbus set ssconf_basic_v2ray_network_host_"$y"="$(dbus get ssconf_basic_v2ray_network_host_$nu)" && dbus remove ssconf_basic_v2ray_network_host_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_network_security_$nu)" ] && dbus set ssconf_basic_v2ray_network_security_"$y"="$(dbus get ssconf_basic_v2ray_network_security_$nu)" && dbus remove ssconf_basic_v2ray_network_security_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_mux_enable_$nu)" ] && dbus set ssconf_basic_v2ray_mux_enable_"$y"="$(dbus get ssconf_basic_v2ray_mux_enable_$nu)" && dbus remove ssconf_basic_v2ray_mux_enable_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_mux_concurrency_$nu)" ] && dbus set ssconf_basic_v2ray_mux_concurrency_"$y"="$(dbus get ssconf_basic_v2ray_mux_concurrency_$nu)" && dbus remove ssconf_basic_v2ray_mux_concurrency_$nu
+				[ -n "$(dbus get ssconf_basic_v2ray_json_$nu)" ] && dbus set ssconf_basic_v2ray_json_"$y"="$(dbus get ssconf_basic_v2ray_json_$nu)" && dbus remove ssconf_basic_v2ray_json_$nu
+				[ -n "$(dbus get ssconf_basic_type_$nu)" ] && dbus set ssconf_basic_type_"$y"="$(dbus get ssconf_basic_type_$nu)" && dbus remove ssconf_basic_type_$nu
+				
 				# change node nu
 				if [ "$nu" == "$ssconf_basic_node" ];then
 					dbus set ssconf_basic_node="$y"
@@ -484,6 +542,20 @@ start_update(){
 						dbus remove ssconf_basic_lbmode_$conf_nu
 						dbus remove ssconf_basic_weight_$conf_nu
 						dbus remove ssconf_basic_koolgame_udp_$conf_nu
+						dbus remove ssconf_basic_v2ray_use_json_$conf_nu
+						dbus remove ssconf_basic_v2ray_uuid_$conf_nu
+						dbus remove ssconf_basic_v2ray_alterid_$conf_nu
+						dbus remove ssconf_basic_v2ray_security_$conf_nu
+						dbus remove ssconf_basic_v2ray_network_$conf_nu
+						dbus remove ssconf_basic_v2ray_headtype_tcp_$conf_nu
+						dbus remove ssconf_basic_v2ray_headtype_kcp_$conf_nu
+						dbus remove ssconf_basic_v2ray_network_path_$conf_nu
+						dbus remove ssconf_basic_v2ray_network_host_$conf_nu
+						dbus remove ssconf_basic_v2ray_network_security_$conf_nu
+						dbus remove ssconf_basic_v2ray_mux_enable_$conf_nu
+						dbus remove ssconf_basic_v2ray_mux_concurrency_$conf_nu
+						dbus remove ssconf_basic_v2ray_json_$conf_nu
+						dbus remove ssconf_basic_type_$conf_nu
 					done
 					# 删除不再鼎业节点的group信息
 					confs_nu_2=`dbus list ss_online_group_|grep "$local_group"| cut -d "=" -f 1|cut -d "_" -f 4`
@@ -609,6 +681,20 @@ remove_online(){
 		dbus remove ssconf_basic_lbmode_$remove_nu
 		dbus remove ssconf_basic_weight_$remove_nu
 		dbus remove ssconf_basic_koolgame_udp_$remove_nu
+		dbus remove ssconf_basic_v2ray_use_json_$remove_nu
+		dbus remove ssconf_basic_v2ray_uuid_$remove_nu
+		dbus remove ssconf_basic_v2ray_alterid_$remove_nu
+		dbus remove ssconf_basic_v2ray_security_$remove_nu
+		dbus remove ssconf_basic_v2ray_network_$remove_nu
+		dbus remove ssconf_basic_v2ray_headtype_tcp_$remove_nu
+		dbus remove ssconf_basic_v2ray_headtype_kcp_$remove_nu
+		dbus remove ssconf_basic_v2ray_network_path_$remove_nu
+		dbus remove ssconf_basic_v2ray_network_host_$remove_nu
+		dbus remove ssconf_basic_v2ray_network_security_$remove_nu
+		dbus remove ssconf_basic_v2ray_mux_enable_$remove_nu
+		dbus remove ssconf_basic_v2ray_mux_concurrency_$remove_nu
+		dbus remove ssconf_basic_v2ray_json_$remove_nu
+		dbus remove ssconf_basic_type_$remove_nu
 	done
 }
 

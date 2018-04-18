@@ -3,7 +3,6 @@
 eval `dbus export ss`
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 mkdir -p /koolshare/ss
-MODEL=`nvram get model`
 
 # 判断路由架构和平台
 case $(uname -m) in
@@ -60,6 +59,8 @@ rm -rf /koolshare/bin/resolveip
 rm -rf /koolshare/bin/speederv1
 rm -rf /koolshare/bin/speederv2
 rm -rf /koolshare/bin/udp2raw
+rm -rf /koolshare/bin/v2ray
+rm -rf /koolshare/bin/v2ctl
 rm -rf /koolshare/res/icon-shadowsocks.png
 rm -rf /koolshare/res/ss-menu.js
 rm -rf /koolshare/res/all.png
@@ -84,10 +85,6 @@ cp -rf /tmp/shadowsocks/scripts/* /koolshare/scripts/
 echo_date 复制网页文件！
 cp -rf /tmp/shadowsocks/webs/* /koolshare/webs/
 cp -rf /tmp/shadowsocks/res/* /koolshare/res/
-if [ "$MODEL" == "GT-AC5300" ];then
-	cp -rf /tmp/shadowsocks/GT-AC5300/webs/* /koolshare/webs/
-	cp -rf /tmp/shadowsocks/GT-AC5300/res/* /koolshare/res/
-fi
 
 echo_date 为新安装文件赋予执行权限...
 chmod 755 /koolshare/ss/rules/*
@@ -125,7 +122,7 @@ echo_date 插件安装成功，你为什么这么屌？！
 
 if [ "$ss_basic_enable" == "1" ];then
 	echo_date 重启ss！
-	. /koolshare/ss/ssconfig.sh restart
+	sh /koolshare/ss/ssconfig.sh restart
 fi
 
 echo_date 更新完毕，请等待网页自动刷新！

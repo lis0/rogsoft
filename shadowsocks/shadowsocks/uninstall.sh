@@ -27,6 +27,9 @@ rm -rf /koolshare/bin/resolveip
 rm -rf /koolshare/bin/speederv1
 rm -rf /koolshare/bin/speederv2
 rm -rf /koolshare/bin/udp2raw
+rm -rf /koolshare/bin/v2ray
+rm -rf /koolshare/bin/v2ctl
+#rm -rf /koolshare/bin/jq $jq is used by another program, do not remove it
 rm -rf /koolshare/res/icon-shadowsocks.png
 rm -rf /koolshare/res/ss-menu.js
 rm -rf /koolshare/res/all.png
