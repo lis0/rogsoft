@@ -1,5 +1,8 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+1.2.3
+   - add	修复GT-AC5300安装1.2.2后皮肤不是ROG皮肤的问题。
+
 1.2.2
    - add	增加v2ray支持。
    - update	优化一些web和shell代码。
