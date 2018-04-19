@@ -84,13 +84,11 @@ cp -rf /tmp/shadowsocks/ss/* /koolshare/ss/
 cp -rf /tmp/shadowsocks/scripts/* /koolshare/scripts/
 
 echo_date 复制网页文件！
-
+cp -rf /tmp/shadowsocks/webs/* /koolshare/webs/
+cp -rf /tmp/shadowsocks/res/* /koolshare/res/
 if [ "$MODEL" == "GT-AC5300" ];then
 	cp -rf /tmp/shadowsocks/GT-AC5300/webs/* /koolshare/webs/
 	cp -rf /tmp/shadowsocks/GT-AC5300/res/* /koolshare/res/
-else
-	cp -rf /tmp/shadowsocks/webs/* /koolshare/webs/
-	cp -rf /tmp/shadowsocks/res/* /koolshare/res/
 fi
 
 echo_date 为新安装文件赋予执行权限...
