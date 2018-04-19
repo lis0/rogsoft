@@ -68,7 +68,7 @@ echo_version(){
 	echo "chinadns1		1.3.2 		2017年12月09日编译"
 	echo "chinadns2		2.0.0 		2017年12月09日编译"
 	echo "client_linux_arm7	20180316	kcptun"
-	echo "v2ray			v3.18.1		20180415"
+	echo "v2ray			v3.18		20180413"
 	echo -----------------------------------------------------------
 }
 

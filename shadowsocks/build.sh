@@ -31,6 +31,6 @@ do_build_result
 backup_version=`cat version | sed -n 1p`
 backup_tar_md5=`cat version | sed -n 2p`
 echo backup VERSION $backup_version
-mv ${MODULE}.tar.gz ./history/"${MODULE}"_"$backup_version".tar.gz
+cp ${MODULE}.tar.gz ./history/"${MODULE}"_"$backup_version".tar.gz
 sed -i "/$backup_version/d" ./history/version
 echo $backup_version $backup_tar_md5 >> ./history/version
