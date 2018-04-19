@@ -12,20 +12,21 @@ case $(uname -m) in
     ;;
   armv7l)
 	echo_date 本插件适用于koolshare merlin aarch64固件平台，armv7l平台不能安装！！！
+	exit 1
     ;;
   mips)
   	echo_date 本插件适用于koolshare merlin aarch64固件平台，mips平台不能安装！！！
   	echo_date 退出安装！
-    exit 0
+    exit 1
     ;;
   x86_64)
 	echo_date 本插件适用于koolshare merlin aarch64固件平台，x86_64固件平台不能安装！！！
-	exit 0
+	exit 1
     ;;
   *)
   	echo_date 本插件适用于koolshare merlin aarch64固件平台，其它平台不能安装！！！
   	echo_date 退出安装！
-    exit 0
+    exit 1
     ;;
 esac
 

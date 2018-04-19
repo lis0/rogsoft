@@ -177,11 +177,11 @@
             "version": "1.6"
         }, 
         {
-            "build_date": "2018-04-19_15:51:58", 
+            "build_date": "2018-04-19_16:17:27", 
             "changelog": "", 
             "description": "科学上网", 
             "home_url": "Module_shadowsocks.asp", 
-            "md5": "ad6e8fb498358ffcc11c4a0fd7241c1c", 
+            "md5": "7cabf3fccd53b668d06c6b2150773221", 
             "name": "shadowsocks", 
             "tar_url": "shadowsocks/shadowsocks.tar.gz", 
             "title": "科学上网", 
