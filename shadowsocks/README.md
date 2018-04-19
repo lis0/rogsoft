@@ -1,4 +1,4 @@
-### merlin科学上网插件 for AM382 4.1.27内核
+### merlin科学上网插件 for hnd platform router with 4.1.27内核
 ***
 ##### 此插件适用于ARM架构，AM382代码，内核为4.1.27的梅林固件（86U），和GT-AC5300的官改固件</b><br/>
 - **shadowsocks/ss**：该文件夹用于存放shadowsocks相关脚本和规则文件：
@@ -30,11 +30,11 @@ tar -zxvf /tmp/shadowsocks.tar.gz
 sh /tmp/shadowsocks/install.sh
 ```
 
-##### 3. ssh安装科学上网插件历史版本（1.0.0为例）： 
+##### 3. ssh安装科学上网插件历史版本（1.2.4为例）： 
 用ssh客户端登陆路由器后输入以下命令：
 ```bash
 cd /tmp
-wget --no-check-certificate https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks/history/shadowsocks_1.0.0.tar.gz
+wget --no-check-certificate https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks/history/shadowsocks_1.2.4.tar.gz
 tar -zxvf /tmp/shadowsocks.tar.gz
 sh /tmp/shadowsocks/install.sh
 ```
