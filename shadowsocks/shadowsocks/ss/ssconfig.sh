@@ -967,8 +967,8 @@ creat_v2ray_json(){
 						]
 					},
 					"streamSettings": {
-						"network": "tcp",
-						"security": "none",
+						"network": "$ss_basic_v2ray_network",
+						"security": "$ss_basic_v2ray_network_security",
 						"tcpSettings": $tcp,
 						"kcpSettings": $kcp,
 						"wsSettings": $ws
