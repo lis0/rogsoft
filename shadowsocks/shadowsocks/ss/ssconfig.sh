@@ -858,7 +858,22 @@ creat_v2ray_json(){
 		local kcp="null"
 		local tcp="null"
 		local ws="null"
+		local tls="null"
+		
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency="null"
+
+		case "$ss_basic_v2ray_network_security" in
+			tls)
+				tls="{
+				\"allowInsecure\": true,
+				\"serverName\": null
+				}"
+			;;
+			none)
+				local tls="null"
+			;;
+		esac
+		
 		case "$ss_basic_v2ray_network" in
 			tcp)
 				if [ "$ss_basic_v2ray_headtype_tcp" == "http" ];then
@@ -971,7 +986,8 @@ creat_v2ray_json(){
 						"security": "$ss_basic_v2ray_network_security",
 						"tcpSettings": $tcp,
 						"kcpSettings": $kcp,
-						"wsSettings": $ws
+						"wsSettings": $ws,
+						"tlsSettings": $tls
 					},
 					"mux": {
 						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),

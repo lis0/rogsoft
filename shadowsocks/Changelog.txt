@@ -1,7 +1,8 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
-1.2.5
+1.2.5 - 1.2.6
    - fix	修复v2ray设置【传输协议】和【底层传输安全】无效的问题
+   - fix	修复传输协议设置为tls时，tlsSettings项缺失的问题
 
 1.2.3 - 1.2.4
    - add	修复GT-AC5300安装1.2.2后皮肤不是ROG皮肤的问题。
