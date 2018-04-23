@@ -177,15 +177,15 @@
             "version": "1.6"
         }, 
         {
-            "build_date": "2018-04-20_15:44:46", 
+            "build_date": "2018-04-23_23:58:14", 
             "changelog": "", 
             "description": "科学上网", 
             "home_url": "Module_shadowsocks.asp", 
-            "md5": "c8990af0c1d638c472185135f82709bf", 
+            "md5": "b4b65a2c42d3c78181dde89e2f217b84", 
             "name": "shadowsocks", 
             "tar_url": "shadowsocks/shadowsocks.tar.gz", 
             "title": "科学上网", 
-            "version": "1.2.6"
+            "version": "1.2.7"
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 

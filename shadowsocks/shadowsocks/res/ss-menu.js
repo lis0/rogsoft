@@ -315,6 +315,9 @@ function LoadingSSProgress(seconds) {
 	} else if (action == 14) {
 		document.getElementById("loading_block3").innerHTML = "socks5代理设置 ..."
 		$("#loading_block2").html("<li><font color='#ffcc00'>请勿刷新本页面，应用中 ...</font></li>");
+	} else if (action == 15) {
+		document.getElementById("loading_block3").innerHTML = "V2Ray 二进制文件更新 ..."
+		$("#loading_block2").html("<li><font color='#ffcc00'>请勿刷新本页面，更新中 ...</font></li>");
 	}
 }
 
@@ -483,26 +486,30 @@ function openssHint(itemNum) {
 		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;国外DNS为大家提供了丰富的选择，其目的有二，一是为了保证大家有能用的国外DNS服务；二是在有能用的基础上，能够选择多种DNS解析方案，达到最佳的解析效果；所以如果你切换某个DNS程序，导致国外连接Problem detected! 那么更换能用的就好，不用纠结某个解析方案不能用。"
 		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;</br></br>各DNS方案做简单介绍："
 		//dns2socks
-		statusmenu += "</br><font color='#CC0066'><b>1:dns2socks(推荐等级 ★★★☆☆)：</b></font>"
-		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;万金油方案，DNS请求通过一个socks5隧道转发到DNS服务器，和下文中ss-tunnel类似，不过dns2socks是利用了SOCK5隧道代理，ss-tunnel是利用了加密UDP；该DNS方案不受到ss服务是否支持udp限制，只要能建立socoks5链接，就能使用；";
+		statusmenu += "</br><font color='#CC0066'><b>1:dns2socks：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;万金油方案，DNS请求通过一个socks5隧道转发到DNS服务器，然后由代理服务器向你定义的DNS发起tcp dns请求，和下文中ss-tunnel类似，不过dns2socks是利用了SOCK5隧道代理，ss-tunnel是利用了加密UDP；该DNS方案不受到ss服务是否支持udp限制，只要能建立socoks5链接，就能使用；";
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析通过SS服务器转发，国内cdn由cdn.txt提供，对cpu负担稍大，国外cdn很好。</b>";
 		//ss-tunnel
-		statusmenu += "</br><font color='#CC0066'><b>2:ss-tunnel(推荐等级 ★★★☆☆)：</b></font>"
-		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;原理是将DNS请求，通过ss-tunnel利用UDP发送到ss服务器上，由ss服务器向你定义的DNS服务器发送解析请求，解析出到正确的IP地址，的解析效果和dns2socks应该是一模一样的。"
+		statusmenu += "</br><font color='#CC0066'><b>2:ss-tunnel：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;原理是将DNS请求，通过ss-tunnel利用UDP发送到ss服务器上，然后由代理服务器向你定义的DNS发起udp dns请求，解析出到正确的IP地址，的解析效果和dns2socks应该是一样的。"
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析通过SS服务器转发，国内cdn由cdn.txt提供，对cpu负担稍大，国外cdn很好。</b>";
 		_caption = "国外DNS";
 		//cdns
-		statusmenu += "</br><font color='#CC0066'><b>3:cdns(推荐等级 ★★☆☆☆)：</b></font>"
-		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;和chinadns2一样，支持edns，DNS请求时携带一个EDNS标签，解析成功后返回带该标签的解析结果，gfw投毒的解析结果则不会带该标签，以达到防dns污染的目的！";
+		statusmenu += "</br><font color='#CC0066'><b>3:cdns：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;和chinadns2一样，支持ECS（EDNS Client Subnet），DNS请求时携带一个EDNS标签，解析成功后返回带该标签的解析结果，gfw投毒的解析结果则不会带该标签，以达到防dns污染的目的！";
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析本地直链国外DNS服务器，国内cdn由cdn.txt提供，对cpu负担稍大，国外cdn较弱。</b>";
 		//chinadns1
-		statusmenu += "</br><font color='#CC0066'><b>4:chinadns1(推荐等级 ★★★★★)：</b></font>"
+		statusmenu += "</br><font color='#CC0066'><b>4:chinadns1：</b></font>"
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;使用dns2socks作为chinadns上游dns解析工具获取无污染dns，通过chinadns的国内dns请求国内dns获取国内解析结果";
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析通过SS服务器转发，具有很好的国内cdn，和很好的国外cdn，不需要cdn.txt作为国内加速，对cpu负担小。</b>";
 		//chinadns2
-		statusmenu += "</br><font color='#CC0066'><b>5:chinadns2(推荐等级 ★★★★☆)：</b></font>"
-		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;和cdns一样，支持EDNS，并且chinadns2根据本地公网ip和ss服务器ip，同时发送两个带edns标签的请求，dns服务器会根据此信息选择离你最近的解析结果返回给你，因此具有非常好的cdn效果！";
-		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析本地直链国外DNS服务器，具有较好的国内cdn，和很好的国外cdn，不需要cdn.txt作为国内加速，对cpu负担小。</b>";
+		statusmenu += "</br><font color='#CC0066'><b>5:chinadns2：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;支持ECS，并且chinadns2根据本地公网ip和ss服务器ip，发送两个带EDNS标签的请求，dns服务器会根据此信息选择离你最近的解析结果返回给你，因此具有非常好的cdn效果！需要上游DNS服务器支持ECS，所以此处固定为直连谷歌DNS，如果你的网络到谷歌DNS丢包严重、不通或你的上级路由开了国外代理，请不要使用此方案";
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析本地直链谷歌DNS服务器，国外cdn很好；不需要cdn.txt作为国内加速，对cpu负担小，国内cdn较好，但是有时候国内网站会解析到香港网站。</b>";
+		//https_dns_proxy
+		statusmenu += "</br><font color='#CC0066'><b>6:https_dns_proxy：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;https_dns_proxy是DNS Over https（DOH）方案，dns请求走https，支持ECS，因此具有非常好的国外cdn效果！此处默认使用了cloudflare的服务（1.1.1.1和1.0.0.1）";
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析本地直连cloudflare服务器，国外cdn很好；国内cdn由cdn.txt提供，对cpu负担稍大。。</b>";
 
 		return overlib(statusmenu, OFFSETX, -860, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	} else if (itemNum == 33) {

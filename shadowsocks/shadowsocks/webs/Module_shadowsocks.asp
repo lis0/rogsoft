@@ -513,6 +513,7 @@ function verifyFields(r) {
 	showhide("v2ray_mux_enable_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_mux_concurrency_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_mux_enable").checked));
 	showhide("v2ray_json_basic_tr", (v2ray_on && json_on));
+	showhide("v2ray_binary_update_tr", v2ray_on);
 
 	// dns pannel
 	showhide("dns_plan_foreign", !koolgame_on);
@@ -616,6 +617,11 @@ function update_visibility() {
 	showhide("ss_dns2socks_user", (f == "3"));
 	showhide("ss_sstunnel_user", (f == "4"));
 	showhide("ss_chinadns1_user", (f == "5"));
+	if(f == "6"){
+		$("#ss_foreign_dns_note").html('DNS over HTTPS (DoH)，<a href="https://cloudflare-dns.com/zh-Hans/" target="_blank"><em>cloudflare服务</em></a>，拒绝一切污染~');
+	}else{
+		$("#ss_foreign_dns_note").html('');
+	}
 }
 
 function generate_lan_list(){
@@ -2517,6 +2523,26 @@ function save_online_nodes(action) {
 	dbus["ss_base64_links"] = E("ss_base64_links").value;
 	push_data("ss_online_update.sh", action,  dbus);
 }
+
+function v2ray_binary_update (){
+	var dbus = {};
+	db_ss["ss_basic_action"] = "15";
+	require(['/res/layer/layer.js'], function(layer) {
+		layer.confirm('<li>为了避免不必要的问题，请保证路由器和服务器上的v2ray版本一致！</li><br /><li>你确定要更新v2ray二进制吗？</li>', {
+			shade: 0.8,
+		}, function(index) {
+			$("#log_content3").attr("rows", "20");
+			push_data("ss_v2ray.sh", 1,  dbus);
+			layer.close(index);
+			return true;
+			//save_online_nodes(action);
+		}, function(index) {
+			layer.close(index);
+			return false;
+		});
+	});
+}
+
 </script>
 </head>
 <body onload="init();">
@@ -3194,6 +3220,12 @@ function save_online_nodes(action) {
 														# 必须配置一个本地监听端口为23456，协议为socks的传入连接，以保证使用dns2socks的dns解析
 														# 必须配置一个本地监听端口为3333，协议为dokodemo-door的传入连接，以保证透明代理正常运行
 														# 使用json配置请自行在IP/CIDR白名单里添加v2ray服务器ip" rows="40" style="width:99%; font-family:'Lucida Console'; font-size:12px;background:transparent;border:1px solid #91071f;color:#FFFFFF;" id="ss_basic_v2ray_json" name="ss_basic_v2ray_json" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" title=""></textarea>
+													</td>
+												</tr>
+												<tr id="v2ray_binary_update_tr" style="display: none;">
+													<th width="35%">其它</th>
+													<td>
+														<a type="button" class="ss_btn" style="cursor:pointer" onclick="v2ray_binary_update(2)">更新V2Ray二进制</V2R></a>
 													</td>
 												</tr>
 											</table>

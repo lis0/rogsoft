@@ -44,6 +44,9 @@ get_dns_name() {
 			echo "chinadns1 + dns2socks上游"
 		;;
 		6)
+			echo "https_dns_proxy"
+		;;
+		7)
 			echo "koolgame内置"
 		;;
 	esac
@@ -52,6 +55,9 @@ get_dns_name() {
 echo_version(){
 	echo_date
 	SOFVERSION=`cat /koolshare/ss/version`
+	KCPTUN_LOCAL_VER=`/koolshare/bin/client_linux_arm7 -version 2>/dev/null | cut -d " " -f3` || "null"
+	V2RAY_LOCAL_VER=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2` || "null"
+	V2RAY_LOCAL_DATE=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f5` || "null"
 	echo ① 程序版本（插件版本：$SOFVERSION）：
 	echo -----------------------------------------------------------
 	echo "程序			版本		备注"
@@ -67,8 +73,9 @@ echo_version(){
 	echo "cdns			1.0 		2017年12月09日编译"
 	echo "chinadns1		1.3.2 		2017年12月09日编译"
 	echo "chinadns2		2.0.0 		2017年12月09日编译"
-	echo "client_linux_arm7	20180316	kcptun"
-	echo "v2ray			v3.18		20180413"
+	echo "https_dns_proxy		bea6840		2018年04月15日编译"
+	echo "client_linux_arm7	$KCPTUN_LOCAL_VER	kcptun"
+	echo "v2ray			$V2RAY_LOCAL_VER		$V2RAY_LOCAL_DATE"
 	echo -----------------------------------------------------------
 }
 
@@ -88,8 +95,8 @@ check_status(){
 	KCPTUN=`pidof client_linux_arm7`
 	HAPROXY=`pidof haproxy`
 	V2RAY=`pidof v2ray`
+	HDP=`pidof https_dns_proxy`
 	game_on=`dbus list ss_acl_mode|cut -d "=" -f 2 | grep 3`
-
 
 	if [ "$ss_basic_type" == "0" ];then
 		echo_version
@@ -108,7 +115,7 @@ check_status(){
 	elif [ "$ss_basic_type" == "2" ];then
 		echo_version
 		echo
-		echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name 6)）
+		echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name 7)）
 		echo -----------------------------------------------------------
 		echo "程序		状态	PID"
 		[ -n "$KOOLGAME" ] && echo "koolgame	工作中	pid：$KOOLGAME" || echo "koolgame	未运行"
@@ -154,8 +161,10 @@ check_status(){
 			if [ "$ss_basic_type" != "3" ];then
 				[ -n "$SSR_LOCAL" ] && echo "ssr-local	工作中	pid：$SSR_LOCAL" || echo "ssr-local	未运行"
 			fi
-				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
-				[ -n "$CHINADNS1" ] && echo "chinadns1	工作中	pid：$CHINADNS1" || echo "chinadns1	未运行"
+			[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
+			[ -n "$CHINADNS1" ] && echo "chinadns1	工作中	pid：$CHINADNS1" || echo "chinadns1	未运行"
+		elif [ "$ss_foreign_dns" == "6" ];then
+			[ -n "$HDP" ] && echo "https_dns_proxy	工作中	pid：$HDP" || echo "https_dns_proxy	未运行"
 		fi
 	fi
 

@@ -8,23 +8,15 @@ MODEL=`nvram get model`
 # 判断路由架构和平台
 case $(uname -m) in
   aarch64)
-	echo_date 固件平台【koolshare merlin aarch64】符合安装要求，开始安装插件！
-    ;;
-  armv7l)
-	echo_date 本插件适用于koolshare merlin aarch64固件平台，armv7l平台不能安装！！！
-	exit 1
-    ;;
-  mips)
-  	echo_date 本插件适用于koolshare merlin aarch64固件平台，mips平台不能安装！！！
-  	echo_date 退出安装！
-    exit 1
-    ;;
-  x86_64)
-	echo_date 本插件适用于koolshare merlin aarch64固件平台，x86_64固件平台不能安装！！！
-	exit 1
+	if [ "`uname -o|grep Merlin`" ] && [ -d "/koolshare" ];then
+		echo_date 固件平台【koolshare merlin aarch64】符合安装要求，开始安装插件！
+	else
+		echo_date 本插件适用于【koolshare merlin aarch64】固件平台，你的平台不能安装！！！
+		exit 1
+	fi
     ;;
   *)
-  	echo_date 本插件适用于koolshare merlin aarch64固件平台，其它平台不能安装！！！
+  	echo_date 本插件适用于koolshare merlin aarch64固件平台，你的平台：$(uname -m)不能安装！！！
   	echo_date 退出安装！
     exit 1
     ;;
@@ -63,6 +55,7 @@ rm -rf /koolshare/bin/speederv2
 rm -rf /koolshare/bin/udp2raw
 rm -rf /koolshare/bin/v2ray
 rm -rf /koolshare/bin/v2ctl
+rm -rf /koolshare/bin/https_dns_proxy
 rm -rf /koolshare/res/icon-shadowsocks.png
 rm -rf /koolshare/res/ss-menu.js
 rm -rf /koolshare/res/all.png
@@ -83,6 +76,8 @@ cp -rf /tmp/shadowsocks/bin/* /koolshare/bin/
 echo_date 复制ss的脚本文件！
 cp -rf /tmp/shadowsocks/ss/* /koolshare/ss/
 cp -rf /tmp/shadowsocks/scripts/* /koolshare/scripts/
+cp -rf /tmp/shadowsocks/install.sh /koolshare/scripts/ss_install.sh
+cp -rf /tmp/shadowsocks/uninstall.sh /koolshare/scripts/uninstall_shadowsocks.sh
 
 echo_date 复制网页文件！
 cp -rf /tmp/shadowsocks/webs/* /koolshare/webs/
