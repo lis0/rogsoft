@@ -1710,9 +1710,7 @@ restart)
 	unset_lock
 	;;
 update)
-	set_lock
 	update_ss
-	unset_lock
 	;;
 start_nat)
 	set_lock
