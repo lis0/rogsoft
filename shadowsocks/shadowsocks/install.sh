@@ -107,7 +107,6 @@ echo_date 设置一些默认值
 [ -z "$ss_acl_default_mode" ] && [ -n "$ss_basic_mode" ] && dbus set ss_acl_default_mode="$ss_basic_mode"
 [ -z "$ss_acl_default_mode" ] && [ -z "$ss_basic_mode" ] && dbus set ss_acl_default_mode=1
 [ -z "$ss_acl_default_port" ] && dbus set ss_acl_default_port=all
-[ -z "$ss_dns_plan" ] && dbus set ss_dns_china=2
 
 # 离线安装时设置软件中心内储存的版本号和连接
 dbus set softcenter_module_shadowsocks_install=1
