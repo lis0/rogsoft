@@ -3319,11 +3319,13 @@ function v2ray_binary_update (){
 															<option value="1">cdns</option>
 															<option value="5">chinadns1</option>
 															<option value="2">chinadns2</option>
+															<option value="6">https_dns_proxy</option>
 														</select>
 														<input type="text" class="input_ss_table" id="ss_dns2socks_user" name="ss_dns2socks_user" style="width:160px" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">
 														<input type="text" class="input_ss_table" id="ss_chinadns1_user" name="ss_chinadns1_user" style="width:160px" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">
 														<input type="text" class="input_ss_table" id="ss_chinadns_user" name="ss_chinadns_user" style="width:160px" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">
 														<input type="text" class="input_ss_table" id="ss_sstunnel_user" name="ss_sstunnel_user" style="width:160px" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">
+														<span id="ss_foreign_dns_note"></span>
 													</td>
 												</tr>
 												<tr id="dns_plan_foreign_game2" style="display: none;">

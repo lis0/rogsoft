@@ -1,6 +1,6 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
-1.2.7
+1.2.7 - 1.2.8
    - update	更新v2ray二进制到3.20；
    - add	增加v2ray二进制更新功能；
    - add	增加https_dns_proxy国外解析方案，DNS over HTTPS (DoH)，使用cloudflare服务，拒绝一切污染~；
