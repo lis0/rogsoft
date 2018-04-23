@@ -1680,7 +1680,7 @@ start)
 	else
 		logger "[软件中心]: 科学上网插件未开启，不启动！"
 	fi
-	get_status >> /tmp/ss_start.txt
+	#get_status >> /tmp/ss_start.txt
 	unset_lock
 	;;
 stop)
@@ -1692,7 +1692,7 @@ stop)
 	echo_date See you again!
 	echo_date
 	echo_date ============ 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao =============
-	get_status >> /tmp/ss_start.txt
+	#get_status >> /tmp/ss_start.txt
 	unset_lock
 	;;
 restart)
@@ -1706,7 +1706,7 @@ restart)
 	echo_date ============ 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao =============
 	# creat nat locker
 	# [ ! -f "/tmp/shadowsocks.nat_lock" ] && touch /tmp/shadowsocks.nat_lock
-	get_status >> /tmp/ss_start.txt
+	#get_status >> /tmp/ss_start.txt
 	unset_lock
 	;;
 update)
@@ -1728,7 +1728,7 @@ start_nat)
 		apply_ss
 		write_numbers
 	fi
-	get_status >> /tmp/ss_start.txt
+	#get_status >> /tmp/ss_start.txt
 	unset_lock
 	;;
 esac
