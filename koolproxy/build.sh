@@ -1,13 +1,24 @@
 #!/bin/sh
 
-MODULE=koolproxy
-VERSION=2.2
-TITLE=koolproxy
-DESCRIPTION=去广告，没烦恼
-HOME_URL=Module_koolproxy.asp
+MODULE="koolproxy"
+VERSION="2.3"
+TITLE="koolproxy"
+DESCRIPTION="去广告，没烦恼"
+HOME_URL="Module_koolproxy.asp"
 
-#get latest rules
-cd koolproxy/koolproxy/data/rules
+# get latest binary
+cd koolproxy/koolproxy/
+mkdir -p data
+mkdir -p data/rules
+wget https://koolproxy.com/downloads/arm
+if [ "$?" == "0" ];then
+	mv arm koolproxy && chmod +x koolproxy
+else
+	rm -rf arm
+fi
+
+# get latest rules
+cd data/rules
 rm -rf *
 wget https://kprule.com/koolproxy.txt
 wget https://kprule.com/daily.txt
