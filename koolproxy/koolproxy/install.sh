@@ -10,6 +10,9 @@ touch /tmp/upload/kp_log.txt
 
 # remove old files, do not remove user.txt incase of upgrade
 rm -rf /koolshare/bin/koolproxy >/dev/null 2>&1
+rm -rf /koolshare/scripts/KoolProxy* >/dev/null 2>&1
+rm -rf /koolshare/webs/Module_koolproxy.asp >/dev/null 2>&1
+rm -rf /koolshare/res/icon-koolproxy.png >/dev/null 2>&1
 rm -rf /koolshare/koolproxy/*.sh >/dev/null 2>&1
 rm -rf /koolshare/koolproxy/data/dnsmasq.adblock >/dev/null 2>&1
 rm -rf /koolshare/koolproxy/data/gen_ca.sh >/dev/null 2>&1
