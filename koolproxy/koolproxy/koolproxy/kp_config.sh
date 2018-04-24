@@ -37,6 +37,10 @@ add_ipset_conf(){
 		ln -sf /koolshare/koolproxy/data/koolproxy_ipset.conf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
 		dnsmasq_restart=1
 	fi
+	#echo "# these sites do not need to filter by koolproxy" > /tmp/kp_white.conf
+	#echo "ipset=/www.baidu.com/white_kp_list" >> /tmp/kp_white.conf
+	#ln -sf /tmp/kp_white.conf /jffs/configs/dnsmasq.d/kp_white.conf
+	#dnsmasq_restart=1
 }
 
 remove_ipset_conf(){
@@ -44,6 +48,10 @@ remove_ipset_conf(){
 		echo_date 移除黑名单软连接...
 		rm -rf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
 	fi
+	#if [ -L "/jffs/configs/dnsmasq.d/kp_white.conf" ];then
+	#	echo_date 移除白名单软连接...
+	#	rm -rf /jffs/configs/dnsmasq.d/kp_white.conf
+	#fi
 }
 # ===============================
 
@@ -81,16 +89,30 @@ creat_ipset(){
 		echo_date "加载xt_set.ko内核模块！"
 		insmod /lib/modules/${OS}/kernel/net/netfilter/xt_set.ko
 	fi
+	if [ -z "`lsmod | grep ip_set_bitmap_port`" ] && [ -f "/lib/modules/${OS}/kernel/net/netfilter/ip_set_bitmap_port.ko" ];then
+		echo_date "加载xt_set.ko内核模块！"
+		insmod /lib/modules/${OS}/kernel/net/netfilter/ip_set_bitmap_port.ko
+	fi
 	echo_date 创建ipset名单
 	ipset -! creat white_kp_list nethash
 	ipset -! creat black_koolproxy nethash
+	ipset -! create kp_port_http bitmap:port range 0-65535
+	ipset -! create kp_port_https bitmap:port range 0-65535
 	
 	ip_lan="0.0.0.0/8 10.0.0.0/8 100.64.0.0/10 127.0.0.0/8 169.254.0.0/16 172.16.0.0/12 192.168.0.0/16 224.0.0.0/4 240.0.0.0/4"
 	for ip in $ip_lan
 	do
 		ipset -A white_kp_list $ip >/dev/null 2>&1
-
 	done
+	
+	ports=`cat /koolshare/koolproxy/data/rules/koolproxy.txt | grep -Eo "(.\w+\:[1-9][0-9]{1,4})/" | grep -Eo "([0-9]{1,5})" | sort -un`
+	for port in $ports 80
+	do
+		ipset -A kp_port_http $port >/dev/null 2>&1
+		ipset -A kp_port_https $port >/dev/null 2>&1
+	done
+
+	ipset -A kp_port_https 443 >/dev/null 2>&1
 	ipset -A black_koolproxy 110.110.110.110 >/dev/null 2>&1
 }
 
@@ -150,6 +172,8 @@ flush_nat(){
 	iptables -t nat -X KP_HTTPS > /dev/null 2>&1
 	ipset -F black_koolproxy > /dev/null 2>&1 && ipset -X black_koolproxy > /dev/null 2>&1
 	ipset -F white_kp_list > /dev/null 2>&1 && ipset -X white_kp_list > /dev/null 2>&1
+	ipset -F kp_port_http > /dev/null 2>&1 && ipset -X kp_port_http > /dev/null 2>&1
+	ipset -F kp_port_https > /dev/null 2>&1 && ipset -X kp_port_https > /dev/null 2>&1
 }
 
 lan_acess_control(){
@@ -196,18 +220,20 @@ load_nat(){
 	iptables -t nat -A KOOLPROXY -m set --match-set white_kp_list dst -j RETURN
 	#  生成对应CHAIN
 	iptables -t nat -N KP_HTTP
-	iptables -t nat -A KP_HTTP -p tcp -m multiport --dport 80,82,8080 -j REDIRECT --to-ports 3000
+	#iptables -t nat -A KP_HTTP -p tcp -m multiport --dport 80,82,8080 -j REDIRECT --to-ports 3000
+	iptables -t nat -A KP_HTTP -p tcp -m set --match-set kp_port_http dst -j REDIRECT --to-ports 3000
 	iptables -t nat -N KP_HTTPS
-	iptables -t nat -A KP_HTTPS -p tcp -m multiport --dport 80,82,443,8080 -j REDIRECT --to-ports 3000
+	#iptables -t nat -A KP_HTTPS -p tcp -m multiport --dport 80,82,443,8080 -j REDIRECT --to-ports 3000
+	iptables -t nat -A KP_HTTPS -p tcp -m set --match-set kp_port_https dst -j REDIRECT --to-ports 3000
 	# 局域网控制
 	lan_acess_control
 	# 剩余流量转发到缺省规则定义的链中
 	iptables -t nat -A KOOLPROXY -p tcp -j $(get_action_chain $koolproxy_acl_default)
 	# 重定所有流量到 KOOLPROXY
 	# 全局模式和视频模式
-	[ "$koolproxy_mode" == "1" ] || [ "$koolproxy_mode" == "3" ] && iptables -t nat -I PREROUTING 2 -p tcp -j KOOLPROXY
+	[ "$koolproxy_mode" == "1" ] || [ "$koolproxy_mode" == "3" ] && iptables -t nat -I PREROUTING 1 -p tcp -j KOOLPROXY
 	# ipset 黑名单模式
-	[ "$koolproxy_mode" == "2" ] && iptables -t nat -I PREROUTING 2 -p tcp -m set --match-set black_koolproxy dst -j KOOLPROXY
+	[ "$koolproxy_mode" == "2" ] && iptables -t nat -I PREROUTING 1 -p tcp -m set --match-set black_koolproxy dst -j KOOLPROXY
 }
 
 dns_takeover(){

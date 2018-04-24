@@ -23,10 +23,6 @@
 <script type="text/javascript" src="/client_function.js"></script>
 <script type="text/javascript" src="/res/softcenter.js"></script>
 <style>
-.cloud_/koolshare_radius h2 { border-bottom:1px #AAA dashed;}
-.cloud_main_radius h3 { font-size:12px;color:#FFF;font-weight:normal;font-style: normal;}
-.cloud_main_radius h4 { font-size:12px;color:#FC0;font-weight:normal;font-style: normal;}
-.cloud_main_radius h5 { color:#FFF;font-weight:normal;font-style: normal;}
 .kp_btn {
 	border: 1px solid #222;
 	background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
@@ -158,7 +154,7 @@ function hook_event(){
 			E("cert_download_tr").style.display = "";
 			E("klloproxy_com").style.display = "";
 			E("acl_method_tr").style.display = "";
-			E("ACL_table").style.display = "";
+			E("ACL_table_div").style.display = "";
 			E("ACL_note").style.display = "";
 		}else{
 			dbus["koolproxy_enable"] = "0";
@@ -170,7 +166,7 @@ function hook_event(){
 			E("cert_download_tr").style.display = "none";
 			E("klloproxy_com").style.display = "none";
 			E("acl_method_tr").style.display = "none";
-			E("ACL_table").style.display = "none";
+			E("ACL_table_div").style.display = "none";
 			E("ACL_note").style.display = "none";
 		}
 	});
@@ -253,7 +249,7 @@ function update_visibility(){
 		E("cert_download_tr").style.display = "";
 		E("klloproxy_com").style.display = "";
 		E("acl_method_tr").style.display = "";
-		E("ACL_table").style.display = "";
+		E("ACL_table_div").style.display = "";
 		E("ACL_note").style.display = "";
 	}else{
 		E("policy_tr").style.display = "none";
@@ -263,7 +259,7 @@ function update_visibility(){
 		E("cert_download_tr").style.display = "none";
 		E("klloproxy_com").style.display = "none";
 		E("acl_method_tr").style.display = "none";
-		E("ACL_table").style.display = "none";
+		E("ACL_table_div").style.display = "none";
 		E("ACL_note").style.display = "none";
 	}
 	showhide("koolproxy_reboot_hour_span", (E("koolproxy_reboot").value == 1));
@@ -761,7 +757,6 @@ function close_user_rule(){
 function save(){
 	showKPLoadingBar();
 	reload=1;
-	setTimeout("get_log();", 600);
 	// collect basic data
 	var params = ["koolproxy_mode", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method", "koolproxy_acl_default"];
 	dbus["koolproxy_enable"] = E("koolproxy_enable").checked ? "1" : "0";
@@ -782,15 +777,20 @@ function save(){
 	}
 	//console.log(dbus)
 	// post data
-	var id3 = parseInt(Math.random() * 100000000);
-	var postData3 = {"id": id3, "method": "KoolProxy_config.sh", "params":[1], "fields": dbus};
+	var id = parseInt(Math.random() * 100000000);
+	var postData3 = {"id": id, "method": "KoolProxy_config.sh", "params":[1], "fields": dbus};
 	//showMsg("msg_warring","正在提交数据！","<b>等待后台运行完毕，请不要刷新本页面！</b>");
 	$.ajax({
 		url: "/_api/",
 		cache:false,
 		type: "POST",
 		dataType: "json",
-		data: JSON.stringify(postData3)
+		data: JSON.stringify(postData3),
+		success: function(response){
+			if(response.result == id){
+				get_log();
+			}
+		}
 	});
 }
 
@@ -964,11 +964,12 @@ function save(){
 														<a type="button" class="kp_btn" target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=d6c8af54e6563126004324b5d8c58aa972e21e04ec6f007679458921587db9b0">加入QQ群①</a>
 														<a type="button" class="kp_btn" target="_blank" href="https://jq.qq.com/?_wv=1027&k=49tpIKb">加入QQ群②</a>
 														<a type="button" class="kp_btn" target="_blank" href="https://t.me/joinchat/AAAAAD-tO7GPvfOU131_vg">加入电报群</a>
+														<a type="button" class="kp_btn" target="_blank" href="https://koolproxy.io">koolproxy官网</a>
 													</td>
 												</tr>
                                     		</table>
                                     	</div>
-										<div style="margin:10px 0px 0px 0px;border:1px solid #91071f;">
+										<div id="ACL_table_div" style="margin:10px 0px 0px 0px;border:1px solid #91071f;">
 											<table id="ACL_table" style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" >
 												<thead>
 												<tr>
