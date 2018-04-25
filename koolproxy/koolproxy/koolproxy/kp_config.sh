@@ -37,10 +37,6 @@ add_ipset_conf(){
 		ln -sf /koolshare/koolproxy/data/koolproxy_ipset.conf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
 		dnsmasq_restart=1
 	fi
-	#echo "# these sites do not need to filter by koolproxy" > /tmp/kp_white.conf
-	#echo "ipset=/www.baidu.com/white_kp_list" >> /tmp/kp_white.conf
-	#ln -sf /tmp/kp_white.conf /jffs/configs/dnsmasq.d/kp_white.conf
-	#dnsmasq_restart=1
 }
 
 remove_ipset_conf(){
@@ -48,12 +44,7 @@ remove_ipset_conf(){
 		echo_date 移除黑名单软连接...
 		rm -rf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
 	fi
-	#if [ -L "/jffs/configs/dnsmasq.d/kp_white.conf" ];then
-	#	echo_date 移除白名单软连接...
-	#	rm -rf /jffs/configs/dnsmasq.d/kp_white.conf
-	#fi
 }
-# ===============================
 
 restart_dnsmasq(){
 	if [ "$dnsmasq_restart" == "1" ];then
@@ -89,8 +80,8 @@ creat_ipset(){
 		echo_date "加载xt_set.ko内核模块！"
 		insmod /lib/modules/${OS}/kernel/net/netfilter/xt_set.ko
 	fi
-	if [ -z "`lsmod | grep ip_set_bitmap_port`" ] && [ -f "/lib/modules/${OS}/kernel/net/netfilter/ip_set_bitmap_port.ko" ];then
-		echo_date "加载xt_set.ko内核模块！"
+	if [ -z "`lsmod | grep ip_set_bitmap_port`" ] && [ -f "/lib/modules/4.1.27/kernel/net/netfilter/ipset/ip_set_bitmap_port.ko" ];then
+		echo_date "加载ip_set_bitmap_port.ko内核模块！"
 		insmod /lib/modules/${OS}/kernel/net/netfilter/ip_set_bitmap_port.ko
 	fi
 	echo_date 创建ipset名单
