@@ -82,7 +82,7 @@ creat_ipset(){
 	fi
 	if [ -z "`lsmod | grep ip_set_bitmap_port`" ] && [ -f "/lib/modules/4.1.27/kernel/net/netfilter/ipset/ip_set_bitmap_port.ko" ];then
 		echo_date "加载ip_set_bitmap_port.ko内核模块！"
-		insmod /lib/modules/${OS}/kernel/net/netfilter/ip_set_bitmap_port.ko
+		insmod /lib/modules/${OS}/kernel/net/netfilter/ipset/ip_set_bitmap_port.ko
 	fi
 	echo_date 创建ipset名单
 	ipset -! creat white_kp_list nethash
