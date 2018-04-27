@@ -153,7 +153,7 @@ function pop_help() {
 				<b>梅林固件 - 科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
 				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="http://firmware.koolshare.cn/binary/koolgame"><u>KoolGame</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>四种客户端的科学上网、游戏加速工具。<br>\
 				本插件仅支持Merlin hnd platform 4.1.27内核的固件，请不要用于其它固件安装。<br>\
-				使用插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/rogsoft/issues"><u>github的issue页面</u></a>反馈~<br><br>\
+				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/rogsoft/issues"><u>github的issue页面</u></a>反馈~<br><br>\
 				● SS/SSR一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/onekeyshell/kcptun_for_ss_ssr"><u>一键安装KCPTUN for SS/SSR on Linux</u></a><br>\
 				● koolgame一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/clangcn/game-server"><u>一键安装koolgame服务器端脚本，完美支持nat2</u></a><br>\
 				● V2Ray一键脚本：<a style="color:#e7bd16" target="_blank" href="https://233blog.com/post/17/"><u>V2Ray 搭建和优化详细图文教程</u></a><br>\
@@ -291,7 +291,7 @@ function save() {
 	}
 	// base64
 	dbus["ssconf_basic_password_" + node_sel] = Base64.encode(E("ss_basic_password").value);
-	dbus["ssconf_basic_v2ray_json_" + node_sel] = Base64.encode(E("ss_basic_v2ray_json").value);
+	dbus["ssconf_basic_v2ray_json_" + node_sel] = Base64.encode(pack_js(document.getElementById('ss_basic_v2ray_json').value));
 	// checkbox
 	dbus["ssconf_basic_use_kcp_" + node_sel] = E("ss_basic_use_kcp").checked ? '1' : '0';
 	dbus["ssconf_basic_v2ray_use_json_" + node_sel] = E("ss_basic_v2ray_use_json").checked ? '1' : '0';
@@ -416,17 +416,13 @@ function update_ss_ui(obj) {
 		}
 	}
 	E("ss_basic_password").value = Base64.decode(E("ss_basic_password").value);
-	E("ss_basic_v2ray_json").value = Base64.decode(E("ss_basic_v2ray_json").value);
+	E("ss_basic_v2ray_json").value = do_js_beautify(Base64.decode(E("ss_basic_v2ray_json").value));
 }
 
 function verifyFields(r) {
 	// somae variable
 	var node_sel = E("ssconf_basic_node").value;
 	var ssmode = E("ss_basic_mode").value;
-	//var suk = E("ss_basic_use_kcp").checked ? '1' : '0';
-	//var ssr_on = typeof(db_ss["ssconf_basic_rss_protocol_" + node_sel]) != "undefined"; //use ssr
-	//var koolgame_on = typeof(db_ss["ssconf_basic_koolgame_udp_" + node_sel]) != "undefined"; //use koolgame
-	//var v2ray_on = typeof(db_ss["ssconf_basic_v2ray_use_json_" + node_sel]) != "undefined"; //use v2ray
 	if (typeof(db_ss["ssconf_basic_rss_protocol_" + node_sel]) != "undefined"){
 		var ss_on = false;
 		var ssr_on = true;
@@ -621,6 +617,8 @@ function update_visibility() {
 	showhide("ss_chinadns1_user", (f == "5"));
 	if(f == "6"){
 		$("#ss_foreign_dns_note").html('DNS over HTTPS (DoH)，<a href="https://cloudflare-dns.com/zh-Hans/" target="_blank"><em>cloudflare服务</em></a>，拒绝一切污染~');
+	}else if(f == "7"){
+		$("#ss_foreign_dns_note").html('v2ray_dns只有启用v2ray节点的时能使用');
 	}else{
 		$("#ss_foreign_dns_note").html('');
 	}
@@ -733,7 +731,7 @@ function getAllConfigs() {
 			obj["method"] = db_ss[p + "_method_" + field];
 		}
 
-		var params = ["password", "mode", "ss_obfs", "ss_obfs_host", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable"];
+		var params = ["password", "mode", "ss_obfs", "ss_obfs_host", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "group", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable"];
 		for (var i = 0; i < params.length; i++) {
 			var ofield = p + "_" + params[i] + "_" + field;
 			if (typeof db_ss["ssconf_basic_mode_" + field] == "undefined") {
@@ -885,7 +883,6 @@ function Add_profile() { //点击节点页面内添加节点动作
 }
 
 function cancel_add_rule() { //点击添加节点面板上的返回
-	//$("body").find(".fullScreen").fadeOut(300, function() { tableApi.removeElement("fullScreen"); });
 	E("vpnc_settings").style.display = "none";
 }
 
@@ -1057,7 +1054,7 @@ function add_ss_node_conf(flag) { //点击添加按钮动作
 	var params1 = ["mode", "name", "server", "port", "method", "ss_obfs", "ss_obfs_host"]; //for ss
 	var params2 = ["mode", "name", "server", "port", "method", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param"]; //for ssr
 	var params3 = ["mode", "name", "server", "port", "method", "koolgame_udp"]; //for ssr
-	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_json"]; //for v2ray
+	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"]; //for v2ray
 	var params4_2 = ["v2ray_use_json", "v2ray_mux_enable"]; //for v2ray
 	if(!$.trim($('#ss_node_table_name').val())){
 		alert("节点名不能为空！！");
@@ -1088,7 +1085,7 @@ function add_ss_node_conf(flag) { //点击添加按钮动作
 		}
 		//base64 value
 		if($("#ss_node_table_v2ray_json").val()){
-			ns[p + "_v2ray_json_" + node_global_max] = Base64.encode($.trim($("#ss_node_table_v2ray_json").val()));
+			ns["ssconf_basic_v2ray_json_" + node_global_max] = Base64.encode(pack_js(document.getElementById('ss_node_table_v2ray_json').value));
 		}
 		//checkbox value
 		for (var i = 0; i < params4_2.length; i++) {
@@ -1364,9 +1361,12 @@ function edit_conf_table(o) { //编辑节点功能，显示编辑面板
 	confs = getAllConfigs();
 	id = ids[ids.length - 1];
 	var c = confs[id];
-	var params1_base64 = ["password", "v2ray_json"];
+	var params1_base64 = ["password"];
 	var params1_check = ["v2ray_use_json", "v2ray_mux_enable"];
 	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "koolgame_udp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"];
+	if(c["v2ray_json"]){
+		E("ss_node_table_v2ray_json").value = do_js_beautify(Base64.decode(c["v2ray_json"]));
+	}
 	for (var i = 0; i < params1_base64.length; i++) {
 		if(c[params1_base64[i]]){
 			E("ss_node_table_" + params1_base64[i]).value = Base64.decode(c[params1_base64[i]]);
@@ -1820,7 +1820,6 @@ function toggle_func() {
 			E("ss_node_list_table_btn").style.display = "";
 			refresh_table();
 			update_ping_method();
-			//setTimeout("ping_test(1)", 500);
 		});
 	$(".show-btn2").click(
 		//dns pannel
@@ -2732,7 +2731,7 @@ function v2ray_binary_update (){
 															<tr id="v2ray_use_json_tr" style="display: none;">
 																<th width="35%">使用json配置</th>
 																<td>
-																	<input type="checkbox" id="ss_node_table_v2ray_use_json" name="ss_node_table_v2ray_use_json" onclick="verifyFields(this, 1);" value="0">
+																	<input type="checkbox" id="ss_node_table_v2ray_use_json" name="ss_node_table_v2ray_use_json" onclick="verifyFields(this, 1);" >
 																</td>
 															</tr>
 															<tr id="ss_name_support_tr" style="display: none;">
@@ -2954,9 +2953,7 @@ function v2ray_binary_update (){
 																<th width="35%">v2ray json</th>
 																<td>
 																	<textarea placeholder="# 此处填入v2ray json，内容可以是标准的也可以是压缩的
-																	# 必须配置一个本地监听端口为23456，协议为socks的传入连接，以保证使用dns2socks的dns解析
-																	# 必须配置一个本地监听端口为3333，协议为dokodemo-door的传入连接，以保证透明代理正常运行
-																	# 使用json配置请自行在IP/CIDR白名单里添加v2ray服务器ip"  rows="32" style="width:344px; font-family:'Lucida Console'; font-size:12px;background:transparent;border:1px solid #91071f;color:#FFFFFF;" id="ss_node_table_v2ray_json" name="ss_node_table_v2ray_json" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" title=""></textarea>
+																	# 请保证你json内的outbound配置正确！！！"  rows="32" style="width:344px; font-family:'Lucida Console'; font-size:12px;background:transparent;border:1px solid #91071f;color:#FFFFFF;" id="ss_node_table_v2ray_json" name="ss_node_table_v2ray_json" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" title=""></textarea>
 																</td>
 															</tr>
 															</table>
@@ -3219,9 +3216,7 @@ function v2ray_binary_update (){
 													<th width="35%">v2ray json</th>
 													<td>
 														<textarea  placeholder="# 此处填入v2ray json，内容可以是标准的也可以是压缩的
-														# 必须配置一个本地监听端口为23456，协议为socks的传入连接，以保证使用dns2socks的dns解析
-														# 必须配置一个本地监听端口为3333，协议为dokodemo-door的传入连接，以保证透明代理正常运行
-														# 使用json配置请自行在IP/CIDR白名单里添加v2ray服务器ip" rows="40" style="width:99%; font-family:'Lucida Console'; font-size:12px;background:transparent;border:1px solid #91071f;color:#FFFFFF;" id="ss_basic_v2ray_json" name="ss_basic_v2ray_json" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" title=""></textarea>
+																	# 请保证你json内的outbound配置正确！！！" rows="40" style="width:99%; font-family:'Lucida Console'; font-size:12px;background:transparent;border:1px solid #91071f;color:#FFFFFF;" id="ss_basic_v2ray_json" name="ss_basic_v2ray_json" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" title=""></textarea>
 													</td>
 												</tr>
 												<tr id="v2ray_binary_update_tr" style="display: none;">
@@ -3324,6 +3319,7 @@ function v2ray_binary_update (){
 															<option value="5">chinadns1</option>
 															<option value="2">chinadns2</option>
 															<option value="6">https_dns_proxy</option>
+															<option value="7">v2ray_dns</option>
 														</select>
 														<input type="text" class="input_ss_table" id="ss_dns2socks_user" name="ss_dns2socks_user" style="width:160px" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">
 														<input type="text" class="input_ss_table" id="ss_chinadns1_user" name="ss_chinadns1_user" style="width:160px" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">

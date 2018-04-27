@@ -12,6 +12,7 @@ ss_basic_version_local=`cat /koolshare/ss/version`
 dbus set ss_basic_version_local=$ss_basic_version_local
 main_url="https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks"
 backup_url="https://rogsoft.ngrok.wang/shadowsocks"
+LOG_FILE=/tmp/upload/ss_log.txt
 CONFIG_FILE=/koolshare/ss/ss.json
 V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
 V2RAY_CONFIG_FILE="/koolshare/ss/v2ray.json"
@@ -19,6 +20,11 @@ LOCK_FILE=/var/lock/koolss.lock
 DNS_PORT=7913
 ISP_DNS1=$(nvram get wan0_dns|sed 's/ /\n/g'|grep -v 0.0.0.0|grep -v 127.0.0.1|sed -n 1p)
 ISP_DNS2=$(nvram get wan0_dns|sed 's/ /\n/g'|grep -v 0.0.0.0|grep -v 127.0.0.1|sed -n 2p)
+IFIP_DNS1=`echo $ISP_DNS1|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+IFIP_DNS2=`echo $ISP_DNS2|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+gfw_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "1"`
+chn_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "2|3|4"`
+all_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "5"`
 lan_ipaddr=$(nvram get lan_ipaddr)
 ip_prefix_hex=`nvram get lan_ipaddr | awk -F "." '{printf ("0x%02x", $1)} {printf ("%02x", $2)} {printf ("%02x", $3)} {printf ("00/0xffffff00\n")}'`
 [ "$ss_basic_mode" == "4" ] && ss_basic_mode=3
@@ -61,7 +67,41 @@ get_wan0_cidr(){
 	x=${1%%$3*}
 	suffix=$(( $2 + (${#x}/4) ))
 	prefix=`nvram get wan0_ipaddr`
-	echo $prefix/$suffix
+	if [ -n "$prefix" -a -n "$netmask" ];then
+		echo $prefix/$suffix
+	else
+		echo ""
+	fi
+}
+
+set_lock(){
+	exec 1000>"$LOCK_FILE"
+	flock -x 1000
+}
+
+unset_lock(){
+	flock -u 1000
+	rm -rf "$LOCK_FILE"
+}
+
+close_in_five(){
+	echo_date "插件将在5秒后自动关闭！！"
+	sleep 1
+	echo_date 5
+	sleep 1
+	echo_date 4
+	sleep 1
+	echo_date 3
+	sleep 1
+	echo_date 2
+	sleep 1
+	echo_date 1
+	sleep 1
+	echo_date 0
+	dbus set ss_basic_enable="0"
+	disable_ss
+	unset_lock
+	exit 1
 }
 
 install_ss(){
@@ -101,14 +141,12 @@ update_ss(){
 			fi
 		else
 			echo_date 主服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 相同！
-			sleep 1
 			echo_date 那还更新个毛啊，关闭更新进程!
-			unset_lock
-			exit 1
+			close_in_five
 		fi
 	else
 		echo_date 没有检测到主服务器在线版本号,访问github服务器有点问题哦~
-		sleep 2
+		sleep 1
 		echo_date 更换备用备用更新地址，请稍后...
 		sleep 1
 		update_ss2
@@ -132,27 +170,24 @@ update_ss2(){
 			if [ "$md5sum_gz" != "$md5_web2" ]; then
 				echo_date 更新包md5校验不一致！估计是下载的时候除了什么状况，请等待一会儿再试...
 				rm -rf /tmp/shadowsocks* >/dev/null 2>&1
-				sleep 2
+				sleep 1
 				echo_date 然而只有这一台备用更更新服务器，请尝试离线手动安装...
-				unset_lock
-				exit 1
+				close_in_five
 			else
 				echo_date 更新包md5校验一致！ 开始安装！...
 				install_ss
 			fi
 		else
 			echo_date 备用服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 相同！
-			sleep 2
+			sleep 1
 			echo_date 那还更新个毛啊，关闭更新进程!
-			unset_lock
-			exit 1
+			close_in_five
 		fi
 	else
 		echo_date 没有检测到备用服务器在线版本号,访问备用服务器有点问题哦，你网络很差欸~
-		sleep 2
+		sleep 1
 		echo_date 然而只有这一台备用更更新服务器，请尝试离线手动安装...
-		unset_lock
-		exit 1
+		close_in_five
 	fi
 }
 # ================================= ss stop ===============================
@@ -293,35 +328,40 @@ ss_pre_start(){
 # ================================= ss start ==============================
 
 resolv_server_ip(){
-	IFIP=`echo $ss_basic_server|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
-	if [ -z "$IFIP" ];then
-		echo_date 尝试解析SS服务器的ip地址
-		server_ip=`nslookup "$ss_basic_server" 114.114.114.114 | sed '1,4d' | awk '{print $3}' | grep -v :|awk 'NR==1{print}'`
-		if [ "$?" == "0" ]; then
-			echo_date SS服务器的ip地址解析成功：$server_ip.
-		else
-			echo_date SS服务器域名解析失败！
-			echo_date 尝试用resolveip方式解析...
-			server_ip=`resolveip -4 -t 2 $ss_basic_server|awk 'NR==1{print}'`
-			if [ "$?" == "0" ]; then
-		    	echo_date SS服务器的ip地址解析成功：$server_ip.
-			else
-				echo_date 使用resolveip方式SS服务器域名解析失败！建议使用手动更换域名为IP地址！
-			fi
-		fi
-
-		if [ -n "$server_ip" ];then
-			ss_basic_server="$server_ip"
-			dbus set ss_basic_server_ip="$server_ip"
-		else
-			dbus remvoe ss_basic_server_ip
-			echo_date SS服务器的ip地址解析失败，将由ss-redir自己解析.
-		fi
+	if [ "$ss_basic_type" == "3" ] && [ "$ss_basic_v2ray_use_json" == "1" ];then
+		#echo_date "你使用的v2ray json配置，请自行将v2ray服务器ip地址添加到IP/CIDR白名单！"
+		return 1
 	else
-		dbus set ss_basic_server_ip=$ss_basic_server
-		echo_date 检测到你的SS服务器已经是IP格式：$ss_basic_server,跳过解析... 
+		IFIP=`echo $ss_basic_server|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+		if [ -z "$IFIP" ];then
+			echo_date 尝试解析SS服务器的ip地址
+			server_ip=`nslookup "$ss_basic_server" 114.114.114.114 | sed '1,4d' | awk '{print $3}' | grep -v :|awk 'NR==1{print}'`
+			if [ "$?" == "0" ];then
+				server_ip=`echo $server_ip|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+			else
+				echo_date SS服务器域名解析失败！
+				echo_date 尝试用resolveip方式解析...
+				server_ip=`resolveip -4 -t 2 $ss_basic_server|awk 'NR==1{print}'`
+				if [ "$?" == "0" ];then
+			    	server_ip=`echo $server_ip|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+				fi
+			fi
+
+			if [ -n "$server_ip" ];then
+				echo_date SS服务器的ip地址解析成功：$server_ip.
+				ss_basic_server="$server_ip"
+				dbus set ss_basic_server_ip="$server_ip"
+			else
+				dbus remvoe ss_basic_server_ip
+				echo_date SS服务器的ip地址解析失败，将由ss-redir自己解析.
+			fi
+		else
+			dbus set ss_basic_server_ip=$ss_basic_server
+			echo_date 检测到你的SS服务器已经是IP格式：$ss_basic_server,跳过解析... 
+		fi
 	fi
 }
+
 ss_arg(){
 	# simple obfs
 	if [ -n "$ss_basic_ss_obfs_host" ];then
@@ -402,10 +442,62 @@ creat_ss_json(){
 	fi
 }
 
+get_type_name() {
+	case "$1" in
+		0)
+			echo "shadowsocks-libev"
+		;;
+		1)
+			echo "shadowsocksR-libev"
+		;;
+		2)
+			echo "koolgame"
+		;;
+		3)
+			echo "v2ray"
+		;;
+	esac
+}
+
+get_dns_name() {
+	case "$1" in
+		1)
+			echo "cdns"
+		;;
+		2)
+			echo "chinadns2"
+		;;
+		3)
+			echo "dns2socks"
+		;;
+		4)
+			if [ -n "$ss_basic_rss_obfs" ];then
+				echo "ssr-tunnel"
+			else
+				echo "ss-tunnel"
+			fi
+		;;
+		5)
+			echo "chinadns1 + dns2socks上游"
+		;;
+		6)
+			echo "https_dns_proxy"
+		;;
+		7)
+			echo "v2ray dns"
+		;;
+		8)
+			echo "koolgame内置"
+		;;
+	esac
+}
+
 start_sslocal(){
 	if [ "$ss_basic_type" == "1" ];then
+		echo_date 开启ssr-local，提供socks5代理端口：23456
 		rss-local -l 23456 -c $CONFIG_FILE -u -f /var/run/sslocal1.pid >/dev/null 2>&1
 	elif  [ "$ss_basic_type" == "0" ];then
+		echo_date 开启ss-local，提供socks5代理端口：23456
 		if [ "$ss_basic_ss_obfs" == "0" ];then
 			ss-local -l 23456 -c $CONFIG_FILE -u -f /var/run/sslocal1.pid >/dev/null 2>&1
 		else
@@ -415,50 +507,55 @@ start_sslocal(){
 }
 
 start_dns(){
-	# start ss-local on port 23456
-	echo_date 开启ss-local，提供socks5代理端口：23456
-	[ "$ss_basic_type" != "3" ] && start_sslocal
-
 	# Start cdns
-	if [ "$ss_foreign_dns" == "1" ]; then
+	if [ "$ss_foreign_dns" == "1" ];then
 		echo_date 开启cdns，用于dns解析...
 		cdns -c /koolshare/ss/rules/cdns.json > /dev/null 2>&1 &
 	fi
 
-	if [ "$ss_foreign_dns" == "2" ]; then
+	# Start chinadns2
+	if [ "$ss_foreign_dns" == "2" ];then
 		echo_date 开启chinadns2，用于dns解析...
-		#public_ip=`curl --connect-timeout 1 -s 'http://118.184.176.13/dyndns/getip'`
-		public_ip=`nvram get wan0_realip_ip`
-		[ -z "$public_ip" ] && public_ip=`curl --connect-timeout 1 --retry 0 --max-time 1 -s 'http://118.184.176.13/dyndns/getip'`
 		clinet_ip="114.114.114.114"
-		if [ "$?" == "0" ] && [ -n "$public_ip" ];then
-			echo_date 你的公网ip地址是：$public_ip
-			dbus set ss_basic_publicip="$public_ip"
+		public_ip=`nvram get wan0_realip_ip`
+		if [ -z "$public_ip" ];then
+			# 路由公网ip为空则获取
+			public_ip=`curl --connect-timeout 1 --retry 0 --max-time 1 -s 'http://members.3322.org/dyndns/getip'`
+			if [ "$?" == "0" ] && [ -n "$public_ip" ];then
+				# 获取成功
+				echo_date 你的公网ip地址是：$public_ip
+				dbus set ss_basic_publicip="$public_ip"
+				clinet_ip="$public_ip"
+			else
+				# 获取失败，则自动为114
+				[ -n "$ss_basic_publicip" ] && clinet_ip="$ss_basic_publicip"
+			fi
+		else
+			# 获取失败，则自动为114
 			clinet_ip="$public_ip"
-		else
-			[ -n "$ss_basic_publicip" ] && clinet_ip="$ss_basic_publicip"
 		fi
-		
-		# 用chnroute去判断SS服务器在国内还是在国外
+
 		if [ -n "$ss_basic_server_ip" ];then
-			FO=`awk -F'[./]' -v ip=$ss_basic_server_ip ' {for (i=1;i<=int($NF/8);i++){a=a$i"."} if (index(ip, a)==1){split( ip, A, ".");b=int($NF/8);if (A[b+1]<($(NF+b-4)+2^(8-$NF%8))&&A[b+1]>=$(NF+b-4)) print ip,"belongs to",$0} a=""}' /koolshare/ss/rules/chnroute.txt`
+			# 用chnroute去判断SS服务器在国内还是在国外
+			ipset test chnroute $ss_basic_server_ip > /dev/null 2>&1
+			if [ "$?" != "0" ];then
+				# ss服务器是国外IP
+				ss_real_server_ip="$ss_basic_server_ip"
+			else
+				# ss服务器是国内ip （可能用了国内中转，那么用谷歌dns ip地址去作为国外edns标签）
+				ss_real_server_ip="8.8.8.8"
+			fi
 		else
-			FO="2333"
-		fi
-		
-		if [ -z "$FO" ];then
-			# ss服务器是国外IP
-			ss_real_server_ip="$ss_basic_server_ip"
-		else
-			# ss服务器是国内ip （可能用了国内中转，那么用谷歌dns ip地址去作为国外edns标签）
-			[ -z "$ss_real_server_ip" ] && ss_real_server_ip="8.8.8.8"
+			# ss服务器可能是域名且没有正确解析
+			ss_real_server_ip="8.8.8.8"
 		fi
 		chinadns -p $DNS_PORT -s $ss_chinadns_user -e $clinet_ip,$ss_real_server_ip -c /koolshare/ss/rules/chnroute.txt >/dev/null 2>&1 &
 	fi
 	
 	# Start DNS2SOCKS (default)
-	if [ "$ss_foreign_dns" == "3" ] || [ -z "$ss_foreign_dns" ]; then
+	if [ "$ss_foreign_dns" == "3" ] || [ -z "$ss_foreign_dns" ];then
 		[ -z "$ss_foreign_dns" ] && dbus set ss_foreign_dns="3"
+		[ "$ss_basic_type" != "3" ] && start_sslocal
 		echo_date 开启dns2socks，用于dns解析...
 		dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNS_PORT > /dev/null 2>&1 &
 	fi
@@ -468,80 +565,81 @@ start_dns(){
 		if [ "$ss_basic_type" == "1" ];then
 			echo_date 开启ssr-tunnel，用于dns解析...
 			rss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user -u -f /var/run/sstunnel.pid >/dev/null 2>&1
-		elif  [ "$ss_basic_type" == "0" ];then
+		elif [ "$ss_basic_type" == "0" ];then
 			echo_date 开启ss-tunnel，用于dns解析...
 			if [ "$ss_basic_ss_obfs" == "0" ];then
 				ss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user -u -f /var/run/sstunnel.pid >/dev/null 2>&1
 			else
-				ss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user $ARG_OBFS -u -f /var/run/sstunnel.pid
+				ss-tunnel -c $CONFIG_FILE -l $DNS_PORT -L $ss_sstunnel_user $ARG_OBFS -u -f /var/run/sstunnel.pid >/dev/null 2>&1
 			fi
 		elif [ "$ss_basic_type" == "3" ];then
 			echo_date V2Ray下不支持ss-tunnel，改用dns2socks！
 			dbus set ss_foreign_dns=3
+			[ "$ss_basic_type" != "3" ] && start_sslocal
+			echo_date 开启dns2socks，用于dns解析...
 			dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNS_PORT > /dev/null 2>&1 &
 		fi
 	fi
 	
 	#start chinadns1
 	if [ "$ss_foreign_dns" == "5" ];then
-		echo_date 开启chinadns1，用于dns解析...
-		#[ "$ss_dns_china" == "1" ] && RCC="114.114.114.114" || RCC="$CDN"
+		[ "$ss_basic_type" != "3" ] && start_sslocal
+		echo_date 开启dns2socks，用于chinadns1上游...
 		dns2socks 127.0.0.1:23456 "$ss_chinadns1_user" 127.0.0.1:1055 > /dev/null 2>&1 &
+		echo_date 开启chinadns1，用于dns解析...
 		chinadns1 -p $DNS_PORT -s $CDN,127.0.0.1:1055 -m -d -c /koolshare/ss/rules/chnroute.txt > /dev/null 2>&1 &
 	fi
 
 	#start https_dns_proxy
 	if [ "$ss_foreign_dns" == "6" ];then
 		echo_date 开启https_dns_proxy，用于dns解析...
-		# 用chnroute去判断SS服务器在国内还是在国外
 		if [ -n "$ss_basic_server_ip" ];then
-			FO=`awk -F'[./]' -v ip=$ss_basic_server_ip ' {for (i=1;i<=int($NF/8);i++){a=a$i"."} if (index(ip, a)==1){split( ip, A, ".");b=int($NF/8);if (A[b+1]<($(NF+b-4)+2^(8-$NF%8))&&A[b+1]>=$(NF+b-4)) print ip,"belongs to",$0} a=""}' /koolshare/ss/rules/chnroute.txt`
+			# 用chnroute去判断SS服务器在国内还是在国外
+			ipset test chnroute $ss_basic_server_ip > /dev/null 2>&1
+			if [ "$?" != "0" ];then
+				# ss服务器是国外IP
+				ss_real_server_ip="$ss_basic_server_ip"
+			else
+				# ss服务器是国内ip （可能用了国内中转，那么用谷歌dns ip地址去作为国外edns标签）
+				ss_real_server_ip="8.8.8.8"
+			fi
 		else
-			FO="2333"
-		fi
-		
-		if [ -z "$FO" ];then
-			# ss服务器是国外IP
-			ss_real_server_ip="$ss_basic_server_ip"
-		else
-			# ss服务器是国内ip （可能用了国内中转，那么用谷歌dns ip地址去作为国外edns标签）
-			[ -z "$ss_real_server_ip" ] && ss_real_server_ip="8.8.8.8"
+			# ss服务器可能是域名且没有正确解析
+			ss_real_server_ip="8.8.8.8"
 		fi
 		https_dns_proxy -u nobody -p 7913 -b 1.1.1.1,1.0.0.1 -e $ss_real_server_ip/16 -r "https://cloudflare-dns.com/dns-query?ct=application/dns-json&" -d
+	fi
+	
+	# start v2ray DNS_PORT
+	if [ "$ss_foreign_dns" == "7" ];then
+		if [ "$ss_basic_type" == "3" ];then
+			return 0
+		else
+			echo_date $(get_type_name $ss_basic_type)下不支持v2ray dns，改用dns2socks！
+			dbus set ss_foreign_dns=3
+			[ "$ss_basic_type" != "3" ] && start_sslocal
+			echo_date 开启dns2socks，用于dns解析...
+			dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNS_PORT > /dev/null 2>&1 &
+		fi
 	fi
 }
 #--------------------------------------------------------------------------------------
 
 create_dnsmasq_conf(){
 	if [ "$ss_dns_china" == "1" ];then
-		IFIP_DNS1=`echo $ISP_DNS1|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
-		IFIP_DNS2=`echo $ISP_DNS2|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
 		if [ -n "$IFIP_DNS1" ];then
 			# 用chnroute去判断运营商DNS是否为局域网(国外)ip地址，有些二级路由的是局域网ip地址，会被ChinaDNS 判断为国外dns服务器，这个时候用取代之
-			FO1=`awk -F'[./]' -v ip=$IFIP_DNS1 ' {for (i=1;i<=int($NF/8);i++){a=a$i"."} if (index(ip, a)==1){split( ip, A, ".");b=int($NF/8);if (A[b+1]<($(NF+b-4)+2^(8-$NF%8))&&A[b+1]>=$(NF+b-4)) print ip,"belongs to",$0} a=""}' /koolshare/ss/rules/chnroute.txt`
-			if [ -z "$FO1" ];then
-				# 运营商DNS是局域网(国外)ip
+			ipset test chnroute $IFIP_DNS1 > /dev/null 2>&1
+			if [ "$?" != "0" ];then
+				# 运营商DNS：ISP_DNS1是局域网(国外)ip
 				CDN="114.114.114.114"
 			else
-				# 运营商DNS是国内ip
+				# 运营商DNS：ISP_DNS1是国内ip
 				CDN="$ISP_DNS1"
 			fi
 		else
+			# 运营商DNS：ISP_DNS1不是ip格式，用114取代之
 			CDN="114.114.114.114"
-		fi
-
-		if [ -n "$IFIP_DNS2" ];then
-			# 用chnroute去判断运营商DNS是否为局域网(国外)ip地址，有些二级路由的是局域网ip地址，会被ChinaDNS 判断为国外dns服务器，这个时候用114取代之
-			FO2=`awk -F'[./]' -v ip=$IFIP_DNS2 ' {for (i=1;i<=int($NF/8);i++){a=a$i"."} if (index(ip, a)==1){split( ip, A, ".");b=int($NF/8);if (A[b+1]<($(NF+b-4)+2^(8-$NF%8))&&A[b+1]>=$(NF+b-4)) print ip,"belongs to",$0} a=""}' /koolshare/ss/rules/chnroute.txt`
-			if [ -z "$FO2" ];then
-				# 运营商DNS是局域网(国外)ip
-				CDN2="114.114.115.115"
-			else
-				# 运营商DNS是国内ip
-				CDN2="$ISP_DNS1"
-			fi
-		else
-			CDN2="114.114.115.115"
 		fi
 	fi
 	[ "$ss_dns_china" == "2" ] && CDN="223.5.5.5"
@@ -568,11 +666,23 @@ create_dnsmasq_conf(){
 	rm -rf /jffs/configs/dnsmasq.d/gfwlist.conf
 	rm -rf /jffs/scripts/dnsmasq.postconf
 
-	# append china site for cdn acceleration
-	if [ "$ss_foreign_dns" != "1" -a "$ss_foreign_dns" != "2" -a "$ss_foreign_dns" != "5" ];then
-		echo_date 生成cdn加速列表到/tmp/sscdn.conf，加速用的dns：$CDN
-		echo "#for china site CDN acclerate" >> /tmp/sscdn.conf
-		cat /koolshare/ss/rules/cdn.txt | sed "s/^/server=&\/./g" | sed "s/$/\/&$CDN/g" | sort | awk '{if ($0!=line) print;line=$0}' >>/tmp/sscdn.conf
+	# generate cdn.txt for china site accelerate
+	if [ "$ss_basic_mode" == "1" ] && [ -z "$chn_on" ] && [ -z "$all_on" ];then
+		# gfwlist模式的时候，且访问控制主机中不存在 大陆白名单模式 游戏模式 全局模式，则使用国内优先模式
+		echo_date 自动判断使用国内优先模式，不加载cdn.txt
+	else
+		# 其它情况，均使用国外优先模式
+		if [ "$ss_foreign_dns" != "2" ] && [ "$ss_foreign_dns" != "5" ];then
+			# 因为chinadns1 chinadns2自带国内cdn，所以也不需要cdn.txt
+			echo_date 自动判断dns解析使用国外优先模式...
+			echo_date 你选择的解析方案【$(get_dns_name $ss_foreign_dns)】无国内cdn，需要加载cdn.txt，路由器开销较大...
+			echo_date 生成cdn加速列表到/tmp/sscdn.conf，加速用的dns：$CDN
+			echo "#for china site CDN acclerate" >> /tmp/sscdn.conf
+			cat /koolshare/ss/rules/cdn.txt | sed "s/^/server=&\/./g" | sed "s/$/\/&$CDN/g" | sort | awk '{if ($0!=line) print;line=$0}' >>/tmp/sscdn.conf
+		else
+			echo_date 自动判断dns解析使用国外优先模式...
+			echo_date 你选择解析方案【$(get_dns_name $ss_foreign_dns)】自带国内cdn，不许需要加载cdn.txt，路由器开销小...
+		fi
 	fi
 	
 	# custom dnsmasq settings by user
@@ -641,21 +751,19 @@ create_dnsmasq_conf(){
 	fi
 	if [ -f /tmp/wblist.conf ];then
 		#echo_date 创建域名黑/白名单软链接到/jffs/configs/dnsmasq.d/wblist.conf
-		mv -f /tmp/wblist.conf /jffs/configs/dnsmasq.d/wblist.conf
+		ln -sf /tmp/wblist.conf /jffs/configs/dnsmasq.d/wblist.conf
 	fi
+	
 	if [ -f /tmp/sscdn.conf ];then
 		#echo_date 创建cdn加速列表软链接/jffs/configs/dnsmasq.d/cdn.conf
-		mv -f /tmp/sscdn.conf /jffs/configs/dnsmasq.d/cdn.conf
+		ln -sf /tmp/sscdn.conf /jffs/configs/dnsmasq.d/cdn.conf
 	fi
 
-	gfw_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "1"`
-	chn_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "2|3|4"`
-	all_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "5"`
 	if [ "$ss_basic_mode" == "1" ];then
 		echo_date 创建gfwlist的软连接到/jffs/etc/dnsmasq.d/文件夹.
 		ln -sf /koolshare/ss/rules/gfwlist.conf /jffs/configs/dnsmasq.d/gfwlist.conf
 	elif [ "$ss_basic_mode" == "2" ] || [ "$ss_basic_mode" == "3" ];then
-		if [ ! -f /jffs/configs/dnsmasq.d/gfwlist.conf ] && [ -n "$gfw_on" ];then
+		if [ -n "$gfw_on" ];then
 			echo_date 创建gfwlist的软连接到/jffs/etc/dnsmasq.d/文件夹.
 			ln -sf /koolshare/ss/rules/gfwlist.conf /jffs/configs/dnsmasq.d/gfwlist.conf
 		fi
@@ -665,7 +773,11 @@ create_dnsmasq_conf(){
 	[ ! -L "/jffs/scripts/dnsmasq.postconf" ] && ln -sf /koolshare/ss/rules/dnsmasq.postconf /jffs/scripts/dnsmasq.postconf
 }
 
-#--------------------------------------------------------------------------------------
+auto_start(){
+	[ ! -L "/koolshare/init.d/S99shadowsocks.sh" ] && ln -sf /koolshare/ss/ssconfig.sh /koolshare/init.d/S99shadowsocks.sh
+	[ ! -L "/koolshare/init.d/N99shadowsocks.sh" ] && ln -sf /koolshare/ss/ssconfig.sh /koolshare/init.d/N99shadowsocks.sh
+}
+
 start_kcp(){
 	# Start kcp
 	if [ "$ss_basic_use_kcp" == "1" ];then
@@ -922,7 +1034,6 @@ get_function_switch() {
 }
 
 creat_v2ray_json(){
-
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"
 	rm -rf "$V2RAY_CONFIG_FILE"
 	if [ "$ss_basic_v2ray_use_json" == "0" ];then
@@ -1015,7 +1126,6 @@ creat_v2ray_json(){
 				}"
 			;;
 		esac
-		
 		cat > "$V2RAY_CONFIG_FILE_TMP" <<-EOF
 			{
 				"log": {
@@ -1023,6 +1133,25 @@ creat_v2ray_json(){
 					"error": "/tmp/v2ray_log.log",
 					"loglevel": "error"
 				},
+		EOF
+		if [ "$ss_foreign_dns" == "7" ];then
+			echo_date 配置v2ray dns，用于dns解析...
+			cat >> "$V2RAY_CONFIG_FILE_TMP" <<-EOF
+				"inbound": {
+				"protocol": "dokodemo-door",
+				"port": 7913,
+				"settings": {
+					"address": "8.8.8.8",
+					"port": 53,
+					"network": "udp",
+					"timeout": 0,
+					"followRedirect": false
+					}
+				},
+
+			EOF
+		else
+			cat >> "$V2RAY_CONFIG_FILE_TMP" <<-EOF
 				"inbound": {
 					"port": 23456,
 					"listen": "0.0.0.0",
@@ -1035,6 +1164,20 @@ creat_v2ray_json(){
 					},
 					"streamSettings": null
 				},
+			EOF
+		fi
+		cat >> "$V2RAY_CONFIG_FILE_TMP" <<-EOF
+				"inboundDetour": [
+					{
+						"listen": "0.0.0.0",
+						"port": 3333,
+						"protocol": "dokodemo-door",
+						"settings": {
+							"network": "tcp,udp",
+							"followRedirect": true
+						}
+					}
+				],
 				"outbound": {
 					"tag": "agentout",
 					"protocol": "vmess",
@@ -1065,29 +1208,114 @@ creat_v2ray_json(){
 						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
 						"concurrency": $ss_basic_v2ray_mux_concurrency
 					}
-				},
-				"inboundDetour": [
-					{
-						"listen": "0.0.0.0",
-						"port": 3333,
-						"protocol": "dokodemo-door",
-						"settings": {
-							"network": "tcp,udp",
-							"followRedirect": true
-						}
-					}
-				]
+				}
 			}
 		EOF
+		echo_date 解析V2Ray配置文件...
+		cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . > "$V2RAY_CONFIG_FILE"
+		echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
 	elif [ "$ss_basic_v2ray_use_json" == "1" ];then
 		echo_date 使用自定义的v2ray json配置文件...
 		echo "$ss_basic_v2ray_json" | base64_decode > "$V2RAY_CONFIG_FILE_TMP"
+
+		OUTBOUND=`cat "$V2RAY_CONFIG_FILE_TMP" | jq .outbound`
+		local TEMPLATE="{
+						\"log\": {
+							\"access\": \"/dev/null\",
+							\"error\": \"/tmp/v2ray_log.log\",
+							\"loglevel\": \"error\"
+						},
+						\"inbound\": {
+							\"port\": 23456,
+							\"listen\": \"0.0.0.0\",
+							\"protocol\": \"socks\",
+							\"settings\": {
+								\"auth\": \"noauth\",
+								\"udp\": true,
+								\"ip\": \"127.0.0.1\",
+								\"clients\": null
+							},
+							\"streamSettings\": null
+						},
+						\"inboundDetour\": [
+							{
+								\"listen\": \"0.0.0.0\",
+								\"port\": 3333,
+								\"protocol\": \"dokodemo-door\",
+								\"settings\": {
+									\"network\": \"tcp,udp\",
+									\"followRedirect\": true
+								}
+							}
+						]
+						}"
+		#local TEMPLATE=`cat /koolshare/ss/rules/v2ray_template.json`
+		echo_date 解析V2Ray配置文件...
+		echo $TEMPLATE | jq --argjson args "$OUTBOUND" '. + {outbound: $args}' > "$V2RAY_CONFIG_FILE"
+		echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
+		#close_in_five
+		
+		# 检测用户json的服务器ip地址
+		v2ray_server=`cat "$V2RAY_CONFIG_FILE" | jq -r .outbound.settings.vnext[0].address`
+		if [ "$v2ray_server" != "null" ];then
+			IFIP_VS=`echo $v2ray_server|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+			if [ -n "$IFIP_VS" ];then
+				ss_basic_server_ip="$v2ray_server"
+				echo_date "检测到你的json配置的v2ray服务器是：$v2ray_server"
+			else
+				echo_date "检测到你的json配置的v2ray服务器：$v2ray_server不是ip格式！"
+				echo_date "为了确保v2ray的正常工作，建议配置ip格式的v2ray服务器地址！"
+
+				echo_date "尝试解析v2ray服务器的ip地址..."
+				v2ray_server_ip=`nslookup "$v2ray_server" 114.114.114.114 | sed '1,4d' | awk '{print $3}' | grep -v :|awk 'NR==1{print}'`
+				if [ "$?" == "0" ]; then
+					v2ray_server_ip=`echo $v2ray_server_ip|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+				else
+					echo_date v2ray服务器域名解析失败！
+					echo_date 尝试用resolveip方式解析...
+					v2ray_server_ip=`resolveip -4 -t 2 $ss_basic_server|awk 'NR==1{print}'`
+					if [ "$?" == "0" ];then
+						v2ray_server_ip=`echo $v2ray_server_ip|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+					fi
+				fi
+
+				if [ -n "$v2ray_server_ip" ];then
+					echo_date "v2ray服务器的ip地址解析成功：$v2ray_server_ip"
+					ss_basic_server_ip="$v2ray_server_ip"
+				else
+					echo_date "v2ray服务器的ip地址解析失败!插件将继续运行，域名解析将由v2ray自己进行！"
+					echo_date "请自行将v2ray服务器的ip地址填入IP/CIDR白名单中!"
+					echo_date "为了确保v2ray的正常工作，建议配置ip格式的v2ray服务器地址！"
+					#close_in_five
+				fi
+			fi
+		else
+			echo_date "检测到你的json配置的v2ray服务器为空！"
+			echo_date "为了确保v2ray的正常工作，请配置正确的v2ray服务器地址！"
+			close_in_five
+		fi
+
+		if [ "$ss_foreign_dns" == "7" ];then
+			echo_date 配置v2ray dns，用于dns解析...
+			local V2DNS="{
+							\"protocol\": \"dokodemo-door\", 
+							\"port\": 7913,
+							\"settings\": {
+								\"address\": \"8.8.8.8\",
+								\"port\": 53,
+								\"network\": \"udp\",
+								\"timeout\": 0,
+								\"followRedirect\": false
+							}
+						}"
+			cat /koolshare/ss/v2ray.json | jq --argjson args "$V2DNS" '. + {inbound: $args}' > /tmp/v2ray_dns.json && mv /tmp/v2ray_dns.json /koolshare/ss/v2ray.json
+		fi
 	fi
-	
-	echo_date 解析V2Ray配置文件...
-	cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . > "$V2RAY_CONFIG_FILE"
-	echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
+
+
+
 	echo_date 测试V2Ray配置文件.....
+	cd /koolshare/bin
 	result=$(v2ray -test -config="$V2RAY_CONFIG_FILE" | grep "Configuration OK.")
 	if [ -n "$result" ];then
 		echo_date $result
@@ -1095,25 +1323,42 @@ creat_v2ray_json(){
 	else
 		rm -rf "$V2RAY_CONFIG_FILE_TMP"
 		rm -rf "$V2RAY_CONFIG_FILE"
-		echo_date V2Ray配置文件没有通过测试，请检查设置!!!插件将在5秒后自动关闭！
-		echo_date
-		echo_date
-		echo_date
-		sleep 5
-		dbus set ss_basic_enable="0"
-		disable_ss
-		unset_lock
-		exit 1
+		echo_date V2Ray配置文件没有通过测试，请检查设置!!!
+		close_in_five
 	fi
 }
 
 start_v2ray(){
-	echo_date 开启v2ray主进程... 为了运行的稳定性，建议使用虚拟内存...
-	start-stop-daemon -S -q -b -m \
-	-p /tmp/var/v2ray.pid \
-	-x /koolshare/bin/v2ray \
-	-- --config="$V2RAY_CONFIG_FILE"
-	echo_date v2ray启动成功。
+	cd /koolshare/bin
+	export GOGC=30
+	v2ray --config=/koolshare/ss/v2ray.json >/dev/null 2>&1 &
+	
+	local i=10
+	until [ -n "$V2PID" ]
+	do
+		i=$(($i-1))
+		V2PID=`pidof v2ray`
+		if [ "$i" -lt 1 ];then
+			echo_date "v2ray进程启动失败！"
+			close_in_five
+		fi
+		sleep 1
+	done
+	echo_date v2ray启动成功，pid：$V2PID
+}
+
+detect_swap(){
+	MODEL=`nvram get model`
+	SWAPSTATUS=`free|grep Swap|awk '{print $2}'`
+	if [ "$MODEL" != "GT-AC5300" ];then
+		if [ "$SWAPSTATUS" != "0" ];then
+			echo_date "你选择了v2ray节点，当前系统已经启用虚拟内存！！符合启动条件！"
+		else
+			echo_date "你选择了v2ray节点，而当前系统未启用虚拟内存！！"
+			echo_date "v2ray程序对路由器开销极大，请挂载虚拟内存后再开启v2ray功能！"
+			close_in_five
+		fi
+	fi
 }
 
 write_cron_job(){
@@ -1148,7 +1393,6 @@ kill_cron_job(){
 }
 #--------------------------------------nat part begin------------------------------------------------
 load_tproxy(){
-	#MODULES="nf_tproxy_core xt_TPROXY xt_socket xt_comment"
 	MODULES="xt_TPROXY xt_socket xt_comment"
 	OS=$(uname -r)
 	# load Kernel Modules
@@ -1173,8 +1417,7 @@ load_tproxy(){
 	
 	if [ $modules_loaded -ne 2 ]; then
 		echo "One or more modules are missing, only $(( modules_loaded+1 )) are loaded. Can't start.";
-		unset_lock
-		exit 1;
+		close_in_five
 	fi
 }
 
@@ -1250,13 +1493,11 @@ add_white_black_ip(){
 	fi
 	
 	# white ip/cidr
-	#ip1=$(nvram get wan0_ipaddr | cut -d"." -f1,2)
-	[ -n "$ss_basic_server_ip" ] && SERVER_IP=$ss_basic_server_ip || SERVER_IP=""
-	IFIP_DNS1=`echo $ISP_DNS1|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
-	IFIP_DNS2=`echo $ISP_DNS2|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
+	[ -n "$ss_basic_server_ip" ] && SERVER_IP="$ss_basic_server_ip" || SERVER_IP=""
 	[ -n "$IFIP_DNS1" ] && ISP_DNS_a="$ISP_DNS1" || ISP_DNS_a=""
 	[ -n "$IFIP_DNS2" ] && ISP_DNS_b="$ISP_DNS2" || ISP_DNS_a=""
 	ip_lan="0.0.0.0/8 10.0.0.0/8 100.64.0.0/10 127.0.0.0/8 169.254.0.0/16 172.16.0.0/12 192.168.0.0/16 224.0.0.0/4 240.0.0.0/4 223.5.5.5 223.6.6.6 114.114.114.114 114.114.115.115 1.2.4.8 210.2.4.8 112.124.47.27 114.215.126.16 180.76.76.76 119.29.29.29 $ISP_DNS_a $ISP_DNS_b $SERVER_IP $(get_wan0_cidr)"
+	# 203.80.96.10 208.67.222.222 8.8.8.8 9.9.9.9
 	for ip in $ip_lan
 	do
 		ipset -! add white_list $ip >/dev/null 2>&1
@@ -1339,7 +1580,7 @@ get_jump_mode(){
 
 lan_acess_control(){
 	# lan access control
-	acl_nu=`dbus list ss_acl_mode|sort -n -t "=" -k 2|cut -d "=" -f 1 | cut -d "_" -f 4`
+	acl_nu=`dbus list ss_acl_mode_|cut -d "=" -f 1 | cut -d "_" -f 4 | sort -n`
 	if [ -n "$acl_nu" ]; then
 		for acl in $acl_nu
 		do
@@ -1520,7 +1761,7 @@ set_ulimit(){
 disable_ss(){
 	echo_date ============ 梅林固件 - shadowsocks by sadoneli\&Xiaobao =============
 	echo_date
-	echo_date ------------------------- 关闭Shadowsocks -----------------------------
+	echo_date ------------------------- 关闭Shadowsocks ----------------------------
 	nvram set ss_mode=0
 	dbus set dns2socks=0
 	nvram commit
@@ -1540,14 +1781,12 @@ load_nat(){
 	    i=$(($i-1))
 	    if [ "$i" -lt 1 ];then
 	        echo_date "错误：不能正确加载nat规则!"
-	        disable_ss
-	        unset_lock
-	        exit 1
+		close_in_five
 	    fi
 	    sleep 2
 	done
 	echo_date "加载nat规则!"
-	creat_ipset
+	#creat_ipset
 	add_white_black_ip
 	apply_nat_rules
 	chromecast
@@ -1581,16 +1820,6 @@ ss_pre_stop(){
 	done
 }
 
-set_lock(){
-	exec 1000>"$LOCK_FILE"
-	flock -x 1000
-}
-
-unset_lock(){
-	flock -u 1000
-	rm -rf "$LOCK_FILE"
-}
-
 apply_ss(){
 	# router is on boot
 	WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
@@ -1613,23 +1842,26 @@ apply_ss(){
 	ss_pre_start
 	# start
 	echo_date ------------------------- 启动 【科学上网】 ----------------------------
+	[ "$ss_basic_type" == "3" ] && detect_swap
 	resolv_server_ip
 	ss_arg
+	creat_ipset
+	create_dnsmasq_conf
 	# do not re generate json on router start, use old one
 	[ -z "$WAN_ACTION" ] && [ "$ss_basic_type" != "3" ] && creat_ss_json
 	[ -z "$WAN_ACTION" ] && [ "$ss_basic_type" = "3" ] && creat_v2ray_json
-	create_dnsmasq_conf
-	write_cron_job
-	[ "$ss_basic_type" != "2" ] && start_dns
 	[ "$ss_basic_type" == "0" ] || [ "$ss_basic_type" == "1" ] && start_ss_redir
 	[ "$ss_basic_type" == "2" ] && start_koolgame
 	[ "$ss_basic_type" == "3" ] && start_v2ray
 	[ "$ss_basic_type" != "2" ] && start_kcp
+	[ "$ss_basic_type" != "2" ] && start_dns
 	load_module
 	#===load nat start===
 	load_nat
 	#===load nat end===
 	restart_dnsmasq
+	auto_start
+	write_cron_job
 	echo_date ------------------------ 【科学上网】 启动完毕 ------------------------
 	# post-start
 	ss_post_start
@@ -1673,9 +1905,9 @@ start)
 	set_lock
 	if [ "$ss_basic_enable" == "1" ];then
 		logger "[软件中心]: 启动科学上网插件！"
-		set_ulimit >> /tmp/upload/ss_log.txt
-		apply_ss >> /tmp/upload/ss_log.txt
-    	write_numbers >> /tmp/upload/ss_log.txt
+		set_ulimit >> "$LOG_FILE"
+		apply_ss >> "$LOG_FILE"
+		write_numbers >> "$LOG_FILE"
 		#[ ! -f "/tmp/shadowsocks.nat_lock" ] && touch /tmp/shadowsocks.nat_lock
 	else
 		logger "[软件中心]: 科学上网插件未开启，不启动！"
@@ -1715,15 +1947,6 @@ update)
 start_nat)
 	set_lock
 	if [ "$ss_basic_enable" == "1" ];then
-		# WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
-		# [ -n "$WAN_ACTION" ] && exit 0
-		# # detect nat locker,do not restart nat on reouter boot
-		# [ ! -f "/tmp/shadowsocks.nat_lock" ] && unset_lock && exit 0
-		# flush_nat
-		# creat_ipset
-		# add_white_black_ip
-		# apply_nat_rules
-		# chromecast
 		set_ulimit
 		apply_ss
 		write_numbers

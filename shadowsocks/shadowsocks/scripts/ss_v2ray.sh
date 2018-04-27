@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# shadowsocks script for HND router with kernel 4.1.27 merlin firmware
+# by sadog (sadoneli@gmail.com) from koolshare.cn
+
 eval `dbus export ss`
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
@@ -29,6 +33,10 @@ get_latest_version(){
 			echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."
 			update_now v$V2VERSION
 		else
+			V2RAY_LOCAL_VER=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2`
+			V2RAY_LOCAL_DATE=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f5`
+			[ -n "$V2RAY_LOCAL_VER" ] && dbus set ss_basic_v2ray_version="$V2RAY_LOCAL_VER"
+			[ -n "$V2RAY_LOCAL_DATE" ] && dbus set ss_basic_v2ray_date="$V2RAY_LOCAL_DATE"
 			echo_date "V2Ray已安装版本已经是最新，退出更新程序!"
 		fi
 	else
@@ -63,6 +71,10 @@ get_latest_version_backup(){
 			echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."
 			update_now_backup v$V2VERSION
 		else
+			V2RAY_LOCAL_VER=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2`
+			V2RAY_LOCAL_DATE=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f5`
+			[ -n "$V2RAY_LOCAL_VER" ] && dbus set ss_basic_v2ray_version="$V2RAY_LOCAL_VER"
+			[ -n "$V2RAY_LOCAL_DATE" ] && dbus set ss_basic_v2ray_date="$V2RAY_LOCAL_DATE"
 			echo_date "V2Ray已安装版本已经是最新，退出更新程序!"
 		fi
 	else
@@ -192,27 +204,44 @@ install_binary(){
 }
 
 move_binary(){
+	echo_date "开始替换v2ray二进制文件... "
 	mv /tmp/v2ray/v2ray_armv7 /koolshare/bin/v2ray
 	mv /tmp/v2ray/v2ctl /koolshare/bin/
 	chmod +x /koolshare/bin/v2*
+	V2RAY_LOCAL_VER=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2`
+	V2RAY_LOCAL_DATE=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f5`
+	[ -n "$V2RAY_LOCAL_VER" ] && dbus set ss_basic_v2ray_version="$V2RAY_LOCAL_VER"
+	[ -n "$V2RAY_LOCAL_DATE" ] && dbus set ss_basic_v2ray_date="$V2RAY_LOCAL_DATE"
+	echo_date "v2ray二进制文件替换成功... "
 }
 
 start_v2ray(){
-	echo_date "开启v2ray主进程... 为了运行的稳定性，建议使用虚拟内存..."
-	start-stop-daemon -S -q -b -m \
-	-p /tmp/var/v2ray.pid \
-	-x /koolshare/bin/v2ray \
-	-- --config="$V2RAY_CONFIG_FILE"
-	echo_date "v2ray启动成功。"
+	echo_date "开启v2ray进程... "
+	cd /koolshare/bin
+	export GOGC=30
+	v2ray --config=/koolshare/ss/v2ray.json >/dev/null 2>&1 &
+	
+	local i=10
+	until [ -n "$V2PID" ]
+	do
+		i=$(($i-1))
+		V2PID=`pidof v2ray`
+		if [ "$i" -lt 1 ];then
+			echo_date "v2ray进程启动失败！"
+			close_in_five
+		fi
+		sleep 1
+	done
+	echo_date v2ray启动成功，pid：$V2PID
 }
 
 case $2 in
 1)
 	echo " " > /tmp/upload/ss_log.txt
+	http_response "$1"
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt
 	echo_date "                v2ray程序更新(Shell by sadog)" >> /tmp/upload/ss_log.txt
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt
-	http_response "$1"
 	get_latest_version >> /tmp/upload/ss_log.txt 2>&1
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt
 	echo XU6J03M6 >> /tmp/upload/ss_log.txt

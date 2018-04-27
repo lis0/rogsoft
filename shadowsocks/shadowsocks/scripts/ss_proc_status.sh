@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# shadowsocks script for HND router with kernel 4.1.27 merlin firmware
+# by sadog (sadoneli@gmail.com) from koolshare.cn
+
 eval `dbus export ss`
 source /koolshare/scripts/base.sh
 source helper.sh
@@ -47,6 +50,9 @@ get_dns_name() {
 			echo "https_dns_proxy"
 		;;
 		7)
+			echo "v2ray dns"
+		;;
+		8)
 			echo "koolgame内置"
 		;;
 	esac
@@ -55,9 +61,27 @@ get_dns_name() {
 echo_version(){
 	echo_date
 	SOFVERSION=`cat /koolshare/ss/version`
-	KCPTUN_LOCAL_VER=`/koolshare/bin/client_linux_arm7 -version 2>/dev/null | cut -d " " -f3` || "null"
-	V2RAY_LOCAL_VER=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2` || "null"
-	V2RAY_LOCAL_DATE=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f5` || "null"
+	KCPTUN_LOCAL_VER="20180316"
+	#KCPTUN_LOCAL_VER=`/koolshare/bin/client_linux_arm5 -version 2>/dev/null | cut -d " " -f3` || "null"
+	if [ -z "$ss_basic_v2ray_version" ];then
+		ss_basic_v2ray_version_tmp=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2`
+		if [ -n "$ss_basic_v2ray_version_tmp" ];then
+			ss_basic_v2ray_version="$ss_basic_v2ray_version_tmp"
+			dbus set ss_basic_v2ray_version="$ss_basic_v2ray_version_tmp"
+		else
+			ss_basic_v2ray_version="null"
+		fi
+	fi
+
+	if [ -z "$ss_basic_v2ray_date" ];then
+		ss_basic_v2ray_date_tmp=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f5`
+		if [ -n "$ss_basic_v2ray_date_tmp" ];then
+			ss_basic_v2ray_date="$ss_basic_v2ray_date_tmp"
+			dbus set ss_basic_v2ray_date="$ss_basic_v2ray_date_tmp"
+		else
+			ss_basic_v2ray_date="null"
+		fi
+	fi
 	echo ① 程序版本（插件版本：$SOFVERSION）：
 	echo -----------------------------------------------------------
 	echo "程序			版本		备注"
@@ -75,7 +99,7 @@ echo_version(){
 	echo "chinadns2		2.0.0 		2017年12月09日编译"
 	echo "https_dns_proxy		bea6840		2018年04月15日编译"
 	echo "client_linux_arm7	$KCPTUN_LOCAL_VER	kcptun"
-	echo "v2ray			$V2RAY_LOCAL_VER		$V2RAY_LOCAL_DATE"
+	echo "v2ray			$ss_basic_v2ray_version		$ss_basic_v2ray_date"
 	echo -----------------------------------------------------------
 }
 
@@ -115,7 +139,7 @@ check_status(){
 	elif [ "$ss_basic_type" == "2" ];then
 		echo_version
 		echo
-		echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name 7)）
+		echo ② 检测当前相关进程工作状态：（你正在使用koolgame,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name 8)）
 		echo -----------------------------------------------------------
 		echo "程序		状态	PID"
 		[ -n "$KOOLGAME" ] && echo "koolgame	工作中	pid：$KOOLGAME" || echo "koolgame	未运行"

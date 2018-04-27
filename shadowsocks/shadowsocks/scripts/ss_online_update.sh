@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# shadowsocks script for HND router with kernel 4.1.27 merlin firmware
+# by sadog (sadoneli@gmail.com) from koolshare.cn
+
 export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
@@ -42,6 +46,20 @@ NO_DEL=1
 # ssconf_basic_v2ray_json_
 # ssconf_basic_type_
 # ==============================
+
+set_lock(){
+	exec 233>"$LOCK_FILE"
+	flock -n 233 || {
+		echo_date "订阅脚本已经在运行，请稍候再试！"
+		exit 1
+	}
+}
+
+unset_lock(){
+	flock -u 233
+	rm -rf "$LOCK_FILE"
+}
+
 prepare(){
 	# 0 检测排序
 	seq_nu=`dbus list ssconf_basic_nam | cut -d "=" -f1|cut -d "_" -f4|sort -n|wc -l`
@@ -159,7 +177,7 @@ add_ss_servers(){
 	dbus set ssconf_basic_port_$ssindex=$server_port
 	dbus set ssconf_basic_method_$ssindex=$encrypt_method
 	dbus set ssconf_basic_password_$ssindex=$password
-	dbus set ssconf_basic_type_$ssindex="1"
+	dbus set ssconf_basic_type_$ssindex="0"
 	echo_date 成功添加了添加SS节点：$remarks 到节点列表第 $ssindex 位。
 }
 
@@ -444,9 +462,6 @@ get_oneline_rule_now(){
 }
 
 start_update(){
-	#防止并发开启服务
-	[ -f "$LOCK_FILE" ] && return 3
-	touch "$LOCK_FILE"
 	prepare
 	rm -rf /tmp/ssr_subscribe_file.txt >/dev/null 2>&1
 	rm -rf /tmp/ssr_subscribe_file_temp1.txt >/dev/null 2>&1
@@ -454,7 +469,7 @@ start_update(){
 	rm -rf /tmp/all_onlineservers >/dev/null 2>&1
 	rm -rf /tmp/group_info.txt >/dev/null 2>&1
 	sleep 1
-	# 收集本地节点名到文件
+	echo_date 收集本地节点名到文件
 	LOCAL_NODES=`dbus list ssconf_basic_group|cut -d "_" -f 4|cut -d "=" -f 1|sort -n`
 	if [ -n "$LOCAL_NODES" ];then
 		for LOCAL_NODE in $LOCAL_NODES
@@ -590,7 +605,6 @@ start_update(){
 	rm -rf /tmp/all_localservers >/dev/null 2>&1
 	rm -rf /tmp/all_onlineservers >/dev/null 2>&1
 	rm -rf /tmp/group_info.txt >/dev/null 2>&1
-	rm -f "$LOCK_FILE"
 }
 
 get_ss_config(){
@@ -603,8 +617,6 @@ get_ss_config(){
 }
 
 add() {
-	[ -f "$LOCK_FILE" ] && return 3
-	touch "$LOCK_FILE"
 	echo_date "==================================================================="
 	sleep 1
 	echo_date 通过SS/SSR链接添加节点...
@@ -641,7 +653,6 @@ add() {
 		dbus remove ss_base64_links
 	done
 	echo_date "==================================================================="
-	rm -f "$LOCK_FILE"
 }
 
 remove_all(){
@@ -700,18 +711,23 @@ remove_online(){
 
 case $2 in
 0)
+	set_lock
 	echo " " > /tmp/upload/ss_log.txt
 	http_response "$1"
 	remove_all >> /tmp/upload/ss_log.txt
 	echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	unset_lock
 	;;
 1)
+	set_lock
 	echo " " > /tmp/upload/ss_log.txt
 	http_response "$1"
 	remove_online >> /tmp/upload/ss_log.txt
 	echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	unset_lock
 	;;
 2)
+	set_lock
 	echo " " > /tmp/upload/ss_log.txt
 	http_response "$1"
 	local_groups=`dbus list ssconf_basic_|grep group|cut -d "=" -f2|sort -u|wc -l`
@@ -731,18 +747,23 @@ case $2 in
 		sed -i '/ssnodeupdate/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
 	fi
 	echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	unset_lock
 	;;
 3)
+	set_lock
 	echo " " > /tmp/upload/ss_log.txt
 	http_response "$1"
 	echo_date "开始订阅" >> /tmp/upload/ss_log.txt
 	start_update >> /tmp/upload/ss_log.txt
 	echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	unset_lock
 	;;
 4)
+	set_lock
 	echo " " > /tmp/upload/ss_log.txt
 	http_response "$1"
 	add >> /tmp/upload/ss_log.txt
 	echo XU6J03M6 >> /tmp/upload/ss_log.txt
+	unset_lock
 	;;
 esac
