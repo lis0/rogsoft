@@ -2,9 +2,10 @@ Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
 1.2.9
    - update	提高v2ray使用json配置的成功率；
-   - update	优化国内dns设定时的一些判断；
-   - add	添加v2ray dns支持（仅在使用v2ray时可用）
-   - fix	修复负载均衡页面添加节点时数据不全导致表格错位的问题
+   - update	优化国内dns设定时的一些判断；
+   - add	添加v2ray dns支持（仅在使用v2ray时可用）；
+   - fix	修复负载均衡页面添加节点时数据不全导致表格错位的问题；
+   - update	v2ray二进制同步到v3.21版本。
 
 1.2.7 - 1.2.8
    - update	更新v2ray二进制到3.20；
