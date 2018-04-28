@@ -64,6 +64,7 @@ perpare(){
 	}
 	[ -n "`cat /etc/dnsmasq.conf|grep no-resolv`" ] && sed -i '/no-resolv/d' /etc/dnsmasq.conf
 	[ -n "`cat /etc/dnsmasq.conf|grep servers-file`" ] && sed -i '/servers-file/d' /etc/dnsmasq.conf
+	[ -n "`cat /etc/dnsmasq.conf|grep resolv-file`" ] && sed -i '/resolv-file/d' /etc/dnsmasq.conf
 }
 
 use_chn_plan(){
@@ -78,7 +79,7 @@ use_chn_plan(){
 		# 选择其它国内DNS时候
 		pc_insert "no-poll" "server=$CDN#53" "/etc/dnsmasq.conf"
 	fi
-	pc_insert "no-poll" "no-resolv" "/etc/dnsmasq.conf"
+		pc_insert "no-poll" "no-resolv" "/etc/dnsmasq.conf"
 }
 
 use_for_plan(){
@@ -98,4 +99,3 @@ else
 	perpare
 	use_for_plan
 fi
-pc_insert "no-poll" "no-resolv" "/etc/dnsmasq.conf"

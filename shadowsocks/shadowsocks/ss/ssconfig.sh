@@ -10,8 +10,6 @@ source helper.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 ss_basic_version_local=`cat /koolshare/ss/version`
 dbus set ss_basic_version_local=$ss_basic_version_local
-main_url="https://raw.githubusercontent.com/koolshare/rogsoft/master/shadowsocks"
-backup_url="https://rogsoft.ngrok.wang/shadowsocks"
 LOG_FILE=/tmp/upload/ss_log.txt
 CONFIG_FILE=/koolshare/ss/ss.json
 V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
@@ -101,95 +99,9 @@ close_in_five(){
 	dbus set ss_basic_enable="0"
 	disable_ss
 	unset_lock
-	exit 1
+	exit
 }
 
-install_ss(){
-	echo_date 开始解压压缩包...
-	tar -zxf shadowsocks.tar.gz
-	chmod a+x /tmp/shadowsocks/install.sh
-	echo_date 开始安装更新文件...
-	sh /tmp/shadowsocks/install.sh
-	rm -rf /tmp/shadowsocks*
-}
-
-update_ss(){
-	echo_date 更新过程中请不要做奇怪的事，不然可能导致问题！
-	echo_date 开启SS检查更新：使用主服务器：$main_url...
-	echo_date 检测主服务器在线版本号...
-	ss_basic_version_web1=`curl --connect-timeout 5 -s "$main_url"/version | sed -n 1p`
-	if [ -n "$ss_basic_version_web1" ];then
-		echo_date 检测到主服务器在线版本号：$ss_basic_version_web1
-		dbus set ss_basic_version_web=$ss_basic_version_web1
-		if [ "$ss_basic_version_local" != "$ss_basic_version_web1" ];then
-		echo_date 主服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 不同！
-			cd /tmp
-			md5_web1=`curl -s "$main_url"/version | sed -n 2p`
-			echo_date 开启下载进程，从主服务器上下载更新包...
-			wget --no-check-certificate --timeout=5 "$main_url"/shadowsocks.tar.gz
-			md5sum_gz=`md5sum /tmp/shadowsocks.tar.gz | sed 's/ /\n/g'| sed -n 1p`
-			if [ "$md5sum_gz" != "$md5_web1" ]; then
-				echo_date 更新包md5校验不一致！估计是下载的时候出了什么状况，请等待一会儿再试...
-				rm -rf /tmp/shadowsocks* >/dev/null 2>&1
-				sleep 1
-				echo_date 更换备用备用更新地址，请稍后...
-				sleep 1
-				update_ss2
-			else
-				echo_date 更新包md5校验一致！ 开始安装！...
-				install_ss
-			fi
-		else
-			echo_date 主服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 相同！
-			echo_date 那还更新个毛啊，关闭更新进程!
-			close_in_five
-		fi
-	else
-		echo_date 没有检测到主服务器在线版本号,访问github服务器有点问题哦~
-		sleep 1
-		echo_date 更换备用备用更新地址，请稍后...
-		sleep 1
-		update_ss2
-	fi
-}
-
-update_ss2(){
-	echo_date 开启SS检查更新：使用备用服务器：$backup_url...
-	echo_date 检测备用服务器在线版本号...
-	ss_basic_version_web2=`curl --connect-timeout 5 -s "$backup_url"/version | sed -n 1p`
-	if [ -n "$ss_basic_version_web2" ];then
-	echo_date 检测到备用服务器在线版本号：$ss_basic_version_web1
-		dbus set ss_basic_version_web=$ss_basic_version_web2
-		if [ "$ss_basic_version_local" != "$ss_basic_version_web2" ];then
-		echo_date 备用服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 不同！
-			cd /tmp
-			md5_web2=`curl -s "$backup_url"/version | sed -n 2p`
-			echo_date 开启下载进程，从备用服务器上下载更新包...
-			wget "$backup_url"/shadowsocks.tar.gz
-			md5sum_gz=`md5sum /tmp/shadowsocks.tar.gz | sed 's/ /\n/g'| sed -n 1p`
-			if [ "$md5sum_gz" != "$md5_web2" ]; then
-				echo_date 更新包md5校验不一致！估计是下载的时候除了什么状况，请等待一会儿再试...
-				rm -rf /tmp/shadowsocks* >/dev/null 2>&1
-				sleep 1
-				echo_date 然而只有这一台备用更更新服务器，请尝试离线手动安装...
-				close_in_five
-			else
-				echo_date 更新包md5校验一致！ 开始安装！...
-				install_ss
-			fi
-		else
-			echo_date 备用服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 相同！
-			sleep 1
-			echo_date 那还更新个毛啊，关闭更新进程!
-			close_in_five
-		fi
-	else
-		echo_date 没有检测到备用服务器在线版本号,访问备用服务器有点问题哦，你网络很差欸~
-		sleep 1
-		echo_date 然而只有这一台备用更更新服务器，请尝试离线手动安装...
-		close_in_five
-	fi
-}
 # ================================= ss stop ===============================
 restore_conf(){
 	echo_date 删除ss相关的名单配置文件.
@@ -209,13 +121,13 @@ kill_process(){
 	ssredir=`pidof ss-redir`
 	if [ -n "$ssredir" ];then 
 		echo_date 关闭ss-redir进程...
-		killall ss-redir
+		killall ss-redir >/dev/null 2>&1
 	fi
 
 	rssredir=`pidof rss-redir`
 	if [ -n "$rssredir" ];then 
 		echo_date 关闭ssr-redir进程...
-		killall rss-redir
+		killall rss-redir >/dev/null 2>&1
 	fi
 	sslocal=`ps | grep -w ss-local | grep -v "grep" | grep -w "23456" | awk '{print $1}'`
 	if [ -n "$sslocal" ];then 
@@ -231,32 +143,32 @@ kill_process(){
 	sstunnel=`pidof ss-tunnel`
 	if [ -n "$sstunnel" ];then 
 		echo_date 关闭ss-tunnel进程...
-		killall ss-tunnel
+		killall ss-tunnel >/dev/null 2>&1
 	fi
 	rsstunnel=`pidof rss-tunnel`
 	if [ -n "$rsstunnel" ];then 
 		echo_date 关闭rss-tunnel进程...
-		killall rss-tunnel
+		killall rss-tunnel >/dev/null 2>&1
 	fi
 	chinadns_process=`pidof chinadns`
 	if [ -n "$chinadns_process" ];then 
 		echo_date 关闭chinadns2进程...
-		killall chinadns
+		killall chinadns >/dev/null 2>&1
 	fi
 	chinadns1_process=`pidof chinadns1`
 	if [ -n "$chinadns1_process" ];then 
 		echo_date 关闭chinadns1进程...
-		killall chinadns1
+		killall chinadns1 >/dev/null 2>&1
 	fi
 	cdns_process=`pidof cdns`
 	if [ -n "$cdns_process" ];then 
 		echo_date 关闭cdns进程...
-		killall cdns
+		killall cdns >/dev/null 2>&1
 	fi
-	DNS2SOCK=`pidof dns2socks`
-	if [ -n "$DNS2SOCK" ];then 
+	dns2socks_process=`pidof dns2socks`
+	if [ -n "$dns2socks_process" ];then 
 		echo_date 关闭dns2socks进程...
-		killall dns2socks
+		killall dns2socks >/dev/null 2>&1
 	fi
 	koolgame_process=`pidof koolgame`
 	if [ -n "$koolgame_process" ];then 
@@ -350,12 +262,14 @@ resolv_server_ip(){
 			if [ -n "$server_ip" ];then
 				echo_date SS服务器的ip地址解析成功：$server_ip.
 				ss_basic_server="$server_ip"
+				ss_basic_server_ip="$server_ip"
 				dbus set ss_basic_server_ip="$server_ip"
 			else
 				dbus remvoe ss_basic_server_ip
 				echo_date SS服务器的ip地址解析失败，将由ss-redir自己解析.
 			fi
 		else
+			ss_basic_server_ip="$ss_basic_server"
 			dbus set ss_basic_server_ip=$ss_basic_server
 			echo_date 检测到你的SS服务器已经是IP格式：$ss_basic_server,跳过解析... 
 		fi
@@ -478,7 +392,7 @@ get_dns_name() {
 			fi
 		;;
 		5)
-			echo "chinadns1 + dns2socks上游"
+			echo "chinadns1"
 		;;
 		6)
 			echo "https_dns_proxy"
@@ -1117,6 +1031,7 @@ creat_v2ray_json(){
 				}"
 			;;
 			ws_hd)
+				ss_basic_v2ray_network="ws"
 				local ws="{
 				\"connectionReuse\": true,
 				\"path\": \"$ss_basic_v2ray_network_path\",
@@ -1256,8 +1171,23 @@ creat_v2ray_json(){
 		#close_in_five
 		
 		# 检测用户json的服务器ip地址
-		v2ray_server=`cat "$V2RAY_CONFIG_FILE" | jq -r .outbound.settings.vnext[0].address`
-		if [ "$v2ray_server" != "null" ];then
+		v2ray_protocal=`cat "$V2RAY_CONFIG_FILE" | jq -r .outbound.protocol`
+		case $v2ray_protocal in
+		vmess)
+			v2ray_server=`cat "$V2RAY_CONFIG_FILE" | jq -r .outbound.settings.vnext[0].address`
+			;;
+		socks)
+			v2ray_server=`cat "$V2RAY_CONFIG_FILE" | jq -r .outbound.settings.servers[0].address`
+			;;
+		shadowsocks)
+			v2ray_server=`cat "$V2RAY_CONFIG_FILE" | jq -r .outbound.settings.servers[0].address`
+			;;
+		*)
+			v2ray_server=""
+			;;
+		esac
+
+		if [ -n "$v2ray_server" -a "$v2ray_server" != "null" ];then
 			IFIP_VS=`echo $v2ray_server|grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:"`
 			if [ -n "$IFIP_VS" ];then
 				ss_basic_server_ip="$v2ray_server"
@@ -1265,7 +1195,6 @@ creat_v2ray_json(){
 			else
 				echo_date "检测到你的json配置的v2ray服务器：$v2ray_server不是ip格式！"
 				echo_date "为了确保v2ray的正常工作，建议配置ip格式的v2ray服务器地址！"
-
 				echo_date "尝试解析v2ray服务器的ip地址..."
 				v2ray_server_ip=`nslookup "$v2ray_server" 114.114.114.114 | sed '1,4d' | awk '{print $3}' | grep -v :|awk 'NR==1{print}'`
 				if [ "$?" == "0" ]; then
@@ -1290,9 +1219,10 @@ creat_v2ray_json(){
 				fi
 			fi
 		else
-			echo_date "检测到你的json配置的v2ray服务器为空！"
-			echo_date "为了确保v2ray的正常工作，请配置正确的v2ray服务器地址！"
-			close_in_five
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+			echo_date "+       没有检测到你的v2ray服务器地址，如果你确定你的配置是正确的        +"
+			echo_date "+   请自行将v2ray服务器的ip地址填入【IP/CIDR】黑名单中，以确保正常使用   +"
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		fi
 
 		if [ "$ss_foreign_dns" == "7" ];then
@@ -1311,8 +1241,6 @@ creat_v2ray_json(){
 			cat /koolshare/ss/v2ray.json | jq --argjson args "$V2DNS" '. + {inbound: $args}' > /tmp/v2ray_dns.json && mv /tmp/v2ray_dns.json /koolshare/ss/v2ray.json
 		fi
 	fi
-
-
 
 	echo_date 测试V2Ray配置文件.....
 	cd /koolshare/bin
@@ -1354,8 +1282,10 @@ detect_swap(){
 		if [ "$SWAPSTATUS" != "0" ];then
 			echo_date "你选择了v2ray节点，当前系统已经启用虚拟内存！！符合启动条件！"
 		else
-			echo_date "你选择了v2ray节点，而当前系统未启用虚拟内存！！"
-			echo_date "v2ray程序对路由器开销极大，请挂载虚拟内存后再开启v2ray功能！"
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+			echo_date "+          你选择了v2ray节点，而当前系统未启用虚拟内存！               +"
+			echo_date "+        v2ray程序对路由器开销极大，请挂载虚拟内存后再开启！            +"
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 			close_in_five
 		fi
 	fi
@@ -1497,7 +1427,6 @@ add_white_black_ip(){
 	[ -n "$IFIP_DNS1" ] && ISP_DNS_a="$ISP_DNS1" || ISP_DNS_a=""
 	[ -n "$IFIP_DNS2" ] && ISP_DNS_b="$ISP_DNS2" || ISP_DNS_a=""
 	ip_lan="0.0.0.0/8 10.0.0.0/8 100.64.0.0/10 127.0.0.0/8 169.254.0.0/16 172.16.0.0/12 192.168.0.0/16 224.0.0.0/4 240.0.0.0/4 223.5.5.5 223.6.6.6 114.114.114.114 114.114.115.115 1.2.4.8 210.2.4.8 112.124.47.27 114.215.126.16 180.76.76.76 119.29.29.29 $ISP_DNS_a $ISP_DNS_b $SERVER_IP $(get_wan0_cidr)"
-	# 203.80.96.10 208.67.222.222 8.8.8.8 9.9.9.9
 	for ip in $ip_lan
 	do
 		ipset -! add white_list $ip >/dev/null 2>&1
@@ -1940,9 +1869,6 @@ restart)
 	# [ ! -f "/tmp/shadowsocks.nat_lock" ] && touch /tmp/shadowsocks.nat_lock
 	#get_status >> /tmp/ss_start.txt
 	unset_lock
-	;;
-update)
-	update_ss
 	;;
 start_nat)
 	set_lock

@@ -152,7 +152,7 @@ function pop_help() {
 				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="http://firmware.koolshare.cn/binary/koolgame"><u>KoolGame</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>四种客户端的科学上网、游戏加速工具。<br>\
 				本插件仅支持Merlin hnd platform 4.1.27内核的固件，请不要用于其它固件安装。<br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/rogsoft/issues"><u>github的issue页面</u></a>反馈~<br><br>\
-				● SS/SSR一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/onekeyshell/kcptun_for_ss_ssr"><u>一键安装KCPTUN for SS/SSR on Linux</u></a><br>\
+				● SS/SSR一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/onekeyshell/kcptun_for_ss_ssr/tree/master"><u>一键安装KCPTUN for SS/SSR on Linux</u></a><br>\
 				● koolgame一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/clangcn/game-server"><u>一键安装koolgame服务器端脚本，完美支持nat2</u></a><br>\
 				● V2Ray一键脚本：<a style="color:#e7bd16" target="_blank" href="https://233blog.com/post/17/"><u>V2Ray 搭建和优化详细图文教程</u></a><br>\
 				● 插件交流：<a style="color:#e7bd16" target="_blank" href="https://t.me/joinchat/AAAAAEC7pgV9vPdPcJ4dJw"><u>加入telegram群组</u></a><br><br>\
@@ -492,6 +492,7 @@ function verifyFields(r) {
 	//v2ray
 	var json_on = E("ss_basic_v2ray_use_json").checked == true;
 	var json_off = E("ss_basic_v2ray_use_json").checked == false;
+	var ws_on = E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "ws_hd"
 	showhide("pass_tr", (!v2ray_on));
 	showhide("method_tr", (!v2ray_on));
 	showhide("server_tr", (json_off));
@@ -503,7 +504,7 @@ function verifyFields(r) {
 	showhide("v2ray_network_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_headtype_tcp_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "tcp"));
 	showhide("v2ray_headtype_kcp_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "kcp"));
-	showhide("v2ray_network_path_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "ws_hd"));
+	showhide("v2ray_network_path_basic_tr", (v2ray_on && json_off && ws_on));
 	showhide("v2ray_network_host_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "ws_hd"));
 	showhide("v2ray_network_security_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_mux_enable_basic_tr", (v2ray_on && json_off));
@@ -634,7 +635,7 @@ function generate_lan_list(){
 function ssconf_node2obj(node_sel) {
 	var p = "ssconf_basic";
 	var obj = {};
-	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_use_json"];
+	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_use_json"];
 
 	for (var i = 0; i < params2.length; i++) {
 		obj["ss_basic_" + params2[i]] = db_ss[p + "_" + params2[i] + "_" + node_sel] || "";
@@ -1214,14 +1215,14 @@ function refresh_html() {
 		html = html + '<input style="margin:-2px 0px -4px -2px;" id="dd_node_' + c["node"] + '" class="edit_btn" type="button" onclick="return edit_conf_table(this);" value="">'
 		html = html + '</td>';
 		html = html + '<td style="width:33px;">'
-		if ((c["node"]) == db_ss["ssconf_basic_node"]) {
+		if ((c["node"]) == db_ss["ssconf_basic_node"] && db_ss["ss_basic_enable"] =="1") {
 			html = html + '<input style="margin:-2px 0px -4px -2px;" id="td_node_' + c["node"] + '" class="remove_btn" type="button" onclick="remove_running_node(this);" value="">'
 		} else {
 			html = html + '<input style="margin:-2px 0px -4px -2px;" id="td_node_' + c["node"] + '" class="remove_btn" type="button" onclick="return remove_conf_table(this);" value="">'
 		}
 		html = html + '</td>';
 		html = html + '<td style="width:65px;">'
-		if ((c["node"]) == db_ss["ssconf_basic_node"]) {
+		if ((c["node"]) == db_ss["ssconf_basic_node"] && db_ss["ss_basic_enable"] =="1") {
 			if (c["rss_protocol"]) {
 				html = html + '<input id="apply_ss_node_' + c["node"] + '" type="button" class="ss_btn" style="color: #f072a5;width:66px;cursor:pointer;" onclick="apply_Running_node(this);" value="运行中">'
 			} else {
@@ -1760,8 +1761,9 @@ function get_udp_status(){
 }
 
 function update_ss() {
+	var dbus = {};
 	db_ss["ss_basic_action"] = "7";
-	push_data("ss_config.sh", "update",  "");
+	push_data("ss_update.sh", "update",  dbus);
 }
 
 function toggle_func() {
@@ -2638,7 +2640,7 @@ function v2ray_binary_update (){
 															</label>
 														</div>
 														<div id="update_button" style="display:table-cell;float: left;position: absolute;margin-left:70px;padding: 5.5px 0px;">
-															<a id="updateBtn" type="button" class="ss_btn" style="cursor:pointer" onclick="update_ss(3)">检查并更新</a>
+															<a id="updateBtn" type="button" class="ss_btn" style="cursor:pointer" onclick="update_ss()">检查并更新</a>
 														</div>
 														<div id="ss_version_show" style="display:table-cell;float: left;position: absolute;margin-left:170px;padding: 5.5px 0px;">
 															<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(12)">
@@ -2727,7 +2729,9 @@ function v2ray_binary_update (){
 																</td>
 															</tr>
 															<tr id="v2ray_use_json_tr" style="display: none;">
-																<th width="35%">使用json配置</th>
+																<th width="35%">
+																	使用json配置&nbsp;&nbsp;<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(27)"><font color="#ffcc00"><u>[说明]</u></font></a>
+																</th>
 																<td>
 																	<input type="checkbox" id="ss_node_table_v2ray_use_json" name="ss_node_table_v2ray_use_json" onclick="verifyFields(this, 1);" >
 																</td>
@@ -2993,7 +2997,9 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="v2ray_use_json_basic_tr" style="display: none;">
-													<th width="35%">使用json配置</th>
+													<th width="35%">
+														使用json配置&nbsp;&nbsp;<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(27)"><font color="#ffcc00"><u>[说明]</u></font></a>
+													</th>
 													<td>
 														<input type="checkbox" id="ss_basic_v2ray_use_json" name="ss_basic_v2ray_use_json" onclick="verifyFields(this, 1);" value="0">
 													</td>
@@ -3158,7 +3164,7 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="v2ray_headtype_tcp_basic_tr" style="display: none;">
-													<th width="35%">tcp伪装类型 (headtype)</th>
+													<th width="35%">&nbsp;&nbsp;* tcp伪装类型 (headtype)</th>
 													<td>
 														<select id="ss_basic_v2ray_headtype_tcp" name="ss_basic_v2ray_headtype_tcp" style="width:164px;margin:0px 0px 0px 2px;" class="input_option">
 															<option value="none">不伪装</option>
@@ -3167,7 +3173,7 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="v2ray_headtype_kcp_basic_tr" style="display: none;">
-													<th width="35%">kcp伪装类型 (headtype)</th>
+													<th width="35%">&nbsp;&nbsp;* kcp伪装类型 (headtype)</th>
 													<td>
 														<select id="ss_basic_v2ray_headtype_kcp" name="ss_basic_v2ray_headtype_kcp" style="width:164px;margin:0px 0px 0px 2px;" class="input_option">
 															<option value="none">不伪装</option>
@@ -3178,13 +3184,13 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="v2ray_network_path_basic_tr" style="display: none;">
-													<th width="35%">伪装路径 (ws path)</th>
+													<th width="35%">&nbsp;&nbsp;* 伪装路径 (ws path)</th>
 													<td>
 														<input type="text" name="ss_basic_v2ray_network_path" id="ss_basic_v2ray_network_path"  class="input_ss_table" maxlength="300" value=""/>
 													</td>
 												</tr>
 												<tr id="v2ray_network_host_basic_tr" style="display: none;">
-													<th width="35%">伪装host (headers)</th>
+													<th width="35%">&nbsp;&nbsp;* 伪装host (headers)</th>
 													<td>
 														<input type="text" name="ss_basic_v2ray_network_host" id="ss_basic_v2ray_network_host"  class="input_ss_table" maxlength="300" value=""/>
 													</td>
@@ -4180,7 +4186,6 @@ taobao.com
 										</div>
 										<div id="warn" style="display: none;font-size: 20px;position: static;" class="formfontdesc" id="cmdDesc"><i>你开启了kcptun,请先关闭后才能开启shadowsocks</i></div>
 										<div id="warn1" style="display: none;font-size: 20px;position: static;" class="formfontdesc" id="cmdDesc"><i>你开启了kcptun,请先关闭后才能开启shadowsocks</i></div>
-										<div id="line_image1" style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"/></div>
 									</td>
 								</tr>
 							</table>

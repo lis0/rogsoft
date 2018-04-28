@@ -16,10 +16,4 @@ start)
 	fi
 	echo XU6J03M6 >> /tmp/upload/ss_log.txt
 	;;
-update)
-	sh /koolshare/ss/ssconfig.sh update >> /tmp/upload/ss_log.txt 2>&1
-	echo XU6J03M6 >> /tmp/upload/ss_log.txt
-	;;
 esac
-
-
