@@ -109,11 +109,12 @@ echo_date 设置一些默认值
 [ -z "$ss_acl_default_port" ] && dbus set ss_acl_default_port=all
 
 # 离线安装时设置软件中心内储存的版本号和连接
-dbus set softcenter_module_shadowsocks_install=1
-dbus set softcenter_module_shadowsocks_version=`cat /koolshare/ss/version`
+CUR_VERSION=`cat /koolshare/ss/version`
+dbus set ss_basic_version_local="$CUR_VERSION"
+dbus set softcenter_module_shadowsocks_install="4"
+dbus set softcenter_module_shadowsocks_version="$CUR_VERSION"
 dbus set softcenter_module_shadowsocks_title="科学上网"
-
-dbus set ss_basic_version_local=`cat /koolshare/ss/version`
+dbus set softcenter_module_shadowsocks_description="科学上网"
 
 echo_date 一点点清理工作...
 rm -rf /tmp/shadowsocks* >/dev/null 2>&1
