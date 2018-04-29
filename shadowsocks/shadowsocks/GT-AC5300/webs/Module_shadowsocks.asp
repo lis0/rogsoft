@@ -150,7 +150,7 @@ function pop_help() {
 			btnAlign: 'c',
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
-				<b>科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
+				<b>GT-AC5300 - 科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
 				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="http://firmware.koolshare.cn/binary/koolgame"><u>KoolGame</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>四种客户端的科学上网、游戏加速工具。<br>\
 				本插件仅支持Merlin hnd platform 4.1.27内核的固件，请不要用于其它固件安装。<br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/rogsoft/issues"><u>github的issue页面</u></a>反馈~<br><br>\
@@ -444,8 +444,8 @@ function verifyFields(r) {
 				var ssr_on = false;
 				var koolgame_on = false;
 				var v2ray_on = true;
-				$("#server_th").html('<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(2)">V2Ray服务器</a>');
-				$("#port_th").html('<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(3)">V2Ray服务器端口</a>');
+				$("#server_th").html('<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(51)"><font color="#ffcc00">地址（address）</font></a>');
+				$("#port_th").html('<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(50)"><font color="#ffcc00">端口（port）</font></a>');
 			}else{
 				var ss_on = true;
 				var ssr_on = false;
@@ -456,7 +456,6 @@ function verifyFields(r) {
 			}
 		}
 	}
-
 	// pop out node add
 	if (node_global_max == 0 && poped == 0) {
 		pop_node_add();
@@ -494,7 +493,9 @@ function verifyFields(r) {
 	//v2ray
 	var json_on = E("ss_basic_v2ray_use_json").checked == true;
 	var json_off = E("ss_basic_v2ray_use_json").checked == false;
-	var ws_on = E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "ws_hd"
+	var http_on = E("ss_basic_v2ray_network").value == "tcp" && E("ss_basic_v2ray_headtype_tcp").value == "http";
+	var host_on = E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "h2" || http_on;
+	var path_on = E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "h2";
 	showhide("pass_tr", (!v2ray_on));
 	showhide("method_tr", (!v2ray_on));
 	showhide("server_tr", (json_off));
@@ -506,8 +507,8 @@ function verifyFields(r) {
 	showhide("v2ray_network_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_headtype_tcp_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "tcp"));
 	showhide("v2ray_headtype_kcp_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "kcp"));
-	showhide("v2ray_network_path_basic_tr", (v2ray_on && json_off && ws_on));
-	showhide("v2ray_network_host_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "ws_hd"));
+	showhide("v2ray_network_host_basic_tr", (v2ray_on && json_off && host_on));
+	showhide("v2ray_network_path_basic_tr", (v2ray_on && json_off && path_on));
 	showhide("v2ray_network_security_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_mux_enable_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_mux_concurrency_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_mux_enable").checked));
@@ -553,10 +554,13 @@ function verifyFields(r) {
 			E('v2ray_mux_enable_tr').style.display = "";
 			E('v2ray_mux_concurrency_tr').style.display = "";
 			E('v2ray_json_tr').style.display = "none";
-			showhide("v2ray_headtype_tcp_tr", ($("#ss_node_table_v2ray_network").val() == "tcp"));
-			showhide("v2ray_headtype_kcp_tr", ($("#ss_node_table_v2ray_network").val() == "kcp"));
-			showhide("v2ray_network_path_tr", ($("#ss_node_table_v2ray_network").val() == "ws" || $("#ss_node_table_v2ray_network").val() == "ws_hd"));
-			showhide("v2ray_network_host_tr", ($("#ss_node_table_v2ray_network").val() == "ws_hd"));
+			var http_on_2 = E("ss_node_table_v2ray_network").value == "tcp" && E("ss_node_table_v2ray_headtype_tcp").value == "http";
+			var host_on_2 = E("ss_node_table_v2ray_network").value == "ws" || E("ss_node_table_v2ray_network").value == "h2" || http_on_2;
+			var path_on_2 = E("ss_node_table_v2ray_network").value == "ws" || E("ss_node_table_v2ray_network").value == "h2"
+			showhide("v2ray_headtype_tcp_tr", (E("ss_node_table_v2ray_network").value == "tcp"));
+			showhide("v2ray_headtype_kcp_tr", (E("ss_node_table_v2ray_network").value == "kcp"));
+			showhide("v2ray_network_host_tr", host_on_2);
+			showhide("v2ray_network_path_tr", path_on_2);
 			showhide("v2ray_mux_concurrency_tr", (E("ss_node_table_v2ray_mux_enable").checked));
 			showhide("v2ray_json_tr", (E("ss_node_table_v2ray_use_json").checked));
 		}
@@ -2601,7 +2605,7 @@ function v2ray_binary_update (){
 								<tr>
 									<td colspan="3" valign="top">
 										<div>&nbsp;</div>
-										<div class="formfonttitle">科学上网插件</div>
+										<div class="formfonttitle">GT-AC5300 科学上网插件</div>
 										<div style="float:right; width:15px; height:25px;margin-top:-20px">
 											<img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
 										</div>
@@ -2866,13 +2870,13 @@ function v2ray_binary_update (){
 															</tr>
 										      				<!--===================================v2ray===========================================-->			
 															<tr id="v2ray_uuid_tr" style="display: none;">
-																<th width="35%">密码 (UUID)</th>
+																<th width="35%">用户id（id）</th>
 																<td>
 																	<input type="text" name="ss_node_table_v2ray_uuid" id="ss_node_table_v2ray_uuid"  class="input_ss_table" style="width:342px;" maxlength="300" value=""/>
 																</td>
 															</tr>															
 															<tr id="v2ray_alterid_tr" style="display: none;">
-																<th width="35%">Alterld</th>
+																<th width="35%">额外ID (Alterld)</th>
 																<td>
 																	<input type="text" name="ss_node_table_v2ray_alterid" id="ss_node_table_v2ray_alterid"  class="input_ss_table" style="width:342px;" maxlength="300" value=""/>
 																</td>
@@ -2881,11 +2885,11 @@ function v2ray_binary_update (){
 																<th width="35%">加密方式 (security)</th>
 																<td>
 																	<select id="ss_node_table_v2ray_security" name="ss_node_table_v2ray_security" style="width:350px;margin:0px 0px 0px 2px;" class="input_option">
-																		<option value="none">不加密</option>
 																		<option value="auto">自动</option>
 																		<option value="aes-128-cfb">aes-128-cfb</option>
 																		<option value="aes-128-gcm">aes-128-gcm</option>
 																		<option value="chacha20-poly1305">chacha20-poly1305</option>
+																		<option value="none">不加密</option>
 																	</select>
 																</td>
 															</tr>
@@ -2896,23 +2900,23 @@ function v2ray_binary_update (){
 																		<option value="tcp">tcp</option>
 																		<option value="kcp">kcp</option>
 																		<option value="ws">ws</option>
-																		<option value="ws_hd">ws_headers</option>
+																		<option value="h2">h2</option>
 																	</select>
 																</td>
 															</tr>
 															<tr id="v2ray_headtype_tcp_tr" style="display: none;">
-																<th width="35%">tcp伪装类型 (headtype)</th>
+																<th width="35%">tcp伪装类型 (type)</th>
 																<td>
-																	<select id="ss_node_table_v2ray_headtype_tcp" name="ss_node_table_v2ray_headtype_tcp" style="width:350px;margin:0px 0px 0px 2px;" class="input_option">
+																	<select id="ss_node_table_v2ray_headtype_tcp" name="ss_node_table_v2ray_headtype_tcp" style="width:350px;margin:0px 0px 0px 2px;" class="input_option" onchange="verifyFields(this, 1);">
 																		<option value="none">不伪装</option>
 																		<option value="http">伪装http</option>
 																	</select>
 																</td>
 															</tr>
 															<tr id="v2ray_headtype_kcp_tr" style="display: none;">
-																<th width="35%">kcp伪装类型 (headtype)</th>
+																<th width="35%">kcp伪装类型 (type)</th>
 																<td>
-																	<select id="ss_node_table_v2ray_headtype_kcp" name="ss_node_table_v2ray_headtype_kcp" style="width:350px;margin:0px 0px 0px 2px;" class="input_option">
+																	<select id="ss_node_table_v2ray_headtype_kcp" name="ss_node_table_v2ray_headtype_kcp" style="width:350px;margin:0px 0px 0px 2px;" class="input_option" onchange="verifyFields(this, 1);">
 																		<option value="none">不伪装</option>
 																		<option value="srtp">伪装视频通话(srtp)</option>
 																		<option value="utp">伪装BT下载(uTP)</option>
@@ -2920,24 +2924,24 @@ function v2ray_binary_update (){
 																	</select>
 																</td>
 															</tr>
-															<tr id="v2ray_network_path_tr" style="display: none;">
-																<th width="35%">伪装路径 (ws path)</th>
+															<tr id="v2ray_network_host_tr" style="display: none;">
+																<th width="35%">伪装域名 (host)</th>
 																<td>
-																	<input type="text" name="ss_node_table_v2ray_network_path" id="ss_node_table_v2ray_network_path"  class="input_ss_table" style="width:342px;" maxlength="300" value=""/>
+																	<input type="text" name="ss_node_table_v2ray_network_host" id="ss_node_table_v2ray_network_host"  class="input_ss_table" placeholder="没有请留空" style="width:342px;" maxlength="300" value=""/>
 																</td>
 															</tr>
-															<tr id="v2ray_network_host_tr" style="display: none;">
-																<th width="35%">伪装host (headers)</th>
+															<tr id="v2ray_network_path_tr" style="display: none;">
+																<th width="35%">路径 (path)</th>
 																<td>
-																	<input type="text" name="ss_node_table_v2ray_network_host" id="ss_node_table_v2ray_network_host"  class="input_ss_table" style="width:342px;" maxlength="300" value=""/>
+																	<input type="text" name="ss_node_table_v2ray_network_path" id="ss_node_table_v2ray_network_path"  class="input_ss_table" placeholder="没有请留空" style="width:342px;" maxlength="300" value=""/>
 																</td>
 															</tr>
 															<tr id="v2ray_network_security_tr" style="display: none;">
-																<th width="35%">底层传输安全(tls)</th>
+																<th width="35%">底层传输安全</th>
 																<td>
 																	<select id="ss_node_table_v2ray_network_security" name="ss_node_table_v2ray_network_security" style="width:350px;margin:0px 0px 0px 2px;" class="input_option">
 																		<option value="none">关闭</option>
-																		<option value="tls">开启tls</option>
+																		<option value="tls">tls</option>
 																	</select>
 																</td>
 															</tr>
@@ -3000,7 +3004,7 @@ function v2ray_binary_update (){
 												</tr>
 												<tr id="v2ray_use_json_basic_tr" style="display: none;">
 													<th width="35%">
-														使用json配置&nbsp;&nbsp;<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(27)"><font color="#ffcc00"><u>[说明]</u></font></a>
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(27)"><font color="#ffcc00">使用json配置</font></a>
 													</th>
 													<td>
 														<input type="checkbox" id="ss_basic_v2ray_use_json" name="ss_basic_v2ray_use_json" onclick="verifyFields(this, 1);" value="0">
@@ -3131,19 +3135,25 @@ function v2ray_binary_update (){
 												</tr>
 										      	<!--===================================v2ray===========================================-->			
 												<tr id="v2ray_uuid_basic_tr" style="display: none;">
-													<th width="35%">密码 (UUID)</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(49)"><font color="#ffcc00">用户id（id）</font></a>
+													</th>
 													<td>
 														<input type="text" name="ss_basic_v2ray_uuid" id="ss_basic_v2ray_uuid"  class="input_ss_table" style="width:300px;" maxlength="300" value="" readonly onBlur="switchType(this, false);" onFocus="switchType(this, true);this.removeAttribute('readonly');"/>
 													</td>
 												</tr>															
 												<tr id="v2ray_alterid_basic_tr" style="display: none;">
-													<th width="35%">Alterld</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(48)"><font color="#ffcc00">额外ID (Alterld)</font></a>
+													</th>
 													<td>
 														<input type="text" name="ss_basic_v2ray_alterid" id="ss_basic_v2ray_alterid"  class="input_ss_table" maxlength="300" value=""/>
 													</td>
 												</tr>		
 												<tr id="v2ray_security_basic_tr" style="display: none;">
-													<th width="35%">加密方式 (security)</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(47)"><font color="#ffcc00">加密方式 (security)</font></a>
+													</th>
 													<td>
 														<select id="ss_basic_v2ray_security" name="ss_basic_v2ray_security" style="width:164px;margin:0px 0px 0px 2px;" class="input_option">
 															<option value="none">不加密</option>
@@ -3155,29 +3165,35 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="v2ray_network_basic_tr" style="display: none;">
-													<th width="35%">传输协议 (network)</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(35)"><font color="#ffcc00">传输协议 (network)</font></a>
+													</th>
 													<td>
 														<select id="ss_basic_v2ray_network" name="ss_basic_v2ray_network" style="width:164px;margin:0px 0px 0px 2px;" class="input_option" onchange="verifyFields(this, 1);">
 															<option value="tcp">tcp</option>
 															<option value="kcp">kcp</option>
 															<option value="ws">ws</option>
-															<option value="ws_hd">ws_headers</option>
+															<option value="h2">h2</option>
 														</select>
 													</td>
 												</tr>
 												<tr id="v2ray_headtype_tcp_basic_tr" style="display: none;">
-													<th width="35%">&nbsp;&nbsp;* tcp伪装类型 (headtype)</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(36)"><font color="#ffcc00">&nbsp;&nbsp;* tcp伪装类型 (type)</font></a>
+													</th>
 													<td>
-														<select id="ss_basic_v2ray_headtype_tcp" name="ss_basic_v2ray_headtype_tcp" style="width:164px;margin:0px 0px 0px 2px;" class="input_option">
+														<select id="ss_basic_v2ray_headtype_tcp" name="ss_basic_v2ray_headtype_tcp" style="width:164px;margin:0px 0px 0px 2px;" class="input_option" onchange="verifyFields(this, 1);">
 															<option value="none">不伪装</option>
 															<option value="http">伪装http</option>
 														</select>
 													</td>
 												</tr>
 												<tr id="v2ray_headtype_kcp_basic_tr" style="display: none;">
-													<th width="35%">&nbsp;&nbsp;* kcp伪装类型 (headtype)</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(37)"><font color="#ffcc00">&nbsp;&nbsp;* kcp伪装类型 (type)</font></a>
+													</th>
 													<td>
-														<select id="ss_basic_v2ray_headtype_kcp" name="ss_basic_v2ray_headtype_kcp" style="width:164px;margin:0px 0px 0px 2px;" class="input_option">
+														<select id="ss_basic_v2ray_headtype_kcp" name="ss_basic_v2ray_headtype_kcp" style="width:164px;margin:0px 0px 0px 2px;" class="input_option" onchange="verifyFields(this, 1);">
 															<option value="none">不伪装</option>
 															<option value="srtp">伪装视频通话(srtp)</option>
 															<option value="utp">伪装BT下载(uTP)</option>
@@ -3185,35 +3201,45 @@ function v2ray_binary_update (){
 														</select>
 													</td>
 												</tr>
-												<tr id="v2ray_network_path_basic_tr" style="display: none;">
-													<th width="35%">&nbsp;&nbsp;* 伪装路径 (ws path)</th>
+												<tr id="v2ray_network_host_basic_tr" style="display: none;">
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(28)"><font color="#ffcc00">&nbsp;&nbsp;* 伪装域名 (host)</font></a>
+													</th>
 													<td>
-														<input type="text" name="ss_basic_v2ray_network_path" id="ss_basic_v2ray_network_path"  class="input_ss_table" maxlength="300" value=""/>
+														<input type="text" name="ss_basic_v2ray_network_host" id="ss_basic_v2ray_network_host" class="input_ss_table"  placeholder="没有请留空" maxlength="300" value=""/>
 													</td>
 												</tr>
-												<tr id="v2ray_network_host_basic_tr" style="display: none;">
-													<th width="35%">&nbsp;&nbsp;* 伪装host (headers)</th>
+												<tr id="v2ray_network_path_basic_tr" style="display: none;">
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(29)"><font color="#ffcc00">&nbsp;&nbsp;* 路径 (path)</font></a>
+													</th>
 													<td>
-														<input type="text" name="ss_basic_v2ray_network_host" id="ss_basic_v2ray_network_host"  class="input_ss_table" maxlength="300" value=""/>
+														<input type="text" name="ss_basic_v2ray_network_path" id="ss_basic_v2ray_network_path" class="input_ss_table"  placeholder="没有请留空" maxlength="300" value=""/>
 													</td>
 												</tr>
 												<tr id="v2ray_network_security_basic_tr" style="display: none;">
-													<th width="35%">底层传输安全(tls)</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(30)"><font color="#ffcc00">底层传输安全</font></a>
+													</th>
 													<td>
 														<select id="ss_basic_v2ray_network_security" name="ss_basic_v2ray_network_security" style="width:164px;margin:0px 0px 0px 2px;" class="input_option">
 															<option value="none">关闭</option>
-															<option value="tls">开启tls</option>
+															<option value="tls">tls</option>
 														</select>
 													</td>
 												</tr>
 												<tr id="v2ray_mux_enable_basic_tr" style="display: none;">
-													<th width="35%">多路复用 (Mux)</th>
+													<th width="35%">
+														<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(31)"><font color="#ffcc00">多路复用 (Mux)</font></a>
+													</th>
 													<td>
 														<input type="checkbox" id="ss_basic_v2ray_mux_enable" name="ss_basic_v2ray_mux_enable" onclick="verifyFields(this, 1);" value="0">
 													</td>
 												</tr>
 												<tr id="v2ray_mux_concurrency_basic_tr" style="display: none;">
-													<th width="35%">Mux并发连接数</th>
+													<th width="35%">
+													<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(32)"><font color="#ffcc00">Mux并发连接数</font></a>
+													</th>
 													<td>
 														<input type="text" name="ss_basic_v2ray_mux_concurrency" id="ss_basic_v2ray_mux_concurrency"  class="input_ss_table" maxlength="300" value=""/>
 													</td>
