@@ -150,7 +150,7 @@ function pop_help() {
 			btnAlign: 'c',
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
-				<b>梅林固件 - 科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
+				<b>科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
 				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="http://firmware.koolshare.cn/binary/koolgame"><u>KoolGame</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>四种客户端的科学上网、游戏加速工具。<br>\
 				本插件仅支持Merlin hnd platform 4.1.27内核的固件，请不要用于其它固件安装。<br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/rogsoft/issues"><u>github的issue页面</u></a>反馈~<br><br>\
@@ -2531,7 +2531,7 @@ function v2ray_binary_update (){
 	var dbus = {};
 	db_ss["ss_basic_action"] = "15";
 	require(['/res/layer/layer.js'], function(layer) {
-		layer.confirm('<li>为了避免不必要的问题，请保证路由器和服务器上的v2ray版本一致！</li><br /><li>你确定要更新v2ray二进制吗？</li>', {
+		layer.confirm('<li>为了避免不必要的问题，请保证路由器和服务器上的v2ray版本一致！</li><br /><li>你确定要更新v2ray程序吗？</li>', {
 			shade: 0.8,
 		}, function(index) {
 			$("#log_content3").attr("rows", "20");
@@ -2601,7 +2601,7 @@ function v2ray_binary_update (){
 								<tr>
 									<td colspan="3" valign="top">
 										<div>&nbsp;</div>
-										<div class="formfonttitle">梅林固件 - 科学上网插件</div>
+										<div class="formfonttitle">科学上网插件</div>
 										<div style="float:right; width:15px; height:25px;margin-top:-20px">
 											<img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
 										</div>
@@ -3228,7 +3228,7 @@ function v2ray_binary_update (){
 												<tr id="v2ray_binary_update_tr" style="display: none;">
 													<th width="35%">其它</th>
 													<td>
-														<a type="button" class="ss_btn" style="cursor:pointer" onclick="v2ray_binary_update(2)">更新V2Ray二进制</V2R></a>
+														<a type="button" class="ss_btn" style="cursor:pointer" onclick="v2ray_binary_update(2)">更新V2Ray程序</V2R></a>
 													</td>
 												</tr>
 											</table>
@@ -3887,14 +3887,14 @@ taobao.com
 													<th width="35%">* 自动添加/删除iptables（-a,--auto-rule）</th>
 													<td>
 														<input type="checkbox" checked="" id="ss_basic_udp2raw_a"/>
-														<a>梅林固件请勾选此选项</a>
+														<a>建议请勾选此选项</a>
 													</td>
 												</tr>
 												<tr id="ss_basic_udp2raw_keeprule_tr">
 													<th width="35%">* 定期检查iptables（--keep-rule）</th>
 													<td>
 														<input type="checkbox" checked="" id="ss_basic_udp2raw_keeprule"/>
-														<a>梅林固件请勾选此选项</a>
+														<a>建议请勾选此选项</a>
 													</td>
 												</tr>
 												<tr id="ss_basic_udp2raw_lowerlevel_tr">

@@ -2529,7 +2529,7 @@ function v2ray_binary_update (){
 	var dbus = {};
 	db_ss["ss_basic_action"] = "15";
 	require(['/res/layer/layer.js'], function(layer) {
-		layer.confirm('<li>为了避免不必要的问题，请保证路由器和服务器上的v2ray版本一致！</li><br /><li>你确定要更新v2ray二进制吗？</li>', {
+		layer.confirm('<li>为了避免不必要的问题，请保证路由器和服务器上的v2ray版本一致！</li><br /><li>你确定要更新v2ray程序文件吗？</li>', {
 			shade: 0.8,
 		}, function(index) {
 			$("#log_content3").attr("rows", "20");
@@ -3226,7 +3226,7 @@ function v2ray_binary_update (){
 												<tr id="v2ray_binary_update_tr" style="display: none;">
 													<th width="35%">其它</th>
 													<td>
-														<a type="button" class="ss_btn" style="cursor:pointer" onclick="v2ray_binary_update(2)">更新V2Ray二进制</V2R></a>
+														<a type="button" class="ss_btn" style="cursor:pointer" onclick="v2ray_binary_update(2)">更新V2Ray程序</V2R></a>
 													</td>
 												</tr>
 											</table>
