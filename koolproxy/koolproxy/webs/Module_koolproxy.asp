@@ -235,10 +235,6 @@ function conf2obj(){
 	}
 }
 
-function reload_Soft_Center(){
-	location.href = "/Module_Softcenter.asp";
-}
-
 function update_visibility(){
 	if(dbus["koolproxy_enable"] == "1"){
 		E("policy_tr").style.display = "";
@@ -755,7 +751,6 @@ function close_user_rule(){
 
 function save(){
 	showKPLoadingBar();
-	reload=1;
 	// collect basic data
 	var params = ["koolproxy_mode", "koolproxy_reboot", "koolproxy_reboot_hour", "koolproxy_reboot_min", "koolproxy_reboot_inter_hour", "koolproxy_reboot_inter_min", "koolproxy_acl_method", "koolproxy_acl_default"];
 	dbus["koolproxy_enable"] = E("koolproxy_enable").checked ? "1" : "0";
@@ -774,11 +769,9 @@ function save(){
 			dbus["koolproxy_acl_mode_" + i] = E("koolproxy_acl_mode_" + i).value;
 		}
 	}
-	//console.log(dbus)
 	// post data
 	var id = parseInt(Math.random() * 100000000);
 	var postData3 = {"id": id, "method": "KoolProxy_config.sh", "params":[1], "fields": dbus};
-	//showMsg("msg_warring","正在提交数据！","<b>等待后台运行完毕，请不要刷新本页面！</b>");
 	$.ajax({
 		url: "/_api/",
 		cache:false,
@@ -787,6 +780,7 @@ function save(){
 		data: JSON.stringify(postData3),
 		success: function(response){
 			if(response.result == id){
+				reload=1;
 				get_log();
 			}
 		}

@@ -1,31 +1,31 @@
 #!/bin/sh
 
 MODULE="koolproxy"
-VERSION="2.6"
+VERSION="3.7.2"
 TITLE="koolproxy"
 DESCRIPTION="去广告，没烦恼"
 HOME_URL="Module_koolproxy.asp"
 
-# # get latest binary
-# cd koolproxy/koolproxy/
-# mkdir -p data
-# mkdir -p data/rules
-# wget https://koolproxy.com/downloads/arm
-# if [ "$?" == "0" ];then
-# 	mv arm koolproxy && chmod +x koolproxy
-# else
-# 	rm -rf arm
-# fi
-# 
-# # get latest rules
-# cd data/rules
-# rm -rf *
-# wget https://kprule.com/koolproxy.txt
-# wget https://kprule.com/daily.txt
-# wget https://kprule.com/kp.dat
-# wget https://kprule.com/user.txt
-# 
-# cd ../../../..
+# get latest binary
+cd koolproxy/koolproxy/
+mkdir -p data
+mkdir -p data/rules
+wget https://koolproxy.com/downloads/arm
+if [ "$?" == "0" ];then
+	mv arm koolproxy && chmod +x koolproxy
+else
+	rm -rf arm
+fi
+
+# get latest rules
+cd data/rules
+rm -rf *
+wget https://kprule.com/koolproxy.txt
+wget https://kprule.com/daily.txt
+wget https://kprule.com/kp.dat
+wget https://kprule.com/user.txt
+
+cd ../../../..
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
 

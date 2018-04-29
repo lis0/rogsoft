@@ -1,10 +1,25 @@
 #! /bin/sh
+
+# shadowsocks script for HND router with kernel 4.1.27 merlin firmware
+# by sadog (sadoneli@gmail.com) from koolshare.cn
+
 alias echo_date='echo $(date +%Y年%m月%d日\ %X):'
 export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy_`
 SOFT_DIR=/koolshare
 KP_DIR=$SOFT_DIR/koolproxy
+#=======================================
+
+get_lan_cidr(){
+	netmask=`nvram get lan_netmask`
+	local x=${netmask##*255.}
+	set -- 0^^^128^192^224^240^248^252^254^ $(( (${#netmask} - ${#x})*2 )) ${x%%.*}
+	x=${1%%$3*}
+	suffix=$(( $2 + (${#x}/4) ))
+	#prefix=`nvram get lan_ipaddr | cut -d "." -f1,2,3`
+	echo $lan_ipaddr/$suffix
+}
 
 write_user_txt(){
 	if [ -n "$koolproxy_custom_rule" ];then
@@ -13,28 +28,31 @@ write_user_txt(){
 	fi
 }
 
+detect_start_up(){
+	[ ! -L "/koolshare/init.d/S98koolproxy.sh" ] && ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/S98koolproxy.sh
+	[ ! -L "/koolshare/init.d/N98koolproxy.sh" ] && ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/N98koolproxy.sh
+}
+
 start_koolproxy(){
 	write_user_txt
-	kp_version=`koolproxy -h | head -n1 | awk '{print $6}'`
-	dbus set koolproxy_binary_version="koolprxoy $kp_version "
 	echo_date 开启koolproxy主进程！
-	[ -f "$KSROOT/bin/koolproxy" ] && rm -rf $KSROOT/bin/koolproxy
 	[ ! -L "$KSROOT/bin/koolproxy" ] && ln -sf $KSROOT/koolproxy/koolproxy $KSROOT/bin/koolproxy
 	[ "$koolproxy_mode" == "3" ] && EXT_ARG="-e" || EXT_ARG=""
 	cd $KP_DIR && koolproxy $EXT_ARG --mark -d
 }
 
 stop_koolproxy(){
-	echo_date 关闭koolproxy主进程...
-	kill -9 `pidof koolproxy` >/dev/null 2>&1
-	killall koolproxy >/dev/null 2>&1
+	if [ "`pidof koolproxy`" ];then
+		echo_date 关闭koolproxy主进程...
+		kill -9 `pidof koolproxy` >/dev/null 2>&1
+		killall koolproxy >/dev/null 2>&1
+	fi
 }
 
 add_ipset_conf(){
 	if [ "$koolproxy_mode" == "2" ];then
 		echo_date 添加黑名单软连接...
-		rm -rf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
-		ln -sf /koolshare/koolproxy/data/koolproxy_ipset.conf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
+		[ ! -L "/jffs/configs/dnsmasq.d/koolproxy_ipset.conf" ] && ln -sf /koolshare/koolproxy/data/koolproxy_ipset.conf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
 		dnsmasq_restart=1
 	fi
 }
@@ -43,6 +61,7 @@ remove_ipset_conf(){
 	if [ -L "/jffs/configs/dnsmasq.d/koolproxy_ipset.conf" ];then
 		echo_date 移除黑名单软连接...
 		rm -rf /jffs/configs/dnsmasq.d/koolproxy_ipset.conf
+		dnsmasq_restart=1
 	fi
 }
 
@@ -155,16 +174,18 @@ factor(){
 }
 
 flush_nat(){
-	echo_date 移除nat规则...
-	cd /tmp
-	iptables -t nat -S | grep -E "KOOLPROXY|KP_HTTP|KP_HTTPS" | sed 's/-A/iptables -t nat -D/g'|sed 1,3d > clean.sh && chmod 777 clean.sh && ./clean.sh && rm clean.sh
-	iptables -t nat -X KOOLPROXY > /dev/null 2>&1
-	iptables -t nat -X KP_HTTP > /dev/null 2>&1
-	iptables -t nat -X KP_HTTPS > /dev/null 2>&1
-	ipset -F black_koolproxy > /dev/null 2>&1 && ipset -X black_koolproxy > /dev/null 2>&1
-	ipset -F white_kp_list > /dev/null 2>&1 && ipset -X white_kp_list > /dev/null 2>&1
-	ipset -F kp_port_http > /dev/null 2>&1 && ipset -X kp_port_http > /dev/null 2>&1
-	ipset -F kp_port_https > /dev/null 2>&1 && ipset -X kp_port_https > /dev/null 2>&1
+	if [ -n "`iptables -t nat -S|grep KOOLPROXY`" ];then
+		echo_date 移除nat规则...
+		cd /tmp
+		iptables -t nat -S | grep -E "KOOLPROXY|KP_HTTP|KP_HTTPS" | sed 's/-A/iptables -t nat -D/g'|sed 1,3d > clean.sh && chmod 777 clean.sh && ./clean.sh && rm clean.sh
+		iptables -t nat -X KOOLPROXY > /dev/null 2>&1
+		iptables -t nat -X KP_HTTP > /dev/null 2>&1
+		iptables -t nat -X KP_HTTPS > /dev/null 2>&1
+	fi
+	[ -n "`ipset -L -n|grep black_koolproxy`" ] && ipset -F black_koolproxy > /dev/null 2>&1 && ipset -X black_koolproxy > /dev/null 2>&1
+	[ -n "`ipset -L -n|grep white_kp_list`" ] && ipset -F white_kp_list > /dev/null 2>&1 && ipset -X white_kp_list > /dev/null 2>&1
+	[ -n "`ipset -L -n|grep kp_port_http`" ] && ipset -F kp_port_http > /dev/null 2>&1 && ipset -X kp_port_http > /dev/null 2>&1
+	[ -n "`ipset -L -n|grep kp_port_https`" ] && ipset -F kp_port_https > /dev/null 2>&1 && ipset -X kp_port_https > /dev/null 2>&1
 }
 
 lan_acess_control(){
@@ -201,6 +222,7 @@ load_nat(){
 	        echo_date "错误：不能正确加载nat规则!"
 	    fi
 	    sleep 1
+		nat_ready=$(iptables -t nat -L PREROUTING -v -n --line-numbers|grep -v PREROUTING|grep -v destination)
 	done
 	echo_date 加载nat规则！
 	#----------------------BASIC RULES---------------------
@@ -235,7 +257,7 @@ dns_takeover(){
 	if [ "$koolproxy_mode" == "2" ]; then
 		if [ -z "$chromecast_nu" ]; then
 			echo_date 黑名单模式开启DNS劫持
-			iptables -t nat -A PREROUTING -p udp --dport 53 -j DNAT --to $lan_ipaddr >/dev/null 2>&1
+			iptables -t nat -A PREROUTING -p udp -s $(get_lan_cidr) --dport 53 -j DNAT --to $lan_ipaddr >/dev/null 2>&1
 		else
 			echo_date DNS劫持规则已经添加，跳过~
 		fi
@@ -244,8 +266,6 @@ dns_takeover(){
 			if [ ! -z "$chromecast_nu" ]; then
 				echo_date 全局过滤模式下删除DNS劫持
 				iptables -t nat -D PREROUTING $chromecast_nu >/dev/null 2>&1
-				echo_date done
-				echo_date
 			fi
 		fi
 	fi
@@ -256,10 +276,6 @@ detect_cert(){
 		echo_date 检测到首次运行，开始生成koolproxy证书，用于https过滤！
 		cd $KP_DIR/data && sh gen_ca.sh
 	fi
-}
-
-get_rule_para(){
-	echo `dbus get koolproxy_rule_list|sed 's/>/\n/g'|sed '/^$/d'|awk NR==$1{print}|cut -d "<" -f "$2"`
 }
 
 case $1 in
@@ -296,6 +312,7 @@ restart)
 	load_nat
 	dns_takeover
 	write_reboot_job
+	detect_start_up
 	echo_date koolproxy启用成功，请等待日志窗口自动关闭，页面会自动刷新...
 	[ ! -f "/tmp/koolprxoy.nat_lock" ] && touch /tmp/koolprxoy.nat_lock
 	echo_date =====================================================================
@@ -316,10 +333,19 @@ start_nat)
 		[ -n "$WAN_ACTION" ] && exit
 		[ ! -f "/tmp/koolprxoy.nat_lock" ] && exit
 		logger "[软件中心]: koolproxy nat重启！"
+		rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
+		remove_reboot_job
 		flush_nat
+		stop_koolproxy
+		remove_ipset_conf && restart_dnsmasq
+		detect_cert
+		start_koolproxy
+		add_ipset_conf && restart_dnsmasq
 		creat_ipset
 		load_nat
 		dns_takeover
+		write_reboot_job
+		detect_start_up
 	fi
 	;;
 esac

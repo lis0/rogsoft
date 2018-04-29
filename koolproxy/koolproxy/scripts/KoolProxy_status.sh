@@ -5,8 +5,7 @@ export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy_`
 
-version=$koolproxy_binary_version
-[ -z "$version" ] && version="koolproxy `koolproxy -v`"
+version="koolproxy `koolproxy -v`"
 status=`ps|grep -w koolproxy | grep -cv grep`
 pid=`pidof koolproxy`
 date=`echo_date1`

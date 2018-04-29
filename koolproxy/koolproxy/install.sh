@@ -45,15 +45,15 @@ else
 	mv /tmp/user.txt.tmp /koolshare/koolproxy/data/rules/user.txt
 fi
 cp -f /tmp/koolproxy/uninstall.sh /koolshare/scripts/uninstall_koolproxy.sh
-[ ! -L "/koolshare/bin/koolproxy" ] && ln -sf /koolshare/koolproxy/koolproxy /koolshare/bin/koolproxy
+#[ ! -L "/koolshare/bin/koolproxy" ] && ln -sf /koolshare/koolproxy/koolproxy /koolshare/bin/koolproxy
 chmod 755 /koolshare/koolproxy/*
 chmod 755 /koolshare/koolproxy/data/*
 chmod 755 /koolshare/scripts/*
 
 # 创建开机启动文件
 find /koolshare/init.d/ -name "*koolproxy*" | xargs rm -rf
-ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/S98koolproxy.sh
-ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/N98koolproxy.sh
+[ ! -L "/koolshare/init.d/S98koolproxy.sh" ] && ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/S98koolproxy.sh
+[ ! -L "/koolshare/init.d/N98koolproxy.sh" ] && ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/N98koolproxy.sh
 
 # 删除安装包
 rm -rf /tmp/koolproxy* >/dev/null 2>&1
