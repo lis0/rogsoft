@@ -56,14 +56,14 @@ get_latest_version_backup(){
 	if [ "$?" == "0" ];then
 		if [ -z "`cat /tmp/v2ray_latest_info.txt`" ];then
 			echo_date "获取V2Ray最新版本信息失败！退出！"
-			echo_date "===================================================================" >> /tmp/upload/ss_log.txt
-			echo XU6J03M6 >> /tmp/upload/ss_log.txt
+			echo_date "==================================================================="
+			echo XU6J03M6
 			exit 1
 		fi
 		if [ -n "`cat /tmp/v2ray_latest_info.txt|grep "404"`" ];then
 			echo_date "获取V2Ray最新版本信息失败！退出！"
-			echo_date "===================================================================" >> /tmp/upload/ss_log.txt
-			echo XU6J03M6 >> /tmp/upload/ss_log.txt
+			echo_date "==================================================================="
+			echo XU6J03M6
 			exit 1
 		fi
 		V2VERSION=`cat /tmp/v2ray_latest_info.txt | sed 's/v//g'`
@@ -88,8 +88,8 @@ get_latest_version_backup(){
 		fi
 	else
 		echo_date "获取V2Ray最新版本信息失败！请检查到你的网络！"
-		echo_date "===================================================================" >> /tmp/upload/ss_log.txt
-		echo XU6J03M6 >> /tmp/upload/ss_log.txt
+		echo_date "==================================================================="
+		echo XU6J03M6
 		exit 1
 	fi
 }
@@ -175,8 +175,8 @@ update_now_backup(){
 		check_md5sum
 	else
 		echo_date "下载失败，请检查你的网络！"
-		echo_date "===================================================================" >> /tmp/upload/ss_log.txt
-		echo XU6J03M6 >> /tmp/upload/ss_log.txt
+		echo_date "==================================================================="
+		echo XU6J03M6
 		exit 1
 	fi
 }
@@ -193,8 +193,8 @@ check_md5sum(){
 		install_binary
 	else
 		echo_date "校验未通过，可能是下载过程出现了什么问题，请检查你的网络！"
-		echo_date "===================================================================" >> /tmp/upload/ss_log.txt
-		echo XU6J03M6 >> /tmp/upload/ss_log.txt
+		echo_date "==================================================================="
+		echo XU6J03M6
 		exit 1
 	fi
 }
