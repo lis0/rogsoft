@@ -15,7 +15,8 @@ softcenter_install() {
 		mkdir -p /koolshare/webs/
 		mkdir -p /koolshare/res/
 		mkdir -p /tmp/upload
-		# remoce useless files
+		
+		# remove useless files
 		[ -L "/jffs/configs/profile" ] && rm -rf /jffs/configs/profile
 		[ -L "/koolshare/webs/files" ] && rm -rf /koolshare/webs/files
 		[ -d "/tmp/files" ] && rm -rf /tmp/files
