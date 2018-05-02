@@ -5,6 +5,8 @@ source /koolshare/scripts/base.sh
 mkdir -p /tmp/upload
 sh /koolshare/perp/perp.sh
 #httpdb >/dev/null 2>&1 &
+nvram set jffs2_scripts=1
+mvran commit
 
 #============================================
 # check start up scripts 
