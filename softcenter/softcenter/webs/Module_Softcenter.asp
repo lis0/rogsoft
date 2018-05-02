@@ -576,40 +576,44 @@ $(function() {
 				db_softcenter_["softcenter_version"] = "0.0";
 			}
 			$("#spnCurrVersion").html(db_softcenter_["softcenter_version"]);
-
-			init(function() {
-				toggleAppPanel(1);
-				//一刷新界面是否就正在插件在安装.
-				initInstallStatus();
-			});
-			//挂接tab切换安装状态事件
-			$('.show-install-btn').click(function() {
+			var jff2_scripts="<% nvram_get("jffs2_scripts"); %>";
+			if(jff2_scripts != 1){
+				$('#software_center_message').html('<h2><font color="#FF9900">错误！</font></h2><h2>软件中心不可用！因为你没有开启Enable JFFS custom scripts and configs选项！</h2><h2>请前往【系统管理】-<a href="Advanced_System_Content.asp"><u><em>【系统设置】</em></u></a>开启此选项再使用软件中心！！</h2>')
+			}else{
 				init(function() {
 					toggleAppPanel(1);
+					//一刷新界面是否就正在插件在安装.
+					initInstallStatus();
 				});
-			});
-			$('.show-uninstall-btn').click(function() {
-				init(function() {
-					toggleAppPanel(0);
+				//挂接tab切换安装状态事件
+				$('.show-install-btn').click(function() {
+					init(function() {
+						toggleAppPanel(1);
+					});
 				});
-			});
-			//挂接安装或者卸载事件
-			$('#IconContainer').on('click', '.install-btn', function() {
-				var name = $(this).data('name');
-				console.log('install', name);
-				appInstallModule(softInfo[name]);
-			});
-			$('#IconContainer').on('click', '.uninstall-btn', function() {
-				var name = $(this).data('name');
-				console.log('uninstall', name);
-				appUninstallModule(softInfo[name]);
-			});
-			$('#IconContainer').on('click', '.update-btn', function() {
-				var name = $(this).data('name');
-				console.log('update', name);
-				appInstallModule(softInfo[name]);
+				$('.show-uninstall-btn').click(function() {
+					init(function() {
+						toggleAppPanel(0);
+					});
+				});
+				//挂接安装或者卸载事件
+				$('#IconContainer').on('click', '.install-btn', function() {
+					var name = $(this).data('name');
+					console.log('install', name);
+					appInstallModule(softInfo[name]);
+				});
+				$('#IconContainer').on('click', '.uninstall-btn', function() {
+					var name = $(this).data('name');
+					console.log('uninstall', name);
+					appUninstallModule(softInfo[name]);
+				});
+				$('#IconContainer').on('click', '.update-btn', function() {
+					var name = $(this).data('name');
+					console.log('update', name);
+					appInstallModule(softInfo[name]);
 
-			});
+				});
+			}
 		}
 	});
 });
