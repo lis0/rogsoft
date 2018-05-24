@@ -4,7 +4,7 @@ source $KSROOT/scripts/base.sh
 eval `dbus export ddnsto_`
 MODULE=ddnsto
 title="DDNSTO远程控制"
-VERSION="1.5"
+VERSION="1.6"
 MODEL=`nvram get model`
 
 cd /
