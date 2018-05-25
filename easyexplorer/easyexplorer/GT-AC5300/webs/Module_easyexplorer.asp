@@ -618,9 +618,10 @@ function cal_panel_block() {
                                         <div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
                                         <div class="SimpleNote">
                                             <h3>EasyExplorer 跨设备文件同步+DLNA流媒体!</h3>
-                                            <li><i>注意：请保护好你的ddnsto或EasyExplorer的Token，如果被其他人获知，那么下一个摄影大师可能就是你！！！</i></li>
+                                            <li><i>注意：</i>请保护好你的ddnsto或EasyExplorer的Token，如果被其他人获知，那么下一个摄影大师可能就是你！！！</li>
                                             <li> EasyExplorer文件同步目前处于测试阶段，仅提供给koolshare固件用户使用，请勿用于反动、不健康等用途；</li>
                                             <li> 教程：<a id="gfw_number" href="http://koolshare.cn/thread-129199-1-1.html" target="_blank"><i>EasyExplorer文件同步使用教程</i></a>&nbsp;&nbsp;<a href="https://github.com/koolshare/rogsoft/blob/master/easyexplorer/Changelog.txt" target="_blank"><em><u>[ 插件更新日志 ]</u></em></a></li>
+                                            <li><i>注意：</i>因验证方式改变，原有Token弃用，现需要重新登录控制台获取Token并重新设置。</li>
                                         </div>
                                         <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
                                             <thead>
@@ -665,7 +666,7 @@ function cal_panel_block() {
                                             <tr id="rule_update_switch">
                                                 <th>管理/帮助</th>
                                                 <td>
-                                                    <a type="button" class="easyexplorer_btn" href="https://ddns.to" target="_blank">获取Token</a>
+                                                    <a type="button" class="easyexplorer_btn" href="https://www.ddnsto.com" target="_blank">登录控制台</a>
                                                     <a type="button" id="easyexplorer_website" class="easyexplorer_btn" href="" target="_blank" >访问EasyExplorer</a>
                                                 </td>
                                             </tr>
