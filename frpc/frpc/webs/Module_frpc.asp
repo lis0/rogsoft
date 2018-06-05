@@ -669,8 +669,8 @@ function openssHint(itemNum) {
 		statusmenu = "此处填入你的frp服务器的端口，对应服务器配置文件中的节[common]下的bind_port字段";
 		_caption = "服务器端口";
 	} else if (itemNum == 3) {
-		statusmenu = "此处填入你的frp服务器的特权授权码。对应服务器配置文件中的节[common]下的privilege_token字段。</br><font color='#F46'>注意：</font>使用带有特殊字符的密码，可能会导致frpc链接不上服务器。";
-		_caption = "Privilege Token";
+		statusmenu = "此处填入你的frp服务器的特权授权码。对应服务器配置文件中的节[common]下的token字段。</br><font color='#F46'>注意：</font>使用带有特殊字符的密码，可能会导致frpc链接不上服务器。";
+		_caption = "Token";
 	} else if (itemNum == 4) {
 		statusmenu = "此处填入你的frp服务器HTTP穿透服务的端口，对应服务器配置文件中的节[common]下的vhost_http_port字段";
 		_caption = "HTTP穿透服务端口";
@@ -819,7 +819,7 @@ function openssHint(itemNum) {
                                             <td><span id="status">获取中...</span>
                                             </td>
                                         </tr>
-                                        
+
                                         <tr>
                                             <th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(18)">DDNS显示设置</a></th>
                                             <td>
@@ -915,7 +915,7 @@ function openssHint(itemNum) {
                                         </tr>
 
                                         <tr>
-                                            <th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(3)">Privilege Token</a></th>
+                                            <th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(3)">Token</a></th>
                                             <td>
                                                 <input type="password" name="frpc_common_privilege_token" id="frpc_common_privilege_token" class="input_ss_table" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="256" value="" onBlur="switchType(this, false);" onFocus="switchType(this, true);"/>
                                             </td>
