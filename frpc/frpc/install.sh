@@ -22,7 +22,7 @@ chmod +x /koolshare/scripts/frpc*.sh
 chmod +x /koolshare/scripts/uninstall_frpc.sh
 
 # for offline install
-dbus set frpc_version="1.0"
+dbus set frpc_version="1.4"
 dbus set softcenter_module_frpc_install="1"
 dbus set softcenter_module_frpc_name="frpc"
 dbus set softcenter_module_frpc_title="frpc内网穿透"
