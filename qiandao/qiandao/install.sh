@@ -1,13 +1,12 @@
 #! /bin/sh
 source /koolshare/scripts/base.sh
-MODEL=`nvram get model`
 
 cd /tmp
 cp -rf /tmp/qiandao/qiandao /koolshare/
 cp -rf /tmp/qiandao/res/* /koolshare/res/
 cp -rf /tmp/qiandao/scripts/* /koolshare/scripts/
 cp -rf /tmp/qiandao/webs/* /koolshare/webs/
-if [ "$MODEL" == "GT-AC5300" ];then
+if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 	cp -rf /tmp/qiandao/GT-AC5300/webs/* /koolshare/webs/
 fi
 cp -rf /tmp/qiandao/uninstall.sh /koolshare/scripts/uninstall_qiandao.sh
