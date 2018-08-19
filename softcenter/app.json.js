@@ -78,6 +78,17 @@
             "version": "1.4"
         }, 
         {
+            "build_date": "2018-08-19_18:25:49", 
+            "changelog": "", 
+            "description": "一些小功能的插件", 
+            "home_url": "Module_rog.asp", 
+            "md5": "3b5d1d715ceddcce2342155b275af284", 
+            "name": "rog", 
+            "tar_url": "rog/rog.tar.gz", 
+            "title": "ROG工具箱", 
+            "version": "1.0"
+        }, 
+        {
             "build_date": "2018-03-31_00:39:33", 
             "changelog": "", 
             "description": "linux下载利器", 
