@@ -24,7 +24,7 @@ softcenter_install() {
 		# coping files
 		cp -rf /tmp/softcenter/webs/* /koolshare/webs/
 		cp -rf /tmp/softcenter/res/* /koolshare/res/
-		if [ "$MODEL" == "GT-AC5300" ];then
+		if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 			cp -rf /tmp/softcenter/GT-AC5300/webs/* /koolshare/webs/
 			cp -rf /tmp/softcenter/GT-AC5300/res/* /koolshare/res/
 		fi
@@ -38,7 +38,7 @@ softcenter_install() {
 		[ ! -L "/koolshare/scripts/ks_app_remove.sh" ] && ln -sf /koolshare/scripts/ks_app_install.sh /koolshare/scripts/ks_app_remove.sh
 		[ ! -L "/jffs/.asusrouter" ] && ln -sf /koolshare/bin/kscore.sh /jffs/.asusrouter
 		[ -L "/koolshare/bin/base64" ] && rm -rf /koolshare/bin/base64
-		if [ "$MODEL" == "GT-AC5300" ];then
+		if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 			[ ! -L "/jffs/etc/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/etc/profile
 		else
 			[ ! -L "/jffs/configs/profile" ] && ln -sf /koolshare/scripts/base.sh /jffs/configs/profile
