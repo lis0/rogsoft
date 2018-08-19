@@ -2,7 +2,6 @@
 source /koolshare/scripts/base.sh
 logger "[软件中心]: 正在安装serverChan..."
 MODULE=serverchan
-MODEL=`nvram get model`
 cd /tmp
 if [[ ! -x /koolshare/bin/base64_encode ]]; then
     cp -f /tmp/serverchan/bin/base64_encode /koolshare/bin/base64_encode
@@ -19,7 +18,7 @@ rm -rf /koolshare/serverchan/
 cp -rf /tmp/serverchan/res/icon-serverchan.png /koolshare/res/
 cp -rf /tmp/serverchan/scripts/* /koolshare/scripts/
 cp -rf /tmp/serverchan/serverchan /koolshare/
-if [ "$MODEL" == "GT-AC5300" ];then
+if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 	cp -rf /tmp/serverchan/GT-AC5300/webs/Module_serverchan.asp /koolshare/webs/
 else
 	cp -rf /tmp/serverchan/webs/Module_serverchan.asp /koolshare/webs/
