@@ -9,7 +9,18 @@ source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy_`
 SOFT_DIR=/koolshare
 KP_DIR=$SOFT_DIR/koolproxy
+LOCK_FILE=/var/lock/koolproxy.lock
 #=======================================
+
+set_lock(){
+	exec 1000>"$LOCK_FILE"
+	flock -x 1000
+}
+
+unset_lock(){
+	flock -u 1000
+	rm -rf "$LOCK_FILE"
+}
 
 get_lan_cidr(){
 	netmask=`nvram get lan_netmask`
@@ -177,7 +188,7 @@ flush_nat(){
 	if [ -n "`iptables -t nat -S|grep KOOLPROXY`" ];then
 		echo_date 移除nat规则...
 		cd /tmp
-		iptables -t nat -S | grep -E "KOOLPROXY|KP_HTTP|KP_HTTPS" | sed 's/-A/iptables -t nat -D/g'|sed 1,3d > clean.sh && chmod 777 clean.sh && ./clean.sh && rm clean.sh
+		iptables -t nat -S | grep -E "KOOLPROXY|KP_HTTP|KP_HTTPS" | sed 's/-A/iptables -t nat -D/g'|sed 1,3d > clean.sh && chmod 777 clean.sh && ./clean.sh > /dev/null 2>&1 && rm clean.sh
 		iptables -t nat -X KOOLPROXY > /dev/null 2>&1
 		iptables -t nat -X KP_HTTP > /dev/null 2>&1
 		iptables -t nat -X KP_HTTPS > /dev/null 2>&1
@@ -258,15 +269,6 @@ dns_takeover(){
 		if [ -z "$chromecast_nu" ]; then
 			echo_date 黑名单模式开启DNS劫持
 			iptables -t nat -A PREROUTING -p udp -s $(get_lan_cidr) --dport 53 -j DNAT --to $lan_ipaddr >/dev/null 2>&1
-		else
-			echo_date DNS劫持规则已经添加，跳过~
-		fi
-	else
-		if [ "$ss_chromecast" != "1" ]; then
-			if [ ! -z "$chromecast_nu" ]; then
-				echo_date 全局过滤模式下删除DNS劫持
-				iptables -t nat -D PREROUTING $chromecast_nu >/dev/null 2>&1
-			fi
 		fi
 	fi
 }
@@ -280,9 +282,15 @@ detect_cert(){
 
 case $1 in
 start)
+	#开机触发，wan重启触发，所以需要先关后开
+	set_lock
 	if [ "$koolproxy_enable" == "1" ];then
 		logger "[软件中心]: 启动koolproxy插件！"
 		rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
+		remove_reboot_job
+		flush_nat
+		stop_koolproxy
+		remove_ipset_conf && restart_dnsmasq
 		detect_cert >> /tmp/syslog.log
 		start_koolproxy >> /tmp/syslog.log
 		add_ipset_conf && restart_dnsmasq >> /tmp/syslog.log
@@ -290,13 +298,15 @@ start)
 		load_nat >> /tmp/syslog.log
 		dns_takeover >> /tmp/syslog.log
 		write_reboot_job >> /tmp/syslog.log
-		[ ! -f "/tmp/koolprxoy.nat_lock" ] && touch /tmp/koolprxoy.nat_lock
 	else
 		logger "[软件中心]: koolproxy插件未开启，不启动！"
 	fi
+	unset_lock
 	;;
 restart)
+	#web提交触发，需要先关后开
 	# now stop
+	set_lock
 	echo_date ================================ 关闭 ===============================
 	rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
 	remove_reboot_job
@@ -314,10 +324,12 @@ restart)
 	write_reboot_job
 	detect_start_up
 	echo_date koolproxy启用成功，请等待日志窗口自动关闭，页面会自动刷新...
-	[ ! -f "/tmp/koolprxoy.nat_lock" ] && touch /tmp/koolprxoy.nat_lock
 	echo_date =====================================================================
+	unset_lock
 	;;
 stop)
+	#web提交触发，需要先关后开
+	set_lock
 	echo_date ================================ 关闭 ===============================
 	remove_reboot_job
 	add_ipset_conf && restart_dnsmasq
@@ -326,12 +338,12 @@ stop)
 	remove_ipset_conf && restart_dnsmasq
 	echo_date koolproxy插件已关闭
 	echo_date =====================================================================
+	unset_lock
 	;;
 start_nat)
+	#nat重启触发，所以需要先关后开
+	set_lock
 	if [ "$koolproxy_enable" == "1" ];then
-		WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
-		[ -n "$WAN_ACTION" ] && exit
-		[ ! -f "/tmp/koolprxoy.nat_lock" ] && exit
 		logger "[软件中心]: koolproxy nat重启！"
 		rm -rf /tmp/upload/user.txt && ln -sf $KSROOT/koolproxy/data/rules/user.txt /tmp/upload/user.txt
 		remove_reboot_job
@@ -347,5 +359,6 @@ start_nat)
 		write_reboot_job
 		detect_start_up
 	fi
+	unset_lock
 	;;
 esac

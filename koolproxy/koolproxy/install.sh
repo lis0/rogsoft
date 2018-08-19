@@ -1,7 +1,6 @@
 #! /bin/sh
 source $KSROOT/scripts/base.sh
 eval `dbus export koolproxy`
-MODEL=`nvram get model`
 mkdir -p /tmp/upload
 touch /tmp/upload/kp_log.txt
 
@@ -33,7 +32,7 @@ mkdir -p /koolshare/koolproxy/data/rules
 cp -rf /tmp/koolproxy/scripts/* /koolshare/scripts/
 cp -rf /tmp/koolproxy/webs/* /koolshare/webs/
 cp -rf /tmp/koolproxy/res/* /koolshare/res/
-if [ "$MODEL" == "GT-AC5300" ];then
+if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 	cp -rf /tmp/koolproxy/GT-AC5300/webs/* /koolshare/webs/
 	cp -rf /tmp/koolproxy/GT-AC5300/res/* /koolshare/res/
 fi
