@@ -1770,7 +1770,9 @@ ss_pre_stop(){
 detect(){
 	MODEL=`nvram get model`
 	# 检测jffs2脚本是否开启，如果没有开启，将会影响插件的自启和DNS部分（dnsmasq.postconf）
-	if [ "$MODEL" != "GT-AC5300" ];then
+	#if [ "$MODEL" != "GT-AC5300" ];then
+	# 判断为非官改固件的，即merlin固件，需要开启jffs2_scripts，官改固件不需要开启
+	if [ -z "`nvram get extendno | grep koolshare`" ];then
 		if [ "`nvram get jffs2_scripts`" != "1" ];then
 			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 			echo_date "+     发现你未开启Enable JFFS custom scripts and configs选项！     +"

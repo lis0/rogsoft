@@ -3,7 +3,6 @@
 eval `dbus export ss`
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 mkdir -p /koolshare/ss
-MODEL=`nvram get model`
 
 # 判断路由架构和平台
 case $(uname -m) in
@@ -82,7 +81,7 @@ cp -rf /tmp/shadowsocks/uninstall.sh /koolshare/scripts/uninstall_shadowsocks.sh
 echo_date 复制网页文件！
 cp -rf /tmp/shadowsocks/webs/* /koolshare/webs/
 cp -rf /tmp/shadowsocks/res/* /koolshare/res/
-if [ "$MODEL" == "GT-AC5300" ];then
+if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 	cp -rf /tmp/shadowsocks/GT-AC5300/webs/* /koolshare/webs/
 	cp -rf /tmp/shadowsocks/GT-AC5300/res/* /koolshare/res/
 fi
@@ -116,6 +115,10 @@ dbus set softcenter_module_shadowsocks_install="4"
 dbus set softcenter_module_shadowsocks_version="$CUR_VERSION"
 dbus set softcenter_module_shadowsocks_title="科学上网"
 dbus set softcenter_module_shadowsocks_description="科学上网"
+
+# v2ray 版本号
+dbus set ss_basic_v2ray_version="v3.35"
+dbus set ss_basic_v2ray_date="20180809"
 
 echo_date 一点点清理工作...
 rm -rf /tmp/shadowsocks* >/dev/null 2>&1

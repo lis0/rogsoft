@@ -150,7 +150,7 @@ function pop_help() {
 			btnAlign: 'c',
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
-				<b>GT-AC5300 - 科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
+				<b><% nvram_get("productid"); %> - 科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
 				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="http://firmware.koolshare.cn/binary/koolgame"><u>KoolGame</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>四种客户端的科学上网、游戏加速工具。<br>\
 				本插件仅支持Merlin hnd platform 4.1.27内核的固件，请不要用于其它固件安装。<br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/rogsoft/issues"><u>github的issue页面</u></a>反馈~<br><br>\
@@ -302,6 +302,11 @@ function save() {
 		}
 		dbus["ss_basic_v2ray_network_host"] = vmess_node.host;
 		dbus["ss_basic_v2ray_network_path"] = vmess_node.path;
+		if(vmess_node.tls == "tls"){
+			dbus["ss_basic_v2ray_network_security"] = "tls";
+		}else{
+			dbus["ss_basic_v2ray_network_security"] = "none";
+		}	
 		dbus["ss_basic_v2ray_mux_enable"] = 1;
 		dbus["ss_basic_v2ray_mux_concurrency"] = 8;
 		dbus["ss_basic_v2ray_use_json"] = 0;
@@ -340,6 +345,11 @@ function save() {
 		}
 		dbus["ssconf_basic_v2ray_network_host_" + node_sel] = vmess_node.host;
 		dbus["ssconf_basic_v2ray_network_path_" + node_sel] = vmess_node.path;
+		if(vmess_node.tls == "tls"){
+			dbus["ss_basic_v2ray_network_security_" + node_sel] = "tls";
+		}else{
+			dbus["ss_basic_v2ray_network_security_" + node_sel] = "none";
+		}	
 		dbus["ssconf_basic_v2ray_mux_enable_" + node_sel] = 1;
 		dbus["ssconf_basic_v2ray_mux_concurrency_" + node_sel] = 8;
 		dbus["ssconf_basic_v2ray_use_json_" + node_sel] = 0;
@@ -1167,6 +1177,11 @@ function add_ss_node_conf(flag) { //点击添加按钮动作
 				}
 				ns["ssconf_basic_v2ray_network_host_" + node_global_max] = vmess_node.host;
 				ns["ssconf_basic_v2ray_network_path_" + node_global_max] = vmess_node.path;
+				if(vmess_node.tls == "tls"){
+					ns["ss_basic_v2ray_network_security_" + node_global_max] = "tls";
+				}else{
+					ns["ss_basic_v2ray_network_security_" + node_global_max] = "none";
+				}	
 				ns["ssconf_basic_v2ray_mux_enable_" + node_global_max] = 1;
 				ns["ssconf_basic_v2ray_mux_concurrency_" + node_global_max] = 8;
 				ns["ssconf_basic_v2ray_use_json_" + node_global_max] = 0;
@@ -2717,7 +2732,7 @@ function v2ray_binary_update (){
 								<tr>
 									<td colspan="3" valign="top">
 										<div>&nbsp;</div>
-										<div class="formfonttitle">GT-AC5300 科学上网插件</div>
+										<div class="formfonttitle"><% nvram_get("productid"); %> 科学上网插件</div>
 										<div style="float:right; width:15px; height:25px;margin-top:-20px">
 											<img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
 										</div>

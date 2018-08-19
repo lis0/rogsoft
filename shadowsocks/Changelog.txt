@@ -1,5 +1,16 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+1.3.6
+   - fix	修复官改机型提示未开启jffs2_scripts的提示，实际上官改没有jffs2_scripts开关并且也不需要，merlin才需要打开；
+   - fix	修复86U ROG官改更新后可能还是普通皮肤而不是ROG皮肤的问题；
+   - fix	修复某些机器开机启动后iptables规则可能被多次添加，影响如koolproxy等其它插件的启动；
+   - fix	修复【内部网络(lan)】-【DHCP服务器】-【DNS 及 WINS 服务器设置】内DNS Server 2无法清空的问题；
+   - fix	修复通过vmess://链接添加v2ray节点时无法添加tls信息的bug；
+   - add	添加域名黑白名单格式检查，错误格式的域名不会添加进对应名单并给予相应提示；
+   - update	同步最新规则：gfwlist.conf, chnroute.txt, cdn.txt；
+   - update	更新v2ray二进制版本为v3.35；
+   - update	更新kcptun二进制版本为20180810
+
 1.3.5
    - fix	修复访问控制配置出国模式后，实际走全局模式的bug、
    - update	增加对86U机型 Enable JFFS custom scripts and configs选项是否开启的检测；
