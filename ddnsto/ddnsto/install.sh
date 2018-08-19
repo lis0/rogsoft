@@ -5,14 +5,13 @@ eval `dbus export ddnsto_`
 MODULE=ddnsto
 title="DDNSTO远程控制"
 VERSION="1.6"
-MODEL=`nvram get model`
 
 cd /
 rm -rf /koolshare/init.d/S70ddnsto.sh
 cp -rf /tmp/$MODULE/bin/* /koolshare/bin/
 cp -rf /tmp/$MODULE/scripts/* /koolshare/scripts/
 cp -rf /tmp/$MODULE/webs/* /koolshare/webs/
-if [ "$MODEL" == "GT-AC5300" ];then
+if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 	cp -rf /tmp/$MODULE/GT-AC5300/webs/* /koolshare/webs/
 fi
 cp -rf /tmp/$MODULE/res/* /koolshare/res/
