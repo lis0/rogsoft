@@ -1,9 +1,9 @@
 {
-"version":"1.4",
-"md5":"646b84cca503946becac7576916ef1b3",
+"version":"1.5",
+"md5":"6ad7a8ce57542589b840f6112ef83e85",
 "home_url":"Module_frpc.asp",
 "title":"frpc内网穿透",
 "description":"支持多种协议的内网穿透软件",
 "changelog":"",
-"build_date":"2018-06-04_20:21:03"
+"build_date":"2018-08-19_13:55:48"
 }

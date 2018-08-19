@@ -1,7 +1,6 @@
 #!/bin/sh
 export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
-MODEL=`nvram get model`
 frpc_enable=`dbus get frpc_enable`
 
 if [ "$frpc_enable" == "1" ];then
@@ -13,7 +12,7 @@ cp -rf /tmp/frpc/scripts/* /koolshare/scripts/
 cp -rf /tmp/frpc/webs/* /koolshare/webs/
 cp -rf /tmp/frpc/res/* /koolshare/res/
 cp -rf /tmp/frpc/uninstall.sh /koolshare/scripts/uninstall_frpc.sh
-if [ "$MODEL" == "GT-AC5300" ];then
+if [ "`nvram get model`" == "GT-AC5300" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
 	cp -rf /tmp/frpc/GT-AC5300/webs/* /koolshare/webs/
 fi
 rm -fr /tmp/frpc* >/dev/null 2>&1
