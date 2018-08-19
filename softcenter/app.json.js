@@ -45,15 +45,15 @@
             "version": "1.4"
         }, 
         {
-            "build_date": "2018-05-26_00:18:58", 
+            "build_date": "2018-08-19_13:52:20", 
             "changelog": "", 
             "description": "EasyExplorer 跨设备文件同步+DLNA流媒体", 
             "home_url": "Module_easyexplorer.asp", 
-            "md5": "8021c2ff07c5fa871fb910ec4330e019", 
+            "md5": "b75217329fc5340385b899d7be2f3bd6", 
             "name": "easyexplorer", 
             "tar_url": "easyexplorer/easyexplorer.tar.gz", 
             "title": "easyexplorer", 
-            "version": "1.1"
+            "version": "1.2"
         }, 
         {
             "build_date": "2018-06-04_20:21:03", 
