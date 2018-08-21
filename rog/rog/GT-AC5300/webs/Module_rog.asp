@@ -282,7 +282,7 @@ function menu_hook(title, tab) {
 														<div>
 															<table>
 																<tr>
-																	<td class="loading_bar" colspan="2">
+																	<td class="loading_bar" colspan="2" style="border: 0px;">
 																		<div>
 																			<div id="ram_bar" class="status_bar"></div>
 																		</div>
