@@ -43,6 +43,7 @@
 }
 .loading_bar {
 	width:250px;
+	border: 0px;
 }
 .loading_bar > div {
 	margin-left:-10px;
@@ -82,6 +83,7 @@ function init() {
 	show_menu(menu_hook);
 	detect_CPU_RAM();
 	get_temperature();
+	showbootTime();
 }
 
 function get_temperature(){
@@ -181,6 +183,19 @@ function flush_ram(){
 	});
 }
 
+function showbootTime() {
+	Days = Math.floor(boottime / (60 * 60 * 24));
+	Hours = Math.floor((boottime / 3600) % 24);
+	Minutes = Math.floor(boottime % 3600 / 60);
+	Seconds = Math.floor(boottime % 60);
+	document.getElementById("boot_days").innerHTML = Days;
+	document.getElementById("boot_hours").innerHTML = Hours;
+	document.getElementById("boot_minutes").innerHTML = Minutes;
+	document.getElementById("boot_seconds").innerHTML = Seconds;
+	boottime += 1;
+	setTimeout("showbootTime()", 1000);
+}
+
 function menu_hook(title, tab) {
 	tabtitle[tabtitle.length - 1] = new Array("", "ROG tools");
 	tablink[tablink.length - 1] = new Array("", "Module_rog.asp");
@@ -240,15 +255,21 @@ function menu_hook(title, tab) {
 														<td colspan="2">ROG 工具箱设置</td>
 													</tr>
 												</thead>
-												<tr id="temp">
+												<tr>
 													<th>系统时间</th>
 													<td><span id="rog_time"></span></td>
 												</tr>
-												<tr id="temp">
+												<tr>
+													<th>开机时间</a></th>
+														<td>
+															<span id="boot_days"></span> <#1231#> <span id="boot_hours"></span> <#1654#> <span id="boot_minutes"></span> <#1931#> <span id="boot_seconds"></span> <#2275#>
+														</td>
+												</tr>
+												<tr>
 													<th>CPU温度</th>
 													<td><span id="rog_cpu_temperature"></span></td>
 												</tr>
-												<tr id="temp">
+												<tr>
 													<th>网卡温度</th>
 													<td><span id="rog_wl_temperature"></span></td>
 												</tr>
@@ -263,8 +284,8 @@ function menu_hook(title, tab) {
 																		<div>
 																			<div id="ram_bar" class="status_bar"></div>
 																		</div>
-																		<span style="float: left;margin-top: -20px;"><font id="rog_ram_used" color='#000000'>484MB</font></span>
-																		<span style="float: left;margin-top: -20px;margin-left: 205px;"><font id="rog_ram_free" color='#000000'>555MB</font></span>
+																		<span style="float: left;margin-top: -20px;background:transparent"><font id="rog_ram_used" color='#000000'>484MB</font></span>
+																		<span style="float: left;margin-top: -20px;background:transparent;margin-left: 207px;"><font id="rog_ram_free" color='#000000'>555MB</font></span>
 																	</td>
 																</tr>
 															</table>
@@ -276,7 +297,7 @@ function menu_hook(title, tab) {
 														
 													</td>
 												</tr>
-												<!--<tr id="temp">
+												<!--<tr>
 													<th>性能测试</th>
 													<td><span id="rog_benchmark">上次得分：9170.86</span><a style="margin-left: 20px;" style="cursor:pointer;" class="rog_btn" onclick="open_user_rule()" >开始测试</a></td>
 												</tr>-->
