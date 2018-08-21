@@ -264,7 +264,7 @@ function menu_hook(title, tab) {
 												<tr>
 													<th>开机时间</a></th>
 														<td>
-															<span id="boot_days"></span> <#1231#> <span id="boot_hours"></span> <#1654#> <span id="boot_minutes"></span> <#1931#> <span id="boot_seconds"></span> <#2275#>
+															<span id="boot_days"></span> 天 <span id="boot_hours"></span> 时 <span id="boot_minutes"></span> 分 <span id="boot_seconds"></span> 秒
 														</td>
 												</tr>
 												<tr>
