@@ -4,8 +4,8 @@ source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 
 start_update(){
-	url_back="https://koolshare.ngrok.wang/maintain_files"
-	url_main="https://raw.githubusercontent.com/koolshare/koolshare.github.io/acelan_softcenter_ui/maintain_files/"
+	url_main="https://raw.githubusercontent.com/hq450/fancyss/master/rules"
+	url_back=""
 	# version dectet
 	version_gfwlist1=$(cat /koolshare/ss/rules/version | sed -n 1p | sed 's/ /\n/g'| sed -n 1p)
 	version_chnroute1=$(cat /koolshare/ss/rules/version | sed -n 2p | sed 's/ /\n/g'| sed -n 1p)
@@ -13,23 +13,23 @@ start_update(){
 	
 	echo ==================================================================================================
 	echo_date 开始更新shadowsocks规则，请等待...
-	wget --no-check-certificate --timeout=8 -qO - "$url_back"/version1 > /tmp/version1
+	wget --no-check-certificate --timeout=8 -qO - "$url_main"/version1 > /tmp/ss_version
 	if [ "$?" == "0" ]; then
 		echo_date 检测到在线版本文件，继续...
 	else
 		echo_date 没有检测到在线版本，可能是访问github有问题，去大陆白名单模式试试吧！
-		rm -rf /tmp/version1
+		rm -rf /tmp/ss_version
 		exit
 	fi
 	
-	online_content=$(cat /tmp/version1)
+	online_content=$(cat /tmp/ss_version)
 	if [ -z "$online_content" ];then
-		rm -rf /tmp/version1
+		rm -rf /tmp/ss_version
 	fi
 	
-	git_line1=$(cat /tmp/version1 | sed -n 1p)
-	git_line2=$(cat /tmp/version1 | sed -n 2p)
-	git_line4=$(cat /tmp/version1 | sed -n 4p)
+	git_line1=$(cat /tmp/ss_version | sed -n 1p)
+	git_line2=$(cat /tmp/ss_version | sed -n 2p)
+	git_line4=$(cat /tmp/ss_version | sed -n 4p)
 	
 	version_gfwlist2=$(echo $git_line1 | sed 's/ /\n/g'| sed -n 1p)
 	version_chnroute2=$(echo $git_line2 | sed 's/ /\n/g'| sed -n 1p)
@@ -41,7 +41,7 @@ start_update(){
 	
 	# update gfwlist
 	if [ "$ss_basic_gfwlist_update" == "1" ];then
-		echo_date " ------------------------------------------------------------------------"
+		echo_date " --------------------------------------------------------------------"
 		if [ ! -z "$version_gfwlist2" ];then
 			if [ "$version_gfwlist1" != "$version_gfwlist2" ];then
 				echo_date 检测到新版本gfwlist，开始更新...
@@ -70,7 +70,7 @@ start_update(){
 	
 	# update chnroute
 	if [ "$ss_basic_chnroute_update" == "1" ];then
-		echo_date " ------------------------------------------------------------------------"
+		echo_date " --------------------------------------------------------------------"
 		if [ ! -z "$version_chnroute2" ];then
 			if [ "$version_chnroute1" != "$version_chnroute2" ];then
 				echo_date 检测到新版本chnroute，开始更新...
@@ -98,7 +98,7 @@ start_update(){
 	
 	# update cdn file
 	if [ "$ss_basic_cdn_update" == "1" ];then
-		echo_date " ------------------------------------------------------------------------"
+		echo_date " --------------------------------------------------------------------"
 		if [ ! -z "$version_cdn2" ];then
 			if [ "$version_cdn1" != "$version_cdn2" ];then
 				echo_date 检测到新版本cdn名单，开始更新...
@@ -123,12 +123,11 @@ start_update(){
 	else
 		echo_date 然而你并没有勾选cdn名单更新！
 	fi
-	
-	echo_date " ------------------------------------------------------------------------"
+	echo_date " --------------------------------------------------------------------"
 	rm -rf /tmp/gfwlist.conf1
 	rm -rf /tmp/chnroute.txt1
 	rm -rf /tmp/cdn.txt1
-	rm -rf /tmp/version1
+	rm -rf /tmp/ss_version
 	
 	echo_date Shadowsocks更新进程运行完毕！
 	# write number

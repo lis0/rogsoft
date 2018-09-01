@@ -346,9 +346,9 @@ function save() {
 		dbus["ssconf_basic_v2ray_network_host_" + node_sel] = vmess_node.host;
 		dbus["ssconf_basic_v2ray_network_path_" + node_sel] = vmess_node.path;
 		if(vmess_node.tls == "tls"){
-			dbus["ss_basic_v2ray_network_security_" + node_sel] = "tls";
+			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "tls";
 		}else{
-			dbus["ss_basic_v2ray_network_security_" + node_sel] = "none";
+			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "none";
 		}	
 		dbus["ssconf_basic_v2ray_mux_enable_" + node_sel] = 1;
 		dbus["ssconf_basic_v2ray_mux_concurrency_" + node_sel] = 8;
@@ -1178,9 +1178,9 @@ function add_ss_node_conf(flag) { //点击添加按钮动作
 				ns["ssconf_basic_v2ray_network_host_" + node_global_max] = vmess_node.host;
 				ns["ssconf_basic_v2ray_network_path_" + node_global_max] = vmess_node.path;
 				if(vmess_node.tls == "tls"){
-					ns["ss_basic_v2ray_network_security_" + node_global_max] = "tls";
+					ns["ssconf_basic_v2ray_network_security_" + node_global_max] = "tls";
 				}else{
-					ns["ss_basic_v2ray_network_security_" + node_global_max] = "none";
+					ns["ssconf_basic_v2ray_network_security_" + node_global_max] = "none";
 				}	
 				ns["ssconf_basic_v2ray_mux_enable_" + node_global_max] = 1;
 				ns["ssconf_basic_v2ray_mux_concurrency_" + node_global_max] = 8;
@@ -1585,6 +1585,11 @@ function edit_ss_node_conf(flag) { //编辑节点功能，数据重写
 				}
 				ns["ssconf_basic_v2ray_network_host_" + myid] = vmess_node.host;
 				ns["ssconf_basic_v2ray_network_path_" + myid] = vmess_node.path;
+				if(vmess_node.tls == "tls"){
+					ns["ssconf_basic_v2ray_network_security_" + myid] = "tls";
+				}else{
+					ns["ssconf_basic_v2ray_network_security_" + myid] = "none";
+				}
 				ns["ssconf_basic_v2ray_mux_enable_" + myid] = 1;
 				ns["ssconf_basic_v2ray_mux_concurrency_" + myid] = 8;
 				ns["ssconf_basic_v2ray_use_json_" + myid] = 0;
@@ -1820,14 +1825,16 @@ function versionCompare(v1, v2, options) {
 	
 
 function version_show() {
+	if(!db_ss["ss_basic_version_local"]){
+		db_ss["ss_basic_version_local"] = "0.0.0"
+	}
+	$("#ss_version_show").html("<a class='hintstyle' href='javascript:void(12);' onclick='openssHint(12)'><i>当前版本：" + db_ss['ss_basic_version_local'] + "</i></a>");
 	$.ajax({
-		url: 'https://rogsoft.ngrok.wang/shadowsocks/config.json.js',
+		url: 'https://raw.githubusercontent.com/hq450/fancyss/master/fancyss_hnd/config.json.js',
 		type: 'GET',
-		dataType: 'jsonp',
+		dataType: 'json',
 		success: function(res) {
-			if(!db_ss["ss_basic_version_local"]){
-				db_ss["ss_basic_version_local"] = "0.0.0"
-			}
+
 			if (typeof(res["version"]) != "undefined" && res["version"].length > 0) {
 				if (versionCompare(res["version"], db_ss["ss_basic_version_local"])) {
 					$("#ss_version_show").html("<a class='hintstyle' href='javascript:void(12);' onclick='openssHint(12)'><i>当前版本：" + db_ss['ss_basic_version_local'] + "</i></a>");
@@ -2777,7 +2784,7 @@ function v2ray_binary_update (){
 														</div>
 														<div id="ss_version_show" style="display:table-cell;float: left;position: absolute;margin-left:170px;padding: 5.5px 0px;">
 															<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(12)">
-																<i>当前版本：<% dbus_get_def("ss_basic_version_local", "未知"); %></i>
+																<i>当前版本：</i>
 															</a>
 														</div>
 														<div style="display:table-cell;float: left;margin-left:270px;position: absolute;padding: 5.5px 0px;">
@@ -3494,7 +3501,7 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="dns_plan_foreign_game2" style="display: none;">
-												<th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(47)">选择国外DNS</a>
+												<th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(47)">选择国外DNS</a></th>
 													<td>
 														<select id="ss_game2_dns_foreign" name="ss_game2_dns_foreign" class="input_option" onclick="update_visibility();" disabled="disabled" >
 															<option value="1" selected>koolgame内置</option>
@@ -4076,7 +4083,7 @@ taobao.com
 													<th id="gfw_nu1" width="35%">gfwlist域名数量</th>
 													<td id="gfw_nu2">
 															<% nvram_get("ipset_numbers"); %>&nbsp;条，最后更新版本：
-															<a href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/gfwlist.conf" target="_blank">
+															<a href="https://github.com/hq450/fancyss/blob/master/rules/gfwlist.conf" target="_blank">
 																<i><% nvram_get("update_ipset"); %></i>
 														</a>
 													</td>
@@ -4086,7 +4093,7 @@ taobao.com
 												<td id="chn_nu2">
 													<p>
 														<% nvram_get("chnroute_numbers"); %>&nbsp;行，最后更新版本：
-														<a href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/chnroute.txt" target="_blank">
+														<a href="https://github.com/hq450/fancyss/blob/master/rules/chnroute.txt" target="_blank">
 															<i><% nvram_get("update_chnroute"); %></i>
 														</a>
 													</p>
@@ -4097,7 +4104,7 @@ taobao.com
 													<td id="cdn_nu2">		
 														<p>		
 														<% nvram_get("cdn_numbers"); %>&nbsp;条，最后更新版本：		
-															<a href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/cdn.txt" target="_blank">		
+															<a href="https://github.com/hq450/fancyss/blob/master/rules/cdn.txt" target="_blank">		
 																<i><% nvram_get("update_cdn"); %></i>		
 															</a>		
 														</p>		

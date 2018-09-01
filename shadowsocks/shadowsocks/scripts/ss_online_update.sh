@@ -8,7 +8,7 @@ source $KSROOT/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 eval `dbus export ss`
 LOCK_FILE=/tmp/online_update.lock
-DEL_SUBSCRIBE=0
+NO_DEL=1
 
 # ==============================
 # ssconf_basic_ping_
@@ -64,6 +64,7 @@ prepare(){
 	# 0 检测排序
 	seq_nu=`dbus list ssconf_basic_|grep _name_ | cut -d "=" -f1|cut -d "_" -f4|sort -n|wc -l`
 	seq_max_nu=`dbus list ssconf_basic_|grep _name_ | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1`
+	#[ "$seq_nu" == "$seq_max_nu" ] && return
 	if [ "$seq_nu" == "$seq_max_nu" ];then
 		echo_date "节点顺序正确，无需调整!"
 		return 0
@@ -138,20 +139,20 @@ prepare(){
 
 
 decode_url_link(){
-	local link=$1
-	local len=`echo $link| wc -L`
-	local mod4=$(($len%4))
+	link=$1
+	num=$2
+	len=$((${#link}-$num))
+	mod4=$(($len%4))
 	if [ "$mod4" -gt "0" ]; then
-		local var="===="
-		local newlink=${link}${var:$mod4}
-		echo -n "$newlink" | sed 's/-/+/g; s/_/\//g' | base64 -d 2>/dev/null
+		var="===="
+		newlink=${link}${var:$mod4}
+		echo -n "$newlink" | sed 's/-/+/g; s/_/\//g' | base64 -d
 	else
-		echo -n "$link" | sed 's/-/+/g; s/_/\//g' | base64 -d 2>/dev/null
+		echo -n "$link" | sed 's/-/+/g; s/_/\//g' | base64 -d
 	fi
 }
 
 add_ssr_servers(){
-	sleep 1
 	ssrindex=$(($(dbus list ssconf_basic_|grep _name_ | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1)+1))
 	dbus set ssconf_basic_name_$ssrindex=$remarks
 	[ -z "$1" ] && dbus set ssconf_basic_group_$ssrindex=$group
@@ -183,58 +184,44 @@ add_ss_servers(){
 
 get_remote_config(){
 	decode_link="$1"
-	action="$2"
 	server=$(echo "$decode_link" |awk -F':' '{print $1}')
 	server_port=$(echo "$decode_link" |awk -F':' '{print $2}')
 	protocol=$(echo "$decode_link" |awk -F':' '{print $3}')
 	encrypt_method=$(echo "$decode_link" |awk -F':' '{print $4}')
 	obfs=$(echo "$decode_link" |awk -F':' '{print $5}'|sed 's/_compatible//g')
+	#password=$(echo "$decode_link" |awk -F':' '{print $6}'|awk -F'/' '{print $1}')
 	
-	password=$(decode_url_link $(echo "$decode_link" |awk -F':' '{print $6}'|awk -F'/' '{print $1}'))
+	password=$(decode_url_link $(echo "$decode_link" |awk -F':' '{print $6}'|awk -F'/' '{print $1}') 0)
 	password=`echo $password|base64_encode`
 	
 	obfsparam_temp=$(echo "$decode_link" |awk -F':' '{print $6}'|grep -Eo "obfsparam.+"|sed 's/obfsparam=//g'|awk -F'&' '{print $1}')
-	[ -n "$obfsparam_temp" ] && obfsparam=$(decode_url_link $obfsparam_temp) || obfsparam=''
+	[ -n "$obfsparam_temp" ] && obfsparam=$(decode_url_link $obfsparam_temp 0) || obfsparam=''
 	
 	protoparam_temp=$(echo "$decode_link" |awk -F':' '{print $6}'|grep -Eo "protoparam.+"|sed 's/protoparam=//g'|awk -F'&' '{print $1}')
-	[ -n "$protoparam_temp" ] && protoparam=$(decode_url_link $protoparam_temp|sed 's/_compatible//g') || protoparam=''
+	[ -n "$protoparam_temp" ] && protoparam=$(decode_url_link $protoparam_temp 0) || protoparam=''
 	
 	remarks_temp=$(echo "$decode_link" |awk -F':' '{print $6}'|grep -Eo "remarks.+"|sed 's/remarks=//g'|awk -F'&' '{print $1}')
-	if [ "$action" == "1" ];then
-		#订阅
-		[ -n "$remarks_temp" ] && remarks=$(decode_url_link $remarks_temp) || remarks=""
-	elif [ "$action" == "2" ];then
-		# ssr://添加
-		[ -n "$remarks_temp" ] && remarks=$(decode_url_link $remarks_temp) || remarks='AutoSuB'
-	fi
+	[ -n "$remarks_temp" ] && remarks=$(decode_url_link $remarks_temp 0) || remarks='AutoSuB'
 	
 	group_temp=$(echo "$decode_link" |awk -F':' '{print $6}'|grep -Eo "group.+"|sed 's/group=//g'|awk -F'&' '{print $1}')
-	if [ "$action" == "1" ];then
-		#订阅
-		[ -n "$group_temp" ] && group=$(decode_url_link $group_temp) || group=""
-	elif [ "$action" == "2" ];then
-		# ssr://添加
-		[ -n "$group_temp" ] && group=$(decode_url_link $group_temp) || group='AutoSuBGroup'
-	fi
+	[ -n "$group_temp" ] && group=$(decode_url_link $group_temp 0) || group='AutoSuBGroup'
 
 	[ -n "$group" ] && group_base64=`echo $group | base64_encode | sed 's/ -//g'`
 	[ -n "$server" ] && server_base64=`echo $server | base64_encode | sed 's/ -//g'`	
 	#把全部服务器节点写入文件 /usr/share/shadowsocks/serverconfig/all_onlineservers
 	[ -n "$group" ] && [ -n "$server" ] && echo $server_base64 $group_base64 >> /tmp/all_onlineservers
 	#echo ------
-	#echo group: $group
-	#echo remarks: $remarks
-	#echo server: $server
-	#echo server_port: $server_port
-	#echo password: $password
-	#echo encrypt_method: $encrypt_method
-	#echo protocol: $protocol
-	#echo protoparam: $protoparam
-	#echo obfs: $obfs
-	#echo obfsparam: $obfsparam
+	#echo $server
+	#echo $server_port
+	#echo $protocol
+	#echo $encrypt_method
+	#echo $obfs
+	#echo $password
+	#echo $obfsparam
+	#echo $protoparam
+	#echo $remarks
+	#echo $group
 	#echo ------
-	echo "$group" >> /tmp/all_group_info.txt
-	[ -n "$group" ] && return 0 || return 1
 }
 
 update_config(){
@@ -410,17 +397,14 @@ get_oneline_rule_now(){
 		curl --connect-timeout 8 -s -L $ssr_subscribe_link > /tmp/ssr_subscribe_file.txt
 	fi
 
-	#虽然为0但是还是要检测下是否下载到正确的内容
 	if [ "$?" == "0" ];then
-		#下载为空...
 		if [ -z "`cat /tmp/ssr_subscribe_file.txt`" ];then
 			echo_date 下载为空...
 			return 3
 		fi
 		#产品信息错误
-		wrong1=`cat /tmp/ssr_subscribe_file.txt|grep "{"`
-		wrong2=`cat /tmp/ssr_subscribe_file.txt|grep "<"`
-		if [ -n "$wrong1" -o -n "$wrong2" ];then
+		wrong=`cat /tmp/ssr_subscribe_file.txt|grep "{"`
+		if [ -n "$wrong" ];then
 			return 2
 		fi
 		#订阅地址有跳转
@@ -438,7 +422,7 @@ get_oneline_rule_now(){
 		echo_date 下载订阅成功...
 		echo_date 开始解析节点信息...
 		#cat /tmp/ssr_subscribe_file.txt | base64 -d > /tmp/ssr_subscribe_file_temp1.txt
-		decode_url_link `cat /tmp/ssr_subscribe_file.txt` > /tmp/ssr_subscribe_file_temp1.txt
+		decode_url_link `cat /tmp/ssr_subscribe_file.txt` 0 > /tmp/ssr_subscribe_file_temp1.txt
 		# 检测ss ssr
 		NODE_FORMAT1=`cat /tmp/ssr_subscribe_file_temp1.txt | grep -E "^ss://"`
 		NODE_FORMAT2=`cat /tmp/ssr_subscribe_file_temp1.txt | grep -E "^ssr://"`
@@ -449,41 +433,40 @@ get_oneline_rule_now(){
 			NODE_NU=`cat /tmp/ssr_subscribe_file_temp1.txt | grep -c "ssr://"`
 			echo_date 检测到ssr节点格式，共计$NODE_NU个节点...
 			#判断格式
-			maxnum=$(decode_url_link `cat /tmp/ssr_subscribe_file.txt` | grep "MAX=" | awk -F"=" '{print $2}' | grep -Eo "[0-9]+")
+			maxnum=$(decode_url_link `cat /tmp/ssr_subscribe_file.txt` 0 | grep "MAX=" |awk -F"=" '{print $2}')
 			if [ -n "$maxnum" ]; then
-				urllinks=$(decode_url_link `cat /tmp/ssr_subscribe_file.txt` | sed '/MAX=/d' | shuf -n $maxnum | sed 's/ssr:\/\///g')
+				urllinks=$(decode_url_link `cat /tmp/ssr_subscribe_file.txt` 0 | sed '/MAX=/d' | shuf -n${maxnum} | sed 's/ssr:\/\///g')
 			else
-				urllinks=$(decode_url_link `cat /tmp/ssr_subscribe_file.txt` | sed 's/ssr:\/\///g')
+				urllinks=$(decode_url_link `cat /tmp/ssr_subscribe_file.txt` 0 | sed 's/ssr:\/\///g')
 			fi
 			[ -z "$urllinks" ] && continue
 			for link in $urllinks
 			do
-				decode_link=$(decode_url_link $link)
-				get_remote_config $decode_link 1
-				[ "$?" == "0" ] && update_config || echo_date "检测到一个错误节点，已经跳过！"
+				decode_link=$(decode_url_link $link 0)
+				get_remote_config $decode_link
+				update_config
 			done
-			# 储存对应订阅链接的group信息
-			if [ -n "$group" ];then
-				dbus set ss_online_group_$z=$group
-				echo $group >> /tmp/group_info.txt
-			else
-				# 如果最后一个节点是空的，那么使用这种方式去获取group名字
-				group=`cat /tmp/all_group_info.txt | sort -u | tail -n1`
-				[ -n "$group" ] && dbus set ss_online_group_$z=$group
-				[ -n "$group" ] && echo $group >> /tmp/group_info.txt
-			fi
 			# 去除订阅服务器上已经删除的节点
 			del_none_exist
 			# 节点重新排序
 			remove_node_gap
+			# 储存对应订阅链接的group信息
+			dbus set ss_online_group_$z=$group
+			HIDE_DETIAL=0
+		else
+			echo_date 该订阅链接不包含任何节点信息！请检查你的服务商是否更换了订阅链接！
+			HIDE_DETIAL=1
+		fi
+		NO_DEL=0
+		sleep 1
+		echo $group >> /tmp/group_info.txt
+		if [ "$HIDE_DETIAL" == "0" ];then
 			USER_ADD=$(($(dbus list ssconf_basic_|grep _name_|wc -l) - $(dbus list ssconf_basic_|grep _group_|wc -l))) || 0
 			ONLINE_GET=$(dbus list ssconf_basic_|grep _group_|wc -l) || 0
 			echo_date "本次更新订阅来源 【$group】， 新增节点 $addnum 个，修改 $updatenum 个，删除 $delnum 个；"
 			echo_date "现共有自添加SSR节点：$USER_ADD 个。"
 			echo_date "现共有订阅SSR节点：$ONLINE_GET 个。"
 			echo_date "在线订阅列表更新完成!"
-		else
-			return 3
 		fi
 	else
 		return 1
@@ -496,7 +479,6 @@ start_update(){
 	rm -rf /tmp/ssr_subscribe_file_temp1.txt >/dev/null 2>&1
 	rm -rf /tmp/all_localservers >/dev/null 2>&1
 	rm -rf /tmp/all_onlineservers >/dev/null 2>&1
-	rm -rf /tmp/all_group_info.txt >/dev/null 2>&1
 	rm -rf /tmp/group_info.txt >/dev/null 2>&1
 	sleep 1
 	echo_date 收集本地节点名到文件
@@ -533,39 +515,38 @@ start_update(){
 			continue
 			;;
 		2)
-			echo_date "无法获取产品信息！请检查你的服务商是否更换了订阅链接！"
+			echo_date "无法获取产品信息"
 			rm -rf /tmp/ssr_subscribe_file.txt >/dev/null 2>&1 &
-			let DEL_SUBSCRIBE+=1
+			NO_DEL=1
 			sleep 2
 			echo_date 退出订阅程序...
 			;;
 		3)
 			echo_date "该订阅链接不包含任何节点信息！请检查你的服务商是否更换了订阅链接！"
 			rm -rf /tmp/ssr_subscribe_file.txt >/dev/null 2>&1 &
-			let DEL_SUBSCRIBE+=1
+			NO_DEL=1
 			sleep 2
 			echo_date 退出订阅程序...
 			;;
 		1|*)
 			echo_date "下载订阅失败...请检查你的网络..."
 			rm -rf /tmp/ssr_subscribe_file.txt >/dev/null 2>&1 &
-			let DEL_SUBSCRIBE+=1
+			NO_DEL=1
 			sleep 2
 			echo_date 退出订阅程序...
 			;;
 		esac
 	done
 
-	if [ "$DEL_SUBSCRIBE" == "0" ];then
-		# 尝试删除去掉订阅链接对应的节点
-		local_groups=`dbus list ssconf_basic_group_|cut -d "=" -f2|sort -u`
+	if [ "$NO_DEL" == "0" ];then
+		# 尝试删除去掉的订阅链接对应的节点
+		local_groups=`dbus list ss|grep group|cut -d "=" -f2|sort -u`
 		if [ -f "/tmp/group_info.txt" ];then
 			for local_group in $local_groups
 			do
 				MATCH=`cat /tmp/group_info.txt | grep $local_group`
 				if [ -z "$MATCH" ];then
-					echo_date "==================================================================="
-					echo_date 【$local_group】 节点已经不再订阅，将进行删除... 
+					echo_date $local_group 节点已经不再订阅，将进行删除... 
 					confs_nu=`dbus list ssconf |grep "$local_group"| cut -d "=" -f 1|cut -d "_" -f 4`
 					for conf_nu in $confs_nu
 					do
@@ -603,7 +584,7 @@ start_update(){
 						dbus remove ssconf_basic_v2ray_json_$conf_nu
 						dbus remove ssconf_basic_type_$conf_nu
 					done
-					# 删除不再订阅节点的group信息
+					# 删除不再鼎业节点的group信息
 					confs_nu_2=`dbus list ss_online_group_|grep "$local_group"| cut -d "=" -f 1|cut -d "_" -f 4`
 					if [ -n "$confs_nu_2" ];then
 						for conf_nu_2 in $confs_nu_2
@@ -624,7 +605,7 @@ start_update(){
 			fi
 		fi
 	else
-		echo_date "由于订阅过程有失败，本次不检测需要删除的订阅，以免误伤；下次成功订阅后再进行检测。"
+		echo_date "由于订阅过程失败，本次不检测需要删除的订阅，以免误伤；下次成功订阅后再进行检测。"
 	fi
 	# 结束
 	echo_date "==================================================================="
@@ -635,7 +616,6 @@ start_update(){
 	rm -rf /tmp/ssr_subscribe_file_temp1.txt >/dev/null 2>&1
 	rm -rf /tmp/all_localservers >/dev/null 2>&1
 	rm -rf /tmp/all_onlineservers >/dev/null 2>&1
-	rm -rf /tmp/all_group_info.txt >/dev/null 2>&1
 	rm -rf /tmp/group_info.txt >/dev/null 2>&1
 }
 
@@ -656,7 +636,6 @@ add() {
 	rm -rf /tmp/ssr_subscribe_file_temp1.txt >/dev/null 2>&1
 	rm -rf /tmp/all_localservers >/dev/null 2>&1
 	rm -rf /tmp/all_onlineservers >/dev/null 2>&1
-	rm -rf /tmp/all_group_info.txt >/dev/null 2>&1
 	rm -rf /tmp/group_info.txt >/dev/null 2>&1
 	echo_date 添加链接为：`dbus get ss_base64_links`
 	ssrlinks=`dbus get ss_base64_links|sed 's/$/\n/'|sed '/^$/d'`
@@ -666,8 +645,8 @@ add() {
 			if [ -n "`echo -n "$ssrlink" | grep "ssr://"`" ]; then
 				echo_date 检测到SSR链接...开始尝试解析...
 				new_ssrlink=`echo -n "$ssrlink" | sed 's/ssr:\/\///g'`
-				decode_ssrlink=$(decode_url_link $new_ssrlink)
-				get_remote_config $decode_ssrlink 2
+				decode_ssrlink=$(decode_url_link $new_ssrlink 1)
+				get_remote_config $decode_ssrlink
 				add_ssr_servers 1
 			else
 				echo_date 检测到SS链接...开始尝试解析...
@@ -678,7 +657,7 @@ add() {
 					new_sslink=`echo -n "$ssrlink" | sed 's/ss:\/\///g'`
 					remarks='AddByLink'
 				fi
-				decode_sslink=$(decode_url_link $new_sslink)
+				decode_sslink=$(decode_url_link $new_sslink 1)
 				get_ss_config $decode_sslink
 				add_ss_servers
 			fi
