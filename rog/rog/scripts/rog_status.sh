@@ -1,13 +1,12 @@
 #!/bin/sh
 
-alias echo_date='echo $(date +%Y年%m月%d日\ %X)'
+#alias echo_date='echo $(date +%Y年%m月%d日\ %X)'
 export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 model=`nvram get productid`
 #=================================================
 
-# CPU温度
-date=`echo_date`
+# date=`echo_date`
 
 # CPU温度
 cpu_temperature_origin=`cat /sys/class/thermal/thermal_zone0/temp`
@@ -39,4 +38,4 @@ RT-AC86U)
 esac
 #=================================================
 
-http_response "$date@@CPU：$cpu_temperature ℃@@$wl_temperature"
+http_response "CPU：$cpu_temperature ℃@@$wl_temperature"

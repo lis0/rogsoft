@@ -84,6 +84,7 @@ function init() {
 	detect_CPU_RAM();
 	get_temperature();
 	showbootTime();
+	showclock();
 }
 
 function get_temperature(){
@@ -96,9 +97,8 @@ function get_temperature(){
 		data: JSON.stringify(postData),
 		dataType: "json",
 		success: function(response){
-			E("rog_time").innerHTML = response.result.split("@@")[0];
-			E("rog_cpu_temperature").innerHTML = response.result.split("@@")[1];
-			E("rog_wl_temperature").innerHTML = response.result.split("@@")[2];
+			E("rog_cpu_temperature").innerHTML = response.result.split("@@")[0];
+			E("rog_wl_temperature").innerHTML = response.result.split("@@")[1];
 			setTimeout("get_temperature();", 2000);
 		},
 		error: function(){
@@ -114,7 +114,6 @@ function render_RAM(total, free, used) {
 	free_MB = Math.round(free / 1024);
 	used_MB = Math.round(used / 1024);
 	used_percentage = Math.round((used / total) * 100);
-	//$("#rog_ram_status").html("Total：" + total_MB + "MB" + "&nbsp;&nbsp;|&nbsp;&nbsp;" + "Free：" + free_MB + "MB" + "&nbsp;&nbsp;|&nbsp;&nbsp;" + "Used：" + used_MB + "MB");
 	$("#rog_ram_used").html(used_MB + "MB" + "&nbsp;/&nbsp;" + used_percentage + "%");
 	$("#rog_ram_free").html(free_MB + "MB");
 	$("#ram_bar").css("width", used_percentage + "%");
@@ -196,6 +195,23 @@ function showbootTime() {
 	setTimeout("showbootTime()", 1000);
 }
 
+function fix_nu(num, length) {
+  return ('' + num).length < length ? ((new Array(length + 1)).join('0') + num).slice(-length) : '' + num;
+}
+
+Date.prototype.toLocaleString = function() {
+	return this.getFullYear() + "年 " + fix_nu((this.getMonth() + 1), 2) + "月" + fix_nu(this.getDate(), 2) + "日 " + fix_nu(this.getHours(), 2) + ":" + fix_nu(this.getMinutes(), 2) + ":" + fix_nu(this.getSeconds(), 2);
+};
+
+function showclock() {
+    var time = new Date(systime_millsec);//获取当前时间
+    E("rog_time").innerHTML = time.toLocaleString();
+    var refreshTime=this.setInterval(function () {//每个一秒执行的方法如下
+        time = new Date(time.valueOf() + 1000);
+        E("rog_time").innerHTML = time.toLocaleString();
+    }, 1000);
+}
+
 function menu_hook(title, tab) {
 	tabtitle[tabtitle.length - 1] = new Array("", "ROG tools");
 	tablink[tablink.length - 1] = new Array("", "Module_rog.asp");
@@ -257,7 +273,9 @@ function menu_hook(title, tab) {
 												</thead>
 												<tr>
 													<th>系统时间</th>
-													<td><span id="rog_time"></span></td>
+													<td>
+														<span id="rog_time"></span>
+													</td>
 												</tr>
 												<tr>
 													<th>开机时间</a></th>
